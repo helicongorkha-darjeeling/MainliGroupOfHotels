@@ -29,3 +29,8 @@
 - Changed: Replaced the public room-label review with one Double Room offer, applied the supplied ₹1,500/₹2,500 rates, and built the protected one-screen staff and housekeeping foundation.
 - Why it matters: Guests now see a clean, bookable-looking offer while the hotel gains the first honest piece of its own operations system instead of a fake DJUBO-style demo.
 - Felt: The bridge and the first working station are connected—one real system at a time.
+
+## Stardate 2026-09-29
+- Changed: Authenticated the new GitHub account and pushed the complete verified project to `helicongorkha-darjeeling/MainliGroupOfHotels` on `main`.
+- Why it matters: The hotel now owns a recoverable source repository ready for Supabase, Vercel, and the live booking-flow work.
+- Felt: Docking complete—the ship is safely home under the right flag.
