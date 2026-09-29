@@ -19,6 +19,17 @@ export function nightsBetween(checkIn: string, checkOut: string) {
   return Math.round((end - start) / 86_400_000);
 }
 
+export function hotelToday(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(now);
+}
+
+export function addHotelDays(value: string, days: number) {
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + days));
+  if ([year, month, day].some(Number.isNaN) || Number.isNaN(date.getTime())) return value;
+  return date.toISOString().slice(0, 10);
+}
+
 export function formatHotelDate(value: string) {
   const date = new Date(`${value}T00:00:00+05:30`);
   if (Number.isNaN(date.getTime())) return value;

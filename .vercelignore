@@ -1,0 +1,11 @@
+.git
+.next
+.vercel
+.env*
+node_modules
+coverage
+*.log
+hotel_teesta_photos
+hotel_teesta_photos_web
+supabase/.branches
+supabase/.temp

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { nightsBetween, staySearchSchema } from "./stay";
+import { addHotelDays, hotelToday, nightsBetween, staySearchSchema } from "./stay";
 
 describe("hotel stay dates", () => {
   it("counts checkout as an exclusive date", () => {
@@ -22,5 +22,13 @@ describe("hotel stay dates", () => {
       guests: "2",
     });
     expect(result.success).toBe(true);
+  });
+
+  it("uses the hotel timezone for today's booking date", () => {
+    expect(hotelToday(new Date("2026-09-29T20:00:00.000Z"))).toBe("2026-09-30");
+  });
+
+  it("moves checkout across month boundaries", () => {
+    expect(addHotelDays("2026-09-30", 1)).toBe("2026-10-01");
   });
 });

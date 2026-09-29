@@ -1,8 +1,9 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, MouseEvent, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, CalendarDays, Users } from "lucide-react";
+import { addHotelDays, hotelToday } from "@/lib/stay";
 
 type SearchFormProps = {
   compact?: boolean;
@@ -18,14 +19,27 @@ export function SearchForm({
   initialGuests = "2",
 }: SearchFormProps) {
   const router = useRouter();
-  const [checkIn, setCheckIn] = useState(initialCheckIn);
-  const [checkOut, setCheckOut] = useState(initialCheckOut);
+  const checkInRef = useRef<HTMLInputElement>(null);
+  const checkOutRef = useRef<HTMLInputElement>(null);
+  const today = useMemo(() => hotelToday(), []);
+  const defaultCheckIn = initialCheckIn || today;
+  const defaultCheckOut = initialCheckOut > defaultCheckIn ? initialCheckOut : addHotelDays(defaultCheckIn, 1);
+  const [checkIn, setCheckIn] = useState(defaultCheckIn);
+  const [checkOut, setCheckOut] = useState(defaultCheckOut);
   const [guests, setGuests] = useState(initialGuests);
   const [error, setError] = useState("");
-  const today = useMemo(
-    () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date()),
-    [],
-  );
+
+  function openPicker(event: MouseEvent<HTMLDivElement>, input: HTMLInputElement | null) {
+    if (!input || event.target === input) return;
+    input.focus();
+    input.showPicker?.();
+  }
+
+  function updateCheckIn(value: string) {
+    setCheckIn(value);
+    if (!checkOut || checkOut <= value) setCheckOut(addHotelDays(value, 1));
+    setError("");
+  }
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,31 +58,35 @@ export function SearchForm({
 
   return (
     <form className={`search-form ${compact ? "search-form-compact" : ""}`} onSubmit={submit} noValidate>
-      <div className="search-field">
+      <div className="search-field search-field-date" onClick={(event) => openPicker(event, checkInRef.current)}>
         <label htmlFor={compact ? "compact-check-in" : "check-in"}>
           <CalendarDays size={16} aria-hidden="true" /> Check-in
         </label>
         <input
+          ref={checkInRef}
           id={compact ? "compact-check-in" : "check-in"}
           name="checkIn"
           type="date"
           min={today}
           value={checkIn}
-          onChange={(event) => setCheckIn(event.target.value)}
+          onClick={(event) => event.currentTarget.showPicker?.()}
+          onChange={(event) => updateCheckIn(event.target.value)}
           required
         />
       </div>
-      <div className="search-field">
+      <div className="search-field search-field-date" onClick={(event) => openPicker(event, checkOutRef.current)}>
         <label htmlFor={compact ? "compact-check-out" : "check-out"}>
           <CalendarDays size={16} aria-hidden="true" /> Checkout
         </label>
         <input
+          ref={checkOutRef}
           id={compact ? "compact-check-out" : "check-out"}
           name="checkOut"
           type="date"
-          min={checkIn || today}
+          min={addHotelDays(checkIn || today, 1)}
           value={checkOut}
-          onChange={(event) => setCheckOut(event.target.value)}
+          onClick={(event) => event.currentTarget.showPicker?.()}
+          onChange={(event) => { setCheckOut(event.target.value); setError(""); }}
           required
         />
       </div>

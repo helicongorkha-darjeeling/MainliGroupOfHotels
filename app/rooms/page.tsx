@@ -25,6 +25,13 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
   const parsed = staySearchSchema.safeParse(raw);
   const nights = parsed.success ? nightsBetween(parsed.data.checkIn, parsed.data.checkOut) : 0;
   const quote = parsed.success ? quoteTeestaStay(parsed.data.guests, nights) : null;
+  const bookingHref = parsed.success
+    ? `/book?${new URLSearchParams({
+        checkIn: parsed.data.checkIn,
+        checkOut: parsed.data.checkOut,
+        guests: String(parsed.data.guests),
+      }).toString()}`
+    : "/stays/teesta#check-rooms";
 
   return (
     <main>
@@ -65,7 +72,8 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
                 <div className="room-result-action">
                   <span>Stay starts at</span>
                   <strong>{formatInr(quote.stayTotalPaise)}+</strong>
-                  <button className="button button-disabled" type="button" disabled aria-disabled="true">Booking opens soon</button>
+                  <Link className="button button-primary" href={bookingHref}>Continue to booking</Link>
+                  <small className="booking-test-note">Secure sign-in first · no charge yet</small>
                 </div>
               </article>
             </div>

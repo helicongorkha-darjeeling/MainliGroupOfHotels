@@ -34,3 +34,8 @@
 - Changed: Authenticated the new GitHub account and pushed the complete verified project to `helicongorkha-darjeeling/MainliGroupOfHotels` on `main`.
 - Why it matters: The hotel now owns a recoverable source repository ready for Supabase, Vercel, and the live booking-flow work.
 - Felt: Docking complete—the ship is safely home under the right flag.
+
+## Stardate 2026-09-29
+- Changed: Linked and deployed the Vercel production project, refined the date calendar, and added the secure stay-review and guest sign-in booking handoff.
+- Why it matters: A guest can now move from real dates and pricing into the first honest stage of a booking, while inventory remains protected until the hosted database is approved and migrated.
+- Felt: The booking corridor is open; the final airlock is Supabase, not guesswork.

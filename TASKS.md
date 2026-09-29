@@ -8,6 +8,8 @@
 - [x] Replace internal room-label review content with one clean customer-facing Double Room offer.
 - [x] Apply supplied starting rates: ₹1,500 single occupancy and ₹2,500 for one or two guests.
 - [x] Preserve dates and guest count through the public search flow.
+- [x] Default the booking calendar to today/tomorrow and open the native picker from the full date field.
+- [x] Add a stay-review and secure guest email sign-in handoff at `/book`.
 - [x] Keep prices, availability, OTP and payment explicitly disabled until real data and providers exist.
 - [ ] Replace the dedicated temporary logo slot with the supplied approved Mainali logo.
 - [ ] Owner review of the responsive public experience.
@@ -22,6 +24,7 @@
 - [x] Add a protected staff sign-in foundation and one-screen front desk.
 - [x] Add room-by-room housekeeping status controls backed by an audited database function.
 - [ ] Execute the migration and pgTAP suite locally when Docker Desktop is available.
+- [ ] Authenticate the Supabase CLI, link project `yefndxkljepxhoeclknl`, then push the migrations and seed.
 - [ ] Connect a Supabase preview project and verify policy behavior with real guest and staff sessions.
 - [ ] Add authorised export controls to the reception interface.
 
@@ -31,6 +34,7 @@
 - [ ] Guest folios with room charges, extras, payments and balance due.
 - [ ] Night audit, daily revenue and occupancy reports.
 - [ ] Wire the public and reception flows to the transactional availability and hold functions.
+- [ ] Activate the approved property, room, rate and booking settings before testing a real inventory hold.
 - [ ] Real phone OTP with CAPTCHA, throttling and recovery.
 - [ ] Server-side pricing and approved payment policy.
 - [ ] Razorpay test checkout, signature/webhook verification and idempotency.
