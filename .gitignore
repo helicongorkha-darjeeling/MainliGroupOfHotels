@@ -1,0 +1,38 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# local environment files
+.env*
+!.env.example
+
+# testing and logs
+/coverage
+*.log
+
+# local Supabase state
+/supabase/.branches/
+/supabase/.temp/
+
+# source photo working folders (selected optimized assets live in public/images)
+/hotel_teesta_photos/
+/hotel_teesta_photos_web/
+
+# operating systems and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
