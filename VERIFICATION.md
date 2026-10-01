@@ -1,5 +1,18 @@
 # Verification — 1 October 2026
 
+## Guest-contact checkout and photo-named room choices
+
+- Added required name, phone and email fields, with an editable checkout review. Browser checks rejected an invalid phone number, normalised an Indian number and retained values when editing.
+- Review checkout focuses its heading, keeps contact details out of the URL and makes no reservation or payment. No sign-in email was sent during this verification.
+- All four room-result links carried 10–12 October and four guests into their corresponding Double, Triple, Four-person and Family-with-sofa booking photos.
+- Double Room preserved its ₹10,000 starting total for two rooms over two nights. New layouts displayed `On request`; automated tests verify that they have no Double Room price or database category fallback.
+- Lobby, Restaurant, Front desk and Bathroom filters each selected the matching photo. The bathroom full-photo viewer loaded on mobile and closed with Escape; it is not assigned to a specific room type.
+- Desktop 1440 × 1000 and phone 390 × 844 checkout screenshots were visually inspected. Both checked checkout layouts had no horizontal overflow.
+- Twelve source photographs are now curated in the public gallery. Four additional copies were hash-matched; source exports remain untouched.
+- `npm test`: 16/16 passed. `npm run lint`, the 19-route production build and `git diff --check` passed.
+- Existing earlier-navigation image-preload notice was present in the first local session; the fresh room-choice navigation pass reported zero console errors or warnings.
+- Real Supabase profile/booking persistence, sign-in delivery, inventory holds, Razorpay checkout and confirmations remain unverified. Live booking stays disabled.
+
 ## Cleaned-photo and custom-calendar increment
 
 - Git remote refreshed; checkout and `origin/main` matched before edits. No incoming changes were skipped.

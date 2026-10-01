@@ -49,3 +49,13 @@
 - Changed: Replaced the native calendar with full-field date buttons, an anchored desktop picker and mobile sheet; verified current-date defaults, month boundaries and the stay-review handoff.
 - Why it matters: A guest can choose dates comfortably and carry the right stay and price into sign-in, without claiming an untested booking or payment.
 - Felt: A smoother boarding corridor—one small, working step closer to the engine room.
+
+## Stardate 2026-10-01
+- Changed: Added guest phone/email validation and an editable checkout review that opens without sending a sign-in email or making payment.
+- Why it matters: We can walk through the booking experience safely while identity, inventory and payment setup remain real external gates.
+- Felt: The next door opens clearly—no mystery button, no pretend booking.
+
+## Stardate 2026-10-01
+- Changed: Added Double, Triple, Four-person and Family-with-sofa photo choices, plus separate lobby, restaurant, front-desk and exterior gallery filters.
+- Why it matters: Guests choose the layout the owner actually photographed; unpriced layouts cannot silently book Double Room inventory.
+- Felt: The ship's rooms now have their own faces, not one label for every cabin.

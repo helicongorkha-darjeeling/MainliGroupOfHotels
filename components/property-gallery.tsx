@@ -5,12 +5,11 @@ import { useId, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Expand, Images, X } from "lucide-react";
 import type { PropertyPhoto } from "@/lib/property";
 
-const filters = ["All photos", "Rooms", "Bathroom", "Hotel"] as const;
-
 export function PropertyGallery({ photos }: { photos: PropertyPhoto[] }) {
   const id = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [filter, setFilter] = useState<(typeof filters)[number]>("All photos");
+  const [filter, setFilter] = useState<string>("All photos");
+  const filters = ["All photos", ...new Set(photos.map((photo) => photo.category))];
   const [selected, setSelected] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [loadedSrc, setLoadedSrc] = useState("");
@@ -35,7 +34,7 @@ export function PropertyGallery({ photos }: { photos: PropertyPhoto[] }) {
             <button type="button" key={label} aria-pressed={filter === label} onClick={() => { setFilter(label); setSelected(0); }}>{label}</button>
           ))}
         </div>
-        <button type="button" className="photo-view-all" onClick={() => open(0)}><Images size={17} aria-hidden="true" /> View {visible.length} photos</button>
+        <button type="button" className="photo-view-all" onClick={() => open(0)}><Images size={17} aria-hidden="true" /> View {visible.length} {visible.length === 1 ? "photo" : "photos"}</button>
       </div>
       <div className={`photo-grid ${visible.length === 1 ? "photo-grid-single" : ""}`}>
         {visible.slice(0, 5).map((photo, index) => (

@@ -2160,6 +2160,39 @@ a {
   }
 }
 
+/* Guest details, checkout review and photo-based room choices. */
+.booking-steps { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 0 0 20px; padding: 0 0 18px; list-style: none; border-bottom: 1px solid var(--line); }
+.booking-steps li { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .74rem; }
+.booking-steps li[aria-current="step"] { color: var(--forest); font-weight: 800; }
+.guest-signin-form { padding-top: 8px; border-top: 0; }
+.guest-signin-form input { padding-inline: 12px; background: var(--ivory); border: 1px solid var(--line); border-radius: 6px; text-transform: none; letter-spacing: normal; }
+.guest-signin-form input[readonly] { color: var(--muted); }
+.checkout-review { animation: calendar-enter 160ms ease-out; }
+.checkout-review h2 { margin: 24px 0; font-family: Georgia, serif; font-size: 2rem; font-weight: 400; }
+.checkout-contact { margin: 0 0 14px; }
+.checkout-contact > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.checkout-contact dt { color: var(--muted); font-size: .75rem; }
+.checkout-contact dd { margin: 0; overflow-wrap: anywhere; color: var(--ink); font-size: .9rem; font-weight: 650; }
+.checkout-edit { padding: 6px 0; color: var(--forest); background: transparent; border: 0; font-size: .75rem; cursor: pointer; }
+.checkout-verification, .checkout-payment { padding: 26px 0; border-bottom: 1px solid var(--line); }
+.checkout-review h3 { display: flex; align-items: center; gap: 9px; margin: 0 0 12px; font-size: .95rem; }
+.checkout-verification p, .checkout-payment p, .checkout-message { color: var(--muted); font-size: .8rem; line-height: 1.6; }
+.checkout-verification .button { margin-top: 10px; }
+.checkout-payment small { display: block; margin-top: 16px; color: var(--muted); font-size: .73rem; line-height: 1.5; }
+.checkout-payment button:disabled { opacity: .6; cursor: not-allowed; }
+.checkout-verified { display: flex; gap: 8px; align-items: center; margin: 22px 0; color: var(--emerald); font-size: .85rem; }
+.room-result-action > strong.rate-on-request { font-size: 1.5rem; }
+.booking-photo-section { border-top: 1px solid var(--line); }
+.booking-visual { position: sticky; top: 24px; align-self: start; height: min(820px, calc(100svh - 120px)); min-height: 560px; }
+@media (max-width: 900px) {
+  .booking-visual { position: relative; top: auto; height: 360px; min-height: 360px; }
+}
+@media (max-width: 640px) {
+  .booking-visual { height: 280px; min-height: 280px; }
+  .checkout-verification .button, .checkout-payment .button, .guest-signin-form .button { width: 100%; }
+  .booking-steps { gap: 12px; }
+}
+
 /* Full-field date controls and the custom stay calendar. */
 .search-field.search-field-date { padding: 0; }
 .date-trigger { display: block; width: 100%; padding: 19px 28px 19px 0; color: var(--ink); text-align: left; background: transparent; border: 0; cursor: pointer; }
