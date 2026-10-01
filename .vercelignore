@@ -7,5 +7,8 @@ coverage
 *.log
 hotel_teesta_photos
 hotel_teesta_photos_web
+hotel_teesta_photos_originals
+output
+.playwright-cli
 supabase/.branches
 supabase/.temp

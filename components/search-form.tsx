@@ -1,9 +1,11 @@
 "use client";
 
-import { FormEvent, MouseEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useId, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CalendarDays, Users } from "lucide-react";
-import { addHotelDays, hotelToday } from "@/lib/stay";
+import { ArrowRight, Users } from "lucide-react";
+import { StayCalendar } from "@/components/stay-calendar";
+import { useHotelToday } from "@/components/use-hotel-today";
+import { addHotelDays, hotelToday, staySearchSchema } from "@/lib/stay";
 
 type SearchFormProps = {
   compact?: boolean;
@@ -19,21 +21,15 @@ export function SearchForm({
   initialGuests = "2",
 }: SearchFormProps) {
   const router = useRouter();
-  const checkInRef = useRef<HTMLInputElement>(null);
-  const checkOutRef = useRef<HTMLInputElement>(null);
-  const today = useMemo(() => hotelToday(), []);
-  const defaultCheckIn = initialCheckIn || today;
-  const defaultCheckOut = initialCheckOut > defaultCheckIn ? initialCheckOut : addHotelDays(defaultCheckIn, 1);
-  const [checkIn, setCheckIn] = useState(defaultCheckIn);
-  const [checkOut, setCheckOut] = useState(defaultCheckOut);
-  const [guests, setGuests] = useState(initialGuests);
+  const id = useId();
+  const today = useHotelToday();
+  const initialStay = staySearchSchema.safeParse({ checkIn: initialCheckIn, checkOut: initialCheckOut, guests: initialGuests });
+  const [chosenCheckIn, setCheckIn] = useState(initialStay.success ? initialStay.data.checkIn : "");
+  const [chosenCheckOut, setCheckOut] = useState(initialStay.success ? initialStay.data.checkOut : "");
+  const checkIn = chosenCheckIn || today;
+  const checkOut = chosenCheckOut > checkIn ? chosenCheckOut : checkIn ? addHotelDays(checkIn, 1) : "";
+  const [guests, setGuests] = useState(initialStay.success ? String(initialStay.data.guests) : "2");
   const [error, setError] = useState("");
-
-  function openPicker(event: MouseEvent<HTMLDivElement>, input: HTMLInputElement | null) {
-    if (!input || event.target === input) return;
-    input.focus();
-    input.showPicker?.();
-  }
 
   function updateCheckIn(value: string) {
     setCheckIn(value);
@@ -51,6 +47,10 @@ export function SearchForm({
       setError("Checkout must be after check-in.");
       return;
     }
+    if (checkIn < hotelToday()) {
+      setError("Check-in cannot be in the past. Choose a new arrival date.");
+      return;
+    }
     setError("");
     const query = new URLSearchParams({ checkIn, checkOut, guests });
     router.push(`/rooms?${query.toString()}`);
@@ -58,49 +58,21 @@ export function SearchForm({
 
   return (
     <form className={`search-form ${compact ? "search-form-compact" : ""}`} onSubmit={submit} noValidate>
-      <div className="search-field search-field-date" onClick={(event) => openPicker(event, checkInRef.current)}>
-        <label htmlFor={compact ? "compact-check-in" : "check-in"}>
-          <CalendarDays size={16} aria-hidden="true" /> Check-in
-        </label>
-        <input
-          ref={checkInRef}
-          id={compact ? "compact-check-in" : "check-in"}
-          name="checkIn"
-          type="date"
-          min={today}
-          value={checkIn}
-          onClick={(event) => event.currentTarget.showPicker?.()}
-          onChange={(event) => updateCheckIn(event.target.value)}
-          required
-        />
-      </div>
-      <div className="search-field search-field-date" onClick={(event) => openPicker(event, checkOutRef.current)}>
-        <label htmlFor={compact ? "compact-check-out" : "check-out"}>
-          <CalendarDays size={16} aria-hidden="true" /> Checkout
-        </label>
-        <input
-          ref={checkOutRef}
-          id={compact ? "compact-check-out" : "check-out"}
-          name="checkOut"
-          type="date"
-          min={addHotelDays(checkIn || today, 1)}
-          value={checkOut}
-          onClick={(event) => event.currentTarget.showPicker?.()}
-          onChange={(event) => { setCheckOut(event.target.value); setError(""); }}
-          required
-        />
-      </div>
+      <StayCalendar checkIn={checkIn} checkOut={checkOut} onChange={(field, value) => {
+        if (field === "checkIn") updateCheckIn(value);
+        else { setCheckOut(value); setError(""); }
+      }} />
       <div className="search-field">
-        <label htmlFor={compact ? "compact-guests" : "guests"}>
+        <label htmlFor={`${id}-guests`}>
           <Users size={16} aria-hidden="true" /> Guests
         </label>
         <select
-          id={compact ? "compact-guests" : "guests"}
+          id={`${id}-guests`}
           name="guests"
           value={guests}
           onChange={(event) => setGuests(event.target.value)}
         >
-          {Array.from({ length: 8 }, (_, index) => index + 1).map((count) => (
+          {Array.from({ length: 12 }, (_, index) => index + 1).map((count) => (
             <option value={count} key={count}>
               {count} {count === 1 ? "guest" : "guests"}
             </option>

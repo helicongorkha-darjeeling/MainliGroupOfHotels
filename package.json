@@ -12,6 +12,7 @@
     "resize-photos": "node resize-photos.mjs"
   },
   "dependencies": {
+    "@daypicker/react": "10.0.2",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "lucide-react": "^1.48.0",

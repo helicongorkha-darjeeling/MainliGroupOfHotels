@@ -50,7 +50,7 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
 
       <section className="modify-search">
         <div className="site-shell">
-          <SearchForm compact initialCheckIn={raw.checkIn} initialCheckOut={raw.checkOut} initialGuests={raw.guests} />
+          <SearchForm key={`${raw.checkIn}/${raw.checkOut}/${raw.guests}`} compact initialCheckIn={raw.checkIn} initialCheckOut={raw.checkOut} initialGuests={raw.guests} />
         </div>
       </section>
 
@@ -61,7 +61,7 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
             <div className="room-results">
               <article className="room-result" key={teesta.publicRoom.id}>
                 <div className="room-result-image">
-                  <Image src={teesta.publicRoom.photo} alt="Double room at Hotel Teesta" fill sizes="(max-width: 800px) 100vw, 35vw" className="cover-image" />
+                  <Image src={teesta.publicRoom.photo} alt="Double room at Hotel Teesta" fill sizes="(max-width: 800px) 100vw, 35vw" className="cover-image" style={{ objectPosition: "50% 65%" }} />
                 </div>
                 <div className="room-result-body">
                   <span className="room-kicker">Hotel Teesta</span>

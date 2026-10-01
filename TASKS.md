@@ -8,7 +8,8 @@
 - [x] Replace internal room-label review content with one clean customer-facing Double Room offer.
 - [x] Apply supplied starting rates: ₹1,500 single occupancy and ₹2,500 for one or two guests.
 - [x] Preserve dates and guest count through the public search flow.
-- [x] Default the booking calendar to today/tomorrow and open the native picker from the full date field.
+- [x] Use eight photos from the owner's cleaned export, with category filters and a full-photo viewer.
+- [x] Replace the native date picker with a full-field custom calendar, mobile sheet, and current hotel-timezone defaults.
 - [x] Add a stay-review and secure guest email sign-in handoff at `/book`.
 - [x] Keep prices, availability, OTP and payment explicitly disabled until real data and providers exist.
 - [ ] Replace the dedicated temporary logo slot with the supplied approved Mainali logo.
@@ -53,6 +54,7 @@
 - [ ] Confirm legal hotel name, complete address, map pin, phone, WhatsApp and email.
 - [ ] Confirm amenities, room activation, tax treatment, extra-person policy and rate validity dates.
 - [ ] Approve check-in/out, cancellation, refund, privacy and booking terms.
-- [ ] Approve full payment or deposit percentage.
+- [x] Choose full payment in Razorpay test mode for the first booking test.
+- [ ] Approve the live full-payment or deposit policy.
 - [ ] Provide Supabase, SMS/OTP, Razorpay test-mode and Vercel access.
 - [ ] Name each staff member, assigned property and approved role.

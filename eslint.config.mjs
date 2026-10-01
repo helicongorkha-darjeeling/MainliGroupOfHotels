@@ -5,5 +5,5 @@ import nextTs from "eslint-config-next/typescript";
 export default defineConfig([
   ...nextVitals,
   ...nextTs,
-  globalIgnores([".next/**", "node_modules/**", "hotel_teesta_photos/**", "hotel_teesta_photos_web/**"]),
+  globalIgnores([".next/**", "node_modules/**", "hotel_teesta_photos/**", "hotel_teesta_photos_web/**", "hotel_teesta_photos_originals/**", "output/**", ".playwright-cli/**"]),
 ]);

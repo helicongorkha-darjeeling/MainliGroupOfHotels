@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, BedDouble, IndianRupee, MapPin, ShieldCheck, UserRound } from "lucide-react";
 import { Reveal } from "@/components/reveal";
 import { SearchForm } from "@/components/search-form";
+import { PropertyGallery } from "@/components/property-gallery";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { teesta } from "@/lib/property";
@@ -26,31 +27,25 @@ export default function TeestaPage() {
           <a href="#check-rooms" className="button button-primary">Check rooms <ArrowRight size={17} /></a>
         </div>
         <div className="property-hero-image">
-          <Image src="/images/teesta-double-room.webp" alt="A photographed guest room at Hotel Teesta" fill priority sizes="(max-width: 800px) 100vw, 55vw" className="cover-image" />
+          <Image src={teesta.publicRoom.photo} alt="Double room with a window at Hotel Teesta" fill preload sizes="(max-width: 800px) 100vw, 55vw" className="cover-image" style={{ objectPosition: "50% 65%" }} />
           <span className="image-caption">Actual property photograph</span>
         </div>
       </section>
 
-      <section className="gallery-section section-space" aria-labelledby="gallery-title">
+      <section id="photos" className="gallery-section section-space" aria-labelledby="gallery-title">
         <div className="site-shell">
           <div className="section-heading-row">
-            <div><p className="eyebrow">Inside the stay</p><h2 id="gallery-title">A first look</h2></div>
-            <p>Real photographs from Hotel Teesta, showing the rooms and spaces guests can expect during their stay.</p>
+            <div><p className="eyebrow">Inside the stay</p><h2 id="gallery-title">Take a closer look.</h2></div>
+            <p>Explore the rooms and spaces at Hotel Teesta. Tap any photograph to see the full view.</p>
           </div>
-          <div className="gallery-grid">
-            {teesta.gallery.map((image, index) => (
-              <Reveal className={`gallery-item gallery-item-${index + 1}`} key={image.src}>
-                <Image src={image.src} alt={image.alt} fill sizes="(max-width: 800px) 100vw, 50vw" className="cover-image" />
-              </Reveal>
-            ))}
-          </div>
+          <PropertyGallery photos={teesta.gallery} />
         </div>
       </section>
 
       <section className="room-offer section-space" aria-labelledby="rooms-title">
         <div className="site-shell room-offer-layout">
           <Reveal className="room-offer-image">
-            <Image src={teesta.publicRoom.photo} alt="Double room at Hotel Teesta" fill sizes="(max-width: 800px) 100vw, 48vw" className="cover-image" />
+            <Image src={teesta.publicRoom.photo} alt="Double room at Hotel Teesta" fill sizes="(max-width: 800px) 100vw, 48vw" className="cover-image" style={{ objectPosition: "50% 65%" }} />
           </Reveal>
           <Reveal className="room-offer-copy">
             <p className="eyebrow">Stay your way</p>

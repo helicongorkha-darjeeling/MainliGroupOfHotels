@@ -39,3 +39,13 @@
 - Changed: Linked and deployed the Vercel production project, refined the date calendar, and added the secure stay-review and guest sign-in booking handoff.
 - Why it matters: A guest can now move from real dates and pricing into the first honest stage of a booking, while inventory remains protected until the hosted database is approved and migrated.
 - Felt: The booking corridor is open; the final airlock is Supabase, not guesswork.
+
+## Stardate 2026-10-01
+- Changed: Used eight real photos from the cleaned, renamed export in a filtered gallery and full-photo viewer; kept the source photos untouched.
+- Why it matters: Guests can inspect the rooms and hotel spaces clearly before choosing a stay.
+- Felt: The hotel finally looks like itself—real rooms from our hills.
+
+## Stardate 2026-10-01
+- Changed: Replaced the native calendar with full-field date buttons, an anchored desktop picker and mobile sheet; verified current-date defaults, month boundaries and the stay-review handoff.
+- Why it matters: A guest can choose dates comfortably and carry the right stay and price into sign-in, without claiming an untested booking or payment.
+- Felt: A smoother boarding corridor—one small, working step closer to the engine room.

@@ -1,4 +1,24 @@
-# Verification — 29 September 2026
+# Verification — 1 October 2026
+
+## Cleaned-photo and custom-calendar increment
+
+- Git remote refreshed; checkout and `origin/main` matched before edits. No incoming changes were skipped.
+- Eight renamed WebP photographs copied unchanged from `hotel_teesta_photos_web`; SHA-256 hashes matched for each copy. See `PHOTO_MANIFEST.md`.
+- Source folders preserved and excluded from Git/Vercel uploads, including `hotel_teesta_photos_originals`.
+- Browser: desktop 1440 × 1000 and phone 390 × 844. Gallery category filter, full-image loading, arrow-key navigation and Escape close passed; screenshots were visually inspected.
+- Calendar opens when the date field is clicked near its outer edge, not just on the icon. It advances from check-in to checkout, closes after checkout, and returns keyboard focus to the date control.
+- Phone calendar fits within the viewport. No horizontal overflow was found on the checked property page.
+- Month boundary: 31 October adjusts checkout to 1 November and opens November for departure selection.
+- Browser clock advanced to 2 October: homepage defaults became 2–3 October, proving defaults are not frozen at build time.
+- Invalid URL date/guest input recovers to valid calendar defaults without crashing.
+- Search → room result → guest sign-in preserves 10–12 October and two guests, with one double room and a ₹5,000 starting total. No sign-in email, reservation or payment was sent by this check.
+- Application tests: 9/9 passed. Lint and the 19-route production build passed.
+- Existing local-browser notices: missing `/favicon.ico` and one unused image-preload warning during navigation. No application exception was observed. The Next.js smooth-scroll warning was corrected.
+- Supabase migration, real inventory holds, payment verification and confirmation remain unverified; this increment does not enable live booking.
+
+## Earlier baseline — 29 September 2026
+
+The following records are historical, including the old photo counts and then-pending Git permissions.
 
 ## Passed
 

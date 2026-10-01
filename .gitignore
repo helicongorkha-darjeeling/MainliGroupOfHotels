@@ -14,6 +14,8 @@
 
 # testing and logs
 /coverage
+/output/playwright/
+/.playwright-cli/
 *.log
 
 # local Supabase state
@@ -23,6 +25,7 @@
 # source photo working folders (selected optimized assets live in public/images)
 /hotel_teesta_photos/
 /hotel_teesta_photos_web/
+/hotel_teesta_photos_originals/
 
 # operating systems and editors
 .DS_Store

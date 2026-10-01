@@ -5,6 +5,7 @@ import { SearchForm } from "@/components/search-form";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Reveal } from "@/components/reveal";
+import { teesta } from "@/lib/property";
 
 export default function Home() {
   return (
@@ -12,10 +13,10 @@ export default function Home() {
       <section className="home-hero">
         <SiteHeader overlay />
         <Image
-          src="/images/teesta-exterior.webp"
+          src="/images/teesta-exterior-front.webp"
           alt="Exterior of Hotel Teesta in Darjeeling"
           fill
-          priority
+          preload
           sizes="100vw"
           className="hero-image"
         />
@@ -46,11 +47,12 @@ export default function Home() {
         <div className="site-shell property-layout">
           <Reveal className="property-image-wrap">
             <Image
-              src="/images/teesta-double-room.webp"
+              src={teesta.publicRoom.photo}
               alt="A photographed guest room at Hotel Teesta"
               fill
               sizes="(max-width: 800px) 100vw, 56vw"
               className="cover-image"
+              style={{ objectPosition: "50% 65%" }}
             />
             <span className="image-caption">Actual Hotel Teesta photography</span>
           </Reveal>
