@@ -55,7 +55,7 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
 
       <section className="results-section section-space">
         <div className="site-shell">
-          <div className="results-heading"><h2>{parsed.success ? "Choose your room" : "Choose dates to see your stay"}</h2>{parsed.success && <span>{parsed.data.guests} guests · {nights} {nights === 1 ? "night" : "nights"}</span>}</div>
+          <div className="results-heading"><h2>{parsed.success ? "Choose your room" : "Choose dates to see your stay"}</h2>{parsed.success && <span>{parsed.data.guests} {parsed.data.guests === 1 ? "guest" : "guests"} · {nights} {nights === 1 ? "night" : "nights"}</span>}</div>
           {parsed.success ? (
             <div className="room-results">
               {teestaRoomTypes.map((room) => {

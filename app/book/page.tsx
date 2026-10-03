@@ -73,13 +73,14 @@ export default async function BookPage({ searchParams }: BookPageProps) {
           <p className="booking-assurance"><ShieldCheck size={17} /> Nothing is charged while we verify your identity and room availability.</p>
 
           <GuestBookingFlow
+            key={bookingPath}
             bookingPath={bookingPath}
             checkIn={parsed.data.checkIn}
             checkOut={parsed.data.checkOut}
             guests={parsed.data.guests}
-            rooms={plan.rooms}
-            categoryId={room.categoryId}
-            bookingEnabled={process.env.BOOKING_MODE === "live"}
+            roomType={room.id}
+            phoneOtpEnabled={process.env.PHONE_OTP_ENABLED === "true"}
+            captchaSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? ""}
           />
         </div>
       </section>

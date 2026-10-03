@@ -20,6 +20,12 @@ const publicSupabaseEnvironmentSchema = z.object({
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(20),
 });
 
+// Contact capture must not depend on payment or scheduler credentials.
+const checkoutEnvironmentSchema = z.object({
+  NEXT_PUBLIC_SUPABASE_URL: z.url(),
+  SUPABASE_SECRET_KEY: z.string().min(20),
+});
+
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 export type PublicSupabaseEnvironment = z.infer<typeof publicSupabaseEnvironmentSchema>;
 
@@ -46,6 +52,13 @@ export function readPublicSupabaseEnvironment() {
   return publicSupabaseEnvironmentSchema.safeParse({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  });
+}
+
+export function readCheckoutEnvironment() {
+  return checkoutEnvironmentSchema.safeParse({
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
   });
 }
 

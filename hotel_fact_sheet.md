@@ -7,4 +7,9 @@ Taxi available.
 Tourism package avaialble.
 Cars available 24/7
 Darjeeling himalayan railway 6 mins
-6 minutes walk to Observatory Hill
+6 minutes walk to Observatory Hill.
+Wifi - free
+Hot water - available
+In room dining - available
+Restraunt - available one of the finest
+Room service.

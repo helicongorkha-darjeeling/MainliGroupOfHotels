@@ -1,37 +1,53 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
-import { ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, Mail, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, Smartphone } from "lucide-react";
+import { CheckoutCaptcha } from "@/components/checkout-captcha";
 import { guestDetailsSchema } from "@/lib/guest-details";
+import { checkoutDraftIdSchema, type CheckoutDraftInput, type CheckoutDraftReceipt } from "@/lib/checkout-draft";
+import { CheckoutSaveError, saveCheckoutDraft } from "@/lib/save-checkout-draft";
+import { matchesVerifiedMobile, MobileCheckoutError, requestMobileOtp, verifyMobileOtp } from "@/lib/mobile-checkout";
 
 type GuestBookingFlowProps = {
   bookingPath: string;
   checkIn: string;
   checkOut: string;
   guests: number;
-  rooms: number;
-  categoryId: string | null;
-  bookingEnabled: boolean;
+  roomType: CheckoutDraftInput["roomType"];
+  phoneOtpEnabled: boolean;
+  captchaSiteKey: string;
 };
 
-type HoldResult = { booking_reference: string; hold_expires_at: string };
-
-export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, rooms, categoryId, bookingEnabled }: GuestBookingFlowProps) {
+export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomType, phoneOtpEnabled, captchaSiteKey }: GuestBookingFlowProps) {
   const supabase = useMemo(() => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-    return url && key ? createBrowserClient(url, key) : null;
+    return url && key ? createBrowserClient(url, key, {
+      global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(15_000) }) },
+    }) : null;
   }, []);
   const [authState, setAuthState] = useState<"checking" | "signed_out" | "signed_in">(supabase ? "checking" : "signed_out");
-  const [step, setStep] = useState<"details" | "checkout">("details");
+  const [step, setStep] = useState<"details" | "checkout" | "otp" | "payment">("details");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const [hold, setHold] = useState<HoldResult | null>(null);
+  const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [resendSeconds, setResendSeconds] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [challengeKey, setChallengeKey] = useState(0);
+  const otpReady = !!supabase && phoneOtpEnabled && !!captchaSiteKey;
+  const countdownRunning = resendSeconds > 0;
   const checkoutRef = useRef<HTMLHeadingElement>(null);
+  const detailsRef = useRef<HTMLInputElement>(null);
+  const draftIdRef = useRef<string | null>(null);
+  const savingRef = useRef(false);
+  const [draft, setDraft] = useState<CheckoutDraftReceipt | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -43,7 +59,10 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, rooms
       if (user) {
         setEmail(user.email ?? "");
         setFullName(typeof user.user_metadata.full_name === "string" ? user.user_metadata.full_name : "");
-        setPhone(typeof user.user_metadata.phone_number === "string" ? user.user_metadata.phone_number : "");
+        setPhone(user.phone ? `+${user.phone.replace(/^\+/, "")}` : typeof user.user_metadata.phone_number === "string" ? user.user_metadata.phone_number : "");
+        if (user.phone && matchesVerifiedMobile(user, `+${user.phone.replace(/^\+/, "")}`)) {
+          setVerifiedPhone(`+${user.phone.replace(/^\+/, "")}`);
+        }
       }
     }).catch(() => {
       if (active) {
@@ -55,59 +74,113 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, rooms
   }, [supabase]);
 
   useEffect(() => {
-    if (step === "checkout") checkoutRef.current?.focus();
-  }, [step]);
+    if (step !== "details") {
+      checkoutRef.current?.focus({ preventScroll: true });
+      checkoutRef.current?.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+    }
+    else if (draft) detailsRef.current?.focus();
+  }, [step, draft]);
 
-  function reviewCheckout(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    if (!countdownRunning) return;
+    const timer = window.setInterval(() => setResendSeconds((remaining) => Math.max(0, remaining - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [countdownRunning]);
+
+  async function reviewCheckout(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy || savingRef.current) return;
     const result = guestDetailsSchema.safeParse({ fullName, email, phone });
     if (!result.success) { setMessage(result.error.issues[0].message); return; }
-    setFullName(result.data.fullName);
-    setEmail(result.data.email);
-    setPhone(result.data.phone);
-    setMessage("");
-    setStep("checkout");
-  }
-
-  async function sendSignInLink() {
-    if (!supabase || busy) return;
-    const details = guestDetailsSchema.safeParse({ fullName, email, phone });
-    if (!details.success) { setMessage(details.error.issues[0].message); return; }
+    savingRef.current = true;
     setBusy(true);
-    setMessage("");
+    setMessage("Saving your details…");
     try {
-      const callback = `${window.location.origin}/auth/callback?next=${encodeURIComponent(bookingPath)}`;
-      const { error } = await supabase.auth.signInWithOtp({
-        email: details.data.email,
-        options: { emailRedirectTo: callback, data: { full_name: details.data.fullName, phone_number: details.data.phone }, shouldCreateUser: true },
-      });
-      setMessage(error ? "We couldn't send your sign-in link. Check your email address and try again shortly." : "Sign-in link sent. Open it in this browser to continue. No room has been reserved yet.");
-    } catch { setMessage("Unable to reach sign-in. Check your connection and try again."); }
-    finally { setBusy(false); }
-  }
-
-  async function holdRoom() {
-    // Display choices must never fall through to the Double Room inventory.
-    if (!supabase || busy || !bookingEnabled || !categoryId || rooms !== 1 || authState !== "signed_in") return;
-    const details = guestDetailsSchema.safeParse({ fullName, email, phone });
-    if (!details.success) { setMessage(details.error.issues[0].message); return; }
-    setBusy(true);
-    setMessage("");
-    try {
-      const profile = await supabase.auth.updateUser({ data: { full_name: details.data.fullName, phone_number: details.data.phone } });
-      if (profile.error) { setMessage("Your contact details couldn't be saved. Please try again."); return; }
-      const { data, error } = await supabase.rpc("create_online_inventory_hold", {
-        property_slug: "hotel-teesta", requested_category_id: categoryId,
-        requested_check_in: checkIn, requested_check_out: checkOut,
-        requested_adults: guests, requested_children: 0,
-      });
-      const result = Array.isArray(data) ? data[0] : data;
-      if (error || !result || typeof result.booking_reference !== "string" || !Number.isFinite(Date.parse(result.hold_expires_at))) {
-        setMessage("A room couldn't be reserved for these dates. No payment was taken."); return;
+      const storageKey = `teesta-checkout-draft:${bookingPath}`;
+      if (!draftIdRef.current) {
+        let previous: string | null = null;
+        try { previous = window.sessionStorage.getItem(storageKey); } catch { /* Session storage may be disabled. */ }
+        draftIdRef.current = previous && checkoutDraftIdSchema.safeParse(previous).success ? previous : crypto.randomUUID();
+        try { window.sessionStorage.setItem(storageKey, draftIdRef.current); } catch { /* The in-memory ID still protects retries. */ }
       }
-      setHold(result as HoldResult);
-    } catch { setMessage("We couldn't check room availability. Please try again before making any payment."); }
-    finally { setBusy(false); }
+      const receipt = await saveCheckoutDraft({
+        ...result.data, draftId: draftIdRef.current, checkIn, checkOut, guests,
+        roomType,
+      });
+      setDraft(receipt);
+      setFullName(result.data.fullName);
+      setEmail(result.data.email);
+      setPhone(result.data.phone);
+      setOtp("");
+      setOtpSent(false);
+      setCaptchaToken("");
+      setMessage("");
+      setStep("checkout");
+    } catch (error) {
+      if (error instanceof CheckoutSaveError && error.restartDraft) {
+        draftIdRef.current = null;
+        try { window.sessionStorage.removeItem(`teesta-checkout-draft:${bookingPath}`); } catch { /* The next attempt still creates a new ID. */ }
+      }
+      setMessage(error instanceof CheckoutSaveError ? error.message : "Your details couldn't be saved. Check your connection and retry. No room has been reserved.");
+    } finally {
+      savingRef.current = false;
+      setBusy(false);
+    }
+  }
+
+  async function sendCode() {
+    if (!supabase || busy || savingRef.current || !draft || resendSeconds > 0) return;
+    savingRef.current = true;
+    setBusy(true);
+    setMessage("");
+    try {
+      await requestMobileOtp(supabase.auth, phone, captchaToken, otpReady);
+      setOtpSent(true);
+      setOtp("");
+      setResendSeconds(60);
+      setStep("otp");
+      setMessage("SMS code requested. Enter the code when it arrives. No room has been reserved.");
+    } catch (error) {
+      setMessage(error instanceof MobileCheckoutError ? error.message : "Mobile verification is unavailable. Please retry shortly.");
+    } finally {
+      // CAPTCHA tokens are single-use; every retry or resend needs a fresh challenge.
+      setCaptchaToken("");
+      setChallengeKey((current) => current + 1);
+      savingRef.current = false;
+      setBusy(false);
+    }
+  }
+
+  function bookNow() {
+    if (busy || !draft) return;
+    setMessage("");
+    if (verifiedPhone === phone) { setStep("payment"); return; }
+    if (!otpReady) { setStep("otp"); return; }
+    void sendCode();
+  }
+
+  async function verifyCode(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!supabase || busy || savingRef.current || !otpSent || !draft) return;
+    savingRef.current = true;
+    setBusy(true);
+    setMessage("");
+    try {
+      const confirmedPhone = await verifyMobileOtp(supabase.auth, phone, otp, otpReady);
+      setVerifiedPhone(confirmedPhone);
+      setOtp("");
+      setStep("payment");
+    } catch (error) {
+      setMessage(error instanceof MobileCheckoutError ? error.message : "Your code couldn't be verified. Please retry.");
+    } finally { savingRef.current = false; setBusy(false); }
+  }
+
+  function editDetails() {
+    setStep("details");
+    setOtp("");
+    setOtpSent(false);
+    setCaptchaToken("");
+    setMessage("");
   }
 
   return (
@@ -115,28 +188,58 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, rooms
       <ol className="booking-steps" aria-label="Booking steps">
         <li><CheckCircle2 size={15} aria-hidden="true" /> Room</li>
         <li aria-current={step === "details" ? "step" : undefined}>2 · Guest details</li>
-        <li aria-current={step === "checkout" ? "step" : undefined}>3 · Checkout</li>
+        <li aria-current={step === "checkout" || step === "otp" ? "step" : undefined}>3 · Verify mobile</li>
+        <li aria-current={step === "payment" ? "step" : undefined}>4 · Payment</li>
       </ol>
       {authState === "checking" ? <p className="booking-flow-status"><LoaderCircle className="spin" size={18} /> Checking secure sign-in…</p> : step === "details" ? (
         <form className="guest-signin-form" onSubmit={reviewCheckout}>
           <h2>Who is booking?</h2>
-          <label>Full name<input name="fullName" autoComplete="name" value={fullName} maxLength={120} onChange={(event) => setFullName(event.target.value)} required /></label>
-          <label>Phone number<input name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+91 98765 43210" maxLength={30} value={phone} onChange={(event) => setPhone(event.target.value)} required /></label>
-          <label>Email address<input name="email" type="email" autoComplete="email" value={email} readOnly={authState === "signed_in"} maxLength={254} onChange={(event) => setEmail(event.target.value)} required /></label>
-          <p>Your contact details are used for this booking. Your phone number is not used for sign-in verification.</p>
-          <button className="button button-primary" type="submit">Review checkout <ArrowRight size={17} aria-hidden="true" /></button>
+          <label>Full name<input ref={detailsRef} name="fullName" autoComplete="name" value={fullName} maxLength={120} disabled={busy} onChange={(event) => setFullName(event.target.value)} required /></label>
+          <label>Phone number<input name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+91 98765 43210" maxLength={30} value={phone} disabled={busy} onChange={(event) => setPhone(event.target.value)} required /></label>
+          <label>Email address<input name="email" type="email" autoComplete="email" value={email} disabled={busy} maxLength={254} onChange={(event) => setEmail(event.target.value)} required /></label>
+          <p>Continuing saves your contact details and selected stay for this checkout. No room is reserved and no payment is taken. <Link href="/policies/privacy">Privacy</Link></p>
+          <button className="button button-primary" type="submit" disabled={busy}>{busy ? <>Saving details… <LoaderCircle className="spin" size={17} /></> : <>Save details &amp; review checkout <ArrowRight size={17} aria-hidden="true" /></>}</button>
           <p role="status" aria-live="polite">{message}</p>
         </form>
       ) : (
         <section className="checkout-review" aria-labelledby="checkout-review-title">
-          <h2 id="checkout-review-title" ref={checkoutRef} tabIndex={-1}>Review checkout.</h2>
-          <dl className="checkout-contact"><div><dt>Guest</dt><dd>{fullName}</dd></div><div><dt>Phone</dt><dd>{phone}</dd></div><div><dt>Email</dt><dd>{email}</dd></div></dl>
-          <button className="text-link checkout-edit" type="button" disabled={busy || !!hold} onClick={() => { setStep("details"); setMessage(""); }}><ArrowLeft size={15} /> Edit contact details</button>
-          {authState === "signed_out" ? (
-            <div className="checkout-verification"><h3><ShieldCheck size={18} /> Verify your email</h3><p>Open the secure link sent to your email before we check availability. Reviewing checkout alone does not reserve a room.</p><button className="button button-primary" type="button" onClick={sendSignInLink} disabled={busy || !supabase}>{busy ? <LoaderCircle className="spin" size={17} /> : <Mail size={17} />} Send secure sign-in link</button>{!supabase && <p>Email verification is temporarily unavailable.</p>}</div>
-          ) : <p className="checkout-verified"><CheckCircle2 size={17} /> Email verified</p>}
-          {hold ? <div className="booking-hold-success"><CheckCircle2 /><div><strong>Room held · {hold.booking_reference}</strong><span>Held until {new Intl.DateTimeFormat("en-IN", { timeStyle: "short", timeZone: "Asia/Kolkata" }).format(new Date(hold.hold_expires_at))} in Darjeeling. This is not a confirmed booking.</span></div></div> : authState === "signed_in" && bookingEnabled && categoryId && rooms === 1 ? <button className="button button-primary" type="button" onClick={holdRoom} disabled={busy}>{busy ? <LoaderCircle className="spin" size={17} /> : <ArrowRight size={17} />} Check availability &amp; hold room</button> : null}
-          <div className="checkout-payment"><h3><CreditCard size={18} /> Payment</h3><p>{!categoryId ? "The hotel must confirm this room's rate and availability before payment." : "Payment opens after email verification, room availability and your final total are confirmed."}</p><button className="button button-outline" type="button" disabled>Payment not open yet</button><small>Your booking is not confirmed. No payment has been taken.</small></div>
+          <h2 id="checkout-review-title" ref={checkoutRef} tabIndex={-1}>{step === "otp" ? "Verify your mobile." : step === "payment" ? "Payment." : "Review checkout."}</h2>
+          {draft && <p className="checkout-verified"><CheckCircle2 size={17} /> Details saved · checkout draft {draft.draftId.slice(0, 8)}. No room reserved.</p>}
+          {step === "checkout" && <dl className="checkout-contact"><div><dt>Guest</dt><dd>{fullName}</dd></div><div><dt>Phone</dt><dd>{phone}</dd></div><div><dt>Email</dt><dd>{email}</dd></div></dl>}
+          <button className="text-link checkout-edit" type="button" disabled={busy} onClick={editDetails}><ArrowLeft size={15} /> Edit contact details</button>
+          {step === "checkout" && <div className="checkout-verification">
+            <h3><Smartphone size={18} /> Continue with your mobile</h3>
+            <p>{verifiedPhone === phone ? "Your mobile is already verified for this signed-in session." : "Book now continues to mobile verification, then payment. It does not confirm or charge your booking."}</p>
+            {otpReady && verifiedPhone !== phone && <CheckoutCaptcha key={challengeKey} siteKey={captchaSiteKey} onToken={setCaptchaToken} />}
+            <button className="button button-primary" type="button" onClick={bookNow} disabled={busy || !draft || (otpReady && verifiedPhone !== phone && (!captchaToken || resendSeconds > 0))}>
+              {busy ? <LoaderCircle className="spin" size={17} /> : <ArrowRight size={17} />} Book now
+            </button>
+            {resendSeconds > 0 && <p>Another code can be requested in {resendSeconds}s.</p>}
+          </div>}
+          {step === "otp" && <div className="checkout-verification">
+            <h3><Smartphone size={18} /> SMS verification · {phone}</h3>
+            {!otpReady && <p className="checkout-setup-notice">Mobile verification is not available yet. No SMS has been requested and no room is reserved.</p>}
+            <form className="checkout-otp-form" onSubmit={verifyCode}>
+              <label htmlFor="checkout-otp">Six-digit code</label>
+              <input id="checkout-otp" name="otp" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))} disabled={!otpReady || !otpSent || busy} required aria-describedby="checkout-otp-hint" />
+              <p id="checkout-otp-hint">{otpSent ? "Enter the code from your SMS. Never share it with anyone." : "Request a code before continuing to payment."}</p>
+              <button className="button button-primary" type="submit" disabled={busy || !otpReady || !otpSent || !/^\d{6}$/.test(otp)}>{busy ? <LoaderCircle className="spin" size={17} /> : <ArrowRight size={17} />} Verify &amp; continue to payment</button>
+            </form>
+            {otpReady && <CheckoutCaptcha key={challengeKey} siteKey={captchaSiteKey} onToken={setCaptchaToken} />}
+            <button className="text-link checkout-resend" type="button" onClick={sendCode} disabled={busy || !otpReady || !captchaToken || resendSeconds > 0}>{resendSeconds > 0 ? `Request another code in ${resendSeconds}s` : otpSent ? "Resend OTP" : "Send OTP"}</button>
+            <button className="text-link checkout-edit" type="button" disabled={busy} onClick={() => { setStep("checkout"); setCaptchaToken(""); setChallengeKey((current) => current + 1); setMessage(""); }}><ArrowLeft size={15} /> Back to review</button>
+          </div>}
+          {step === "payment" && verifiedPhone === phone && <div className="checkout-payment">
+            <h3><CheckCircle2 size={18} /> Mobile verified</h3>
+            <p>Your mobile is verified. A room has not been reserved yet.</p>
+            <h3><CreditCard size={18} /> Pay securely</h3>
+            <p>Payment is not available yet. We must confirm room availability and your final total before opening secure checkout.</p>
+            {/* Integration point: request a server-priced order backed by a real category hold.
+                Never unlock this button using client state or Razorpay keys alone. */}
+            <button className="button button-outline" type="button" disabled>Payment not open yet</button>
+            <small>Your booking is not confirmed. No payment has been taken. Reception will assign your room number after a confirmed booking.</small>
+          </div>}
+          {step !== "payment" && <p className="checkout-next-step"><CreditCard size={16} /> Payment follows mobile verification and an availability check.</p>}
           <p className="checkout-message" role="status" aria-live="polite">{message}</p>
         </section>
       )}

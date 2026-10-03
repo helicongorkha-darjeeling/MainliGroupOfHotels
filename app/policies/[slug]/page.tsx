@@ -28,7 +28,9 @@ const policies = {
     title: "Privacy notice",
     intro: "This operational draft describes the planned minimum data handling for the booking service.",
     sections: [
-      ["Information used", "Phone number, email, stay details, booking records and payment status will be used to operate a reservation. Guest name and required arrival details will be collected after booking."],
+      ["Information used", "When you continue to checkout, your name, phone, email and chosen stay are saved as a checkout draft, before any payment. The draft is not a reservation or payment confirmation. Contact details are used to continue this checkout, not as consent for marketing."],
+      ["Guest sign-in", "If you choose Continue with Google, our sign-in provider, Supabase Auth, receives and stores your Google account name, email address and profile picture link so you can return to your guest account. We never see your Google password. Signing in does not verify your mobile number, create a reservation or take payment. You can ask the hotel to delete your guest account."],
+      ["Before payment", "Checkout drafts are unverified and are not publicly readable. No identity document or card details are requested at this step. Draft expiry is separate from deletion; the owner must approve the retention and deletion schedule before live booking opens."],
       ["Access", "Guests will see only their own records. Staff access will be limited to assigned properties and authorised duties, with important changes audited."],
       ["Data minimisation", "The initial release will not request ID uploads. Personal information will be excluded from routine logs and booking-flow analytics."],
     ],

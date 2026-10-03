@@ -59,3 +59,48 @@
 - Changed: Added Double, Triple, Four-person and Family-with-sofa photo choices, plus separate lobby, restaurant, front-desk and exterior gallery filters.
 - Why it matters: Guests choose the layout the owner actually photographed; unpriced layouts cannot silently book Double Room inventory.
 - Felt: The ship's rooms now have their own faces, not one label for every cabin.
+
+## Stardate 2026-10-02
+- Changed: Prepared private Supabase checkout-draft saving before payment, including validated contacts, retry-safe updates and failure handling. Hosted activation is still pending database access and the server-only key.
+- Why it matters: Checkout will only report a save after the database acknowledges it, independently of Razorpay; drafts cannot become pretend reservations.
+- Felt: Wiring the recorder before opening the payment airlock.
+
+## Stardate 2026-10-02
+- Changed: Recorded the owner's 25-room, 70-guest inventory in a backend-only import source, with 14 Double, 4 Triple, 6 Four-person and 1 Six-person rooms; blank amenities remain unknown.
+- Why it matters: Guests choose a category while reception controls physical room assignment. The corrected inventory remains unpublished until database import and category-capacity checks are verified.
+- Felt: A clear cabin manifest, with the keys staying at reception.
+
+## Stardate 2026-10-02
+- Changed: Verified Supabase login, linked the hotel checkout to the correct hosted project, and applied only the private checkout-draft migration with its migration history. Hosted save, retry, ownership, validation and role-permission checks passed; synthetic test writes were rolled back.
+- Why it matters: The database can safely receive guest details before payment. The website still needs its server-only key and a real form test; inventory holds, reception assignment and payments remain off.
+- Felt: The recorder is connected—now one safe cable left before the guest form can use it.
+
+## Stardate 2026-10-02
+- Changed: Replaced the guest email-link button with Book now, a compact mobile OTP step and a guarded payment section. Added real Supabase phone-auth/CAPTCHA integration seams and setup instructions; removed the old automatic physical-room hold action.
+- Why it matters: Guests can follow a clear category-first booking journey while reception retains room assignment. Missing providers cannot simulate SMS verification, inventory holds or payment; live delivery and charging remain off.
+- Felt: The boarding sequence is clear—each door opens only when its real check passes.
+
+## Stardate 2026-10-03
+- Changed: Audited local/GitHub/Vercel/Supabase backend state and added BACKEND_AUDIT_AND_PLAN.md plus BACKEND_CUSTOMIZATION_GUIDE.md. Tests (45), lint and build passed; hosted draft grants and migration history were checked read-only.
+- Why it matters: We now have an evidence-based path from private drafts to category reservations and verified payments, with clear customization points and 25 unfinished source files identified. No application code, hosted data, push or deployment was changed by this audit.
+- Felt: A clear engine-room map—one small, testable system at a time.
+
+## Stardate 2026-10-03
+- Changed: Configured the ignored local Supabase server key, corrected local same-origin host matching without trusting forwarded headers, and verified that the actual guest form saves a labelled draft before checkout review.
+- Why it matters: Guest contacts now reach the real private database locally before payment; a saved draft is still not a reservation, SMS or charge. Production configuration remains to be checked.
+- Felt: The recorder works—the booking engine now has a real first signal.
+
+## Stardate 2026-10-03
+- Changed: Integrated the supplied ivory-and-gold design with Teesta's real photographs, complete navigation and a gated members page. Removed obsolete public styles and reconciled the ₹2,500 Double Room starting price in both the site and hosted draft writer.
+- Why it matters: Guests see the real hotel, keep their selected dates, and receive one consistent room price. The existing guarded checkout, private storage and disabled-payment controls are preserved.
+- Felt: Teesta looks like itself, with a much clearer boarding path.
+
+## Stardate 2026-10-03
+- Changed: Made the website the first channel in a read-only setup workspace showing the owner's 25 rooms, 70-person capacity and category mapping; restricted production access to authorized Teesta staff or group administrators.
+- Why it matters: We can see exactly what is recorded and what must be activated next, without pretending source counts are live availability or assigning room numbers online.
+- Felt: One bridge, one manifest—now we can open the next system deliberately.
+
+## Stardate 2026-10-03
+- Changed: Finished guest Google sign-in on Members and My bookings with Supabase PKCE, allow-listed return paths, sign-out and honest failure states; confirmed Google is enabled and accepts the Supabase callback; reviewed every pending file for the public repository and pushed the whole site to `main`.
+- Why it matters: Guests can open a private Mainali account in one tap without a password, while signing in still grants no reservation, payment, mobile verification or staff access. One Supabase URL setting remains before live sign-ins return to the website.
+- Felt: A new gangway is down—guests can step aboard, and the keys still stay at reception.

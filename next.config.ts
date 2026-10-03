@@ -4,12 +4,12 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"} https://checkout.razorpay.com`,
+  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"} https://checkout.razorpay.com https://challenges.cloudflare.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data:",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co https://api.razorpay.com https://*.razorpay.com",
-  "frame-src https://api.razorpay.com https://*.razorpay.com",
+  "connect-src 'self' https://*.supabase.co https://api.razorpay.com https://*.razorpay.com https://challenges.cloudflare.com",
+  "frame-src https://api.razorpay.com https://*.razorpay.com https://challenges.cloudflare.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

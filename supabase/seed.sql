@@ -36,8 +36,8 @@ insert into public.rates (
   'Starting direct rate',
   '2026-09-29',
   '2100-01-01',
-  150000,
-  100000,
+  250000,
+  0,
   0,
   'INR',
   false

@@ -1,0 +1,41 @@
+{
+  "propertySlug": "hotel-teesta",
+  "source": "Owner inventory supplied on 2026-10-02",
+  "assignmentPolicy": "Guests select a room category; reception assigns the physical room later. Room numbers are staff-only.",
+  "liveBookingsEnabled": false,
+  "rooms": [
+    { "number": "301", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "302", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "303", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "304", "category": "double-room", "occupancy": 2, "tv": true },
+    { "number": "305", "category": "double-room", "occupancy": 2, "tv": true },
+    { "number": "306", "category": "triple-room", "occupancy": 3, "tv": true },
+    { "number": "307", "category": "four-person-room", "occupancy": 4, "tv": true },
+    { "number": "308", "category": "four-person-room", "occupancy": 4, "tv": true },
+    { "number": "309", "category": "four-person-room", "occupancy": 4, "tv": true },
+    { "number": "310", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "311", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "312", "category": "double-room", "occupancy": 2, "tv": true },
+    { "number": "313", "category": "double-room", "occupancy": 2, "tv": true },
+    { "number": "314", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "315", "category": "four-person-room", "occupancy": 4, "tv": true },
+    { "number": "316", "category": "four-person-room", "occupancy": 4, "tv": true },
+    { "number": "317", "category": "four-person-room", "occupancy": 4, "tv": true },
+    { "number": "318", "category": "triple-room", "occupancy": 3, "tv": null },
+    { "number": "319", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "320", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "321", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "322", "category": "double-room", "occupancy": 2, "tv": null },
+    { "number": "323", "category": "triple-room", "occupancy": 3, "tv": null },
+    { "number": "324", "category": "six-person-room", "occupancy": 6, "tv": null },
+    { "number": "325", "category": "triple-room", "occupancy": 3, "tv": null }
+  ],
+  "minimumRates": null,
+  "maximumRates": null,
+  "notes": [
+    "Blank amenity cells mean unconfirmed, not unavailable.",
+    "This replaces provisional bed labels: 304 and 312 are Double Rooms.",
+    "The sheet confirms one six-person room, but does not yet identify it as the photographed Family Room with Sofa.",
+    "Import and category-level reservation capacity checks are pending; saving this file does not publish availability."
+  ]
+}

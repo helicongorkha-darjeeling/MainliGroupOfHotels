@@ -4,11 +4,15 @@ Mobile-first public website and booking foundation for Hotel Teesta, Darjeeling.
 
 ## Current state
 
-The public experience and production-safe booking foundation are implemented as a truthful preview. The pages use supplied Hotel Teesta photographs and preserve a guest's selected dates and party size through the room-search route. The customer-facing offer is one Double Room at the supplied starting rates: ₹1,500 for single occupancy and ₹2,500 for one or two guests. Availability, phone OTP, and payment controls remain disabled until their real services are connected.
+The public experience is a guarded preview using the supplied ivory/gold design and Hotel Teesta's actual photographs. Home, Hotels, Experiences, Offers, Our Story, Contact and Members login have real destinations. The calendar defaults to today in Darjeeling and preserves dates and party size through room search and checkout. Double Rooms start at ₹2,500 per room per night for one or two guests; Triple, Four-person and Family-with-sofa layouts remain on request. Availability, phone OTP and payments are not live.
 
-The repository also includes a Supabase migration, reproducible 25-room inventory seed, database policy/concurrency tests, readiness checks, security headers, and a server-side availability endpoint that fails closed until launch configuration is complete. A protected `/staff` foundation provides a one-screen front desk, while `/book` now carries a selected stay into a real Supabase email sign-in and guarded inventory-hold flow. Manual reservations, folios, phone OTP, and Razorpay checkout remain later milestones.
+Members login and My bookings offer guest sign-in with Google through Supabase Auth. Signing in creates a private guest account; it does not create a reservation, take payment, verify a mobile number or grant staff access.
 
-The approved Mainali logo file is still being prepared. The header therefore uses a dedicated temporary `data-logo-slot="mainali"` mark. It is intentionally isolated in `components/brand.tsx`, so the final logo can replace it without changing navigation spacing or page composition.
+The actual local `/book` form saves contacts and the selected stay into hosted private `booking_drafts` before checkout review. Book now then leads to the gated mobile OTP/payment foundation; it does not send an email link or allocate a physical room. The hosted draft writer and frontend starting price have been reconciled. A draft is not a reservation. Production server-key configuration and saving must be verified separately after deployment.
+
+The website is the first channel. The protected `/staff/channels` setup dashboard summarizes the owner's 25 rooms and 70-person capacity; it is read-only source mapping, not live inventory or OTA synchronization. The older front-desk/database foundation is retained but must be reconciled with category-level reservations and later reception room assignment before activation. Do not blindly push its historical migrations or provisional seed. See [BOOKING_FLOW_SETUP.md](BOOKING_FLOW_SETUP.md) and [SUPABASE_CHECKOUT_SETUP.md](SUPABASE_CHECKOUT_SETUP.md).
+
+The approved Mainali logo is still pending. The header uses a clean text wordmark in `components/brand.tsx`, with the former placeholder circle removed. Local verification and screenshot evidence are recorded in [design-qa.md](design-qa.md) and [VERIFICATION.md](VERIFICATION.md).
 
 ## Run locally
 
@@ -24,6 +28,8 @@ Open `http://localhost:3000`.
 
 Staff entry is at `http://localhost:3000/staff`. Without Supabase public environment values it intentionally shows a setup-required screen; it never simulates a successful login or hotel data.
 
+Read-only channel setup preview: `http://localhost:3000/staff/channels?preview=1`. The preview flag works only in development; production requires an authenticated, active Teesta staff membership or group administrator. Member phone login also remains disabled until its real provider and CAPTCHA are configured.
+
 Production checks:
 
 ```bash
@@ -38,6 +44,16 @@ Docker is not required for the website checks above. It is required only for the
 ## Environment and safety
 
 Keep `BOOKING_MODE=preview` until all owner decisions in `TASKS.md` are approved and the transactional booking path has passed concurrency and payment tests. Razorpay values must start with test-mode credentials. Never expose `SUPABASE_SECRET_KEY`, `RAZORPAY_KEY_SECRET`, or `RAZORPAY_WEBHOOK_SECRET` through `NEXT_PUBLIC_` variables.
+
+## Guest Google sign-in setup
+
+Google sign-in needs no extra environment variables; it uses `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. The rest is dashboard configuration:
+
+1. Google Cloud: a Web OAuth client whose authorized redirect URI is `https://<project-ref>.supabase.co/auth/v1/callback`, with the consent screen published so every guest, not only test users, can sign in.
+2. Supabase → Authentication → Sign In / Providers → Google: enabled with that client's ID and secret.
+3. Supabase → Authentication → URL Configuration: Site URL `https://mainli-group-of-hotels.vercel.app`; Redirect URLs `https://mainli-group-of-hotels.vercel.app/**` and `http://localhost:3000/**`. The callback carries a `?next=` path, so exact entries without `**` do not match. Never allow a broad `https://*.vercel.app/**` pattern.
+
+The site returns guests only to `/book`, `/my-bookings` or `/members` (see `lib/auth-redirect.ts`).
 
 ## Current official foundation
 
@@ -63,4 +79,4 @@ Follow [DEPLOYMENT.md](DEPLOYMENT.md) for the staged Vercel and Supabase release
 
 Backup, hold-expiry, recovery, and incident procedures are in [OPERATIONS.md](OPERATIONS.md).
 
-The site has not been deployed by this build step.
+Pushing `main` to GitHub deploys Vercel Production automatically. The 3 October push (editorial design, private checkout drafts, channel setup and guest Google sign-in) passed 55 local tests, lint and the production build. Production draft saving still needs `SUPABASE_SECRET_KEY` in Vercel, approved by the owner. Live reservation, OTP, payment, member history and OTA checks remain pending.

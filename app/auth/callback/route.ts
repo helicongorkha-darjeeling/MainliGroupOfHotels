@@ -1,23 +1,29 @@
 import { NextResponse } from "next/server";
 import { createSessionSupabaseClient } from "@/lib/server/supabase-session";
-
-function safeDestination(requestUrl: URL) {
-  const requested = requestUrl.searchParams.get("next") ?? "/my-bookings";
-  if (!requested.startsWith("/") || requested.startsWith("//")) return "/my-bookings";
-  const pathname = new URL(requested, requestUrl.origin).pathname;
-  return pathname === "/book" || pathname === "/my-bookings" ? requested : "/my-bookings";
-}
+import { safeAuthDestination } from "@/lib/auth-redirect";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const destination = safeDestination(url);
+  const destination = new URL(safeAuthDestination(url.searchParams.get("next"), url.origin), url.origin);
+  const failure = () => {
+    destination.searchParams.set("auth", "failed");
+    const response = NextResponse.redirect(destination);
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
+  };
+  if (url.searchParams.has("error")) return failure();
   const supabase = await createSessionSupabaseClient();
 
-  if (!code || !supabase) return NextResponse.redirect(new URL(`${destination}${destination.includes("?") ? "&" : "?"}auth=setup`, url.origin));
-
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error) return NextResponse.redirect(new URL(`${destination}${destination.includes("?") ? "&" : "?"}auth=failed`, url.origin));
-
-  return NextResponse.redirect(new URL(destination, url.origin));
+  if (!code || !supabase) return failure();
+  try {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) return failure();
+  } catch {
+    return failure();
+  }
+  destination.searchParams.delete("auth");
+  const response = NextResponse.redirect(destination);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
 }

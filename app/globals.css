@@ -111,7 +111,7 @@ a {
 }
 
 .brand-lockup strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -127,20 +127,7 @@ a {
   text-transform: uppercase;
 }
 
-.brand-mark {
-  display: grid;
-  width: 35px;
-  height: 35px;
-  place-items: center;
-  border: 1px solid currentColor;
-  border-radius: 50% 50% 48% 48%;
-}
 
-.brand-mark span {
-  font-family: Georgia, serif;
-  font-size: 1.08rem;
-  font-style: italic;
-}
 
 .site-header nav {
   display: flex;
@@ -172,77 +159,18 @@ a {
   transform-origin: left;
 }
 
-.nav-bookings {
-  padding: 11px 18px;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-}
 
-.home-hero {
-  position: relative;
-  min-height: min(760px, 88svh);
-  overflow: hidden;
-  color: white;
-  background: var(--forest-deep);
-}
 
-.hero-image,
 .cover-image {
   object-fit: cover;
 }
 
-.hero-image {
-  object-position: 58% 45%;
-  animation: hero-settle 1.4s cubic-bezier(0.2, 0.75, 0.2, 1) both;
-}
 
-.hero-shade {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(4, 27, 21, 0.87) 0%, rgba(5, 34, 26, 0.58) 42%, rgba(5, 30, 23, 0.1) 72%),
-    linear-gradient(0deg, rgba(5, 30, 23, 0.55) 0%, transparent 45%);
-}
 
-.hero-copy {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  min-height: min(760px, 88svh);
-  max-width: none;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 90px;
-}
 
-.hero-copy > * {
-  max-width: 620px;
-  animation: rise-in 0.8s cubic-bezier(0.2, 0.75, 0.2, 1) both;
-}
 
-.hero-copy .eyebrow {
-  animation-delay: 100ms;
-}
 
-.hero-copy h1 {
-  margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(3.7rem, 8vw, 7.4rem);
-  font-weight: 400;
-  letter-spacing: -0.055em;
-  line-height: 0.88;
-  animation-delay: 180ms;
-}
 
-.hero-intro {
-  max-width: 480px !important;
-  margin: 26px 0 30px;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: clamp(1rem, 2vw, 1.14rem);
-  line-height: 1.65;
-  animation-delay: 260ms;
-}
 
 .text-link {
   display: inline-flex;
@@ -256,47 +184,13 @@ a {
   border-bottom: 1px solid currentColor;
 }
 
-.light-link {
-  color: white;
-  animation-delay: 340ms !important;
-}
 
-.preview-ribbon {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-  padding: 12px 22px;
-  color: var(--forest-deep);
-  background: #e9c985;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
 
-.booking-band {
-  position: relative;
-  z-index: 5;
-  padding: 42px 0 34px;
-  background: var(--ivory);
-  border-bottom: 1px solid var(--line);
-}
 
-.booking-band-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 22px;
-}
 
-.booking-band-heading h2,
-.section-heading-row h2,
-.promise-layout h2,
-.property-search h2,
-.essentials-layout h2 {
+.section-heading-row h2 {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: clamp(2.2rem, 4vw, 4.4rem);
   font-weight: 400;
   letter-spacing: -0.045em;
@@ -425,56 +319,22 @@ a {
   border-color: #d4d6d1;
 }
 
-.property-layout {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: clamp(48px, 8vw, 110px);
-  align-items: center;
-}
 
-.property-image-wrap {
-  position: relative;
-  min-height: 620px;
-  overflow: hidden;
-  border-radius: 2px 120px 2px 2px;
-}
 
-.image-caption {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  padding: 7px 10px;
-  color: white;
-  background: rgba(6, 32, 25, 0.76);
-  font-size: 0.62rem;
-  font-weight: 750;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  backdrop-filter: blur(8px);
-}
 
-.property-copy h2,
-.property-hero h1,
 .rooms-head h1,
 .simple-page h1,
 .account-page h1,
 .policy-page h1 {
   margin: 0 0 18px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: clamp(3.1rem, 6.2vw, 6.4rem);
   font-weight: 400;
   letter-spacing: -0.055em;
   line-height: 0.95;
 }
 
-.property-copy > p:not(.eyebrow):not(.property-place) {
-  margin: 24px 0;
-  color: var(--muted);
-  font-size: 1.03rem;
-  line-height: 1.75;
-}
 
-.property-place,
 .location-line {
   display: flex;
   gap: 7px;
@@ -484,45 +344,11 @@ a {
   font-weight: 800;
 }
 
-.property-facts {
-  display: grid;
-  gap: 12px;
-  margin: 30px 0;
-  padding: 24px 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  color: var(--forest);
-  font-size: 0.83rem;
-  font-weight: 700;
-}
 
-.property-facts span {
-  display: flex;
-  gap: 9px;
-  align-items: center;
-}
 
-.promise-section {
-  color: var(--ivory);
-  background: var(--forest-deep);
-}
 
-.promise-layout {
-  display: grid;
-  grid-template-columns: 0.65fr 1.3fr 0.8fr;
-  gap: clamp(28px, 5vw, 70px);
-  align-items: end;
-}
 
-.promise-layout .eyebrow {
-  color: #d8b979;
-}
 
-.promise-layout p:last-child {
-  margin: 0;
-  color: rgba(247, 242, 232, 0.7);
-  line-height: 1.7;
-}
 
 .site-footer {
   padding: 78px 0 28px;
@@ -577,28 +403,8 @@ a {
   letter-spacing: 0.04em;
 }
 
-.property-hero {
-  display: grid;
-  min-height: 650px;
-  grid-template-columns: 0.82fr 1.18fr;
-  gap: clamp(48px, 8vw, 96px);
-  align-items: center;
-  padding-block: 72px 90px;
-}
 
-.property-hero-copy > p:not(.eyebrow):not(.location-line) {
-  max-width: 500px;
-  margin: 26px 0;
-  color: var(--muted);
-  line-height: 1.75;
-}
 
-.property-hero-image {
-  position: relative;
-  min-height: 560px;
-  overflow: hidden;
-  border-radius: 160px 2px 2px 2px;
-}
 
 .gallery-section {
   background: var(--ivory);
@@ -618,61 +424,14 @@ a {
   line-height: 1.7;
 }
 
-.gallery-grid {
-  display: grid;
-  min-height: 760px;
-  grid-template-columns: 1.2fr 0.8fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 14px;
-}
 
-.gallery-item {
-  position: relative;
-  min-height: 310px;
-  overflow: hidden;
-}
 
-.gallery-item-1 {
-  grid-row: 1 / 3;
-}
 
-.gallery-item .cover-image {
-  transition: transform 600ms cubic-bezier(0.2, 0.75, 0.2, 1);
-}
 
-.gallery-item:hover .cover-image {
-  transform: scale(1.025);
-}
 
-.room-offer-layout {
-  display: grid;
-  grid-template-columns: 1fr 0.9fr;
-  gap: clamp(44px, 8vw, 100px);
-  align-items: center;
-}
 
-.room-offer-image {
-  position: relative;
-  min-height: 580px;
-  overflow: hidden;
-  border-radius: 2px 130px 2px 2px;
-}
 
-.room-offer-copy h2 {
-  margin: 0 0 22px;
-  font-family: Georgia, serif;
-  font-size: clamp(2.8rem, 5vw, 5rem);
-  font-weight: 400;
-  letter-spacing: -0.045em;
-  line-height: 0.98;
-}
 
-.room-offer-copy > p:not(.eyebrow) {
-  max-width: 540px;
-  margin: 0 0 28px;
-  color: var(--muted);
-  line-height: 1.75;
-}
 
 .rate-lines {
   margin-bottom: 30px;
@@ -698,137 +457,34 @@ a {
   grid-row: 1 / 3;
   grid-column: 2;
   color: var(--forest);
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 1.8rem;
   font-weight: 400;
 }
 
-.essentials {
-  color: var(--ivory);
-  background: var(--forest-deep);
-}
 
-.essentials-layout {
-  display: grid;
-  grid-template-columns: 0.75fr 1.25fr;
-  gap: 90px;
-}
 
-.essentials-layout .eyebrow {
-  color: #d8b979;
-}
 
-.essentials-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 40px;
-}
 
-.essentials-list > div {
-  padding: 26px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-}
 
-.essentials-list svg {
-  color: #d8b979;
-}
 
-.essentials-list h3 {
-  margin: 14px 0 7px;
-  font-size: 0.9rem;
-}
 
-.essentials-list p {
-  margin: 0;
-  color: rgba(247, 242, 232, 0.62);
-  font-size: 0.82rem;
-  line-height: 1.65;
-}
 
-.property-search {
-  color: white;
-  background:
-    linear-gradient(90deg, rgba(4, 28, 21, 0.93), rgba(4, 28, 21, 0.68)),
-    url("/images/teesta-neighbourhood-view.webp") center 46% / cover;
-}
 
-.property-search > .site-shell > p:not(.eyebrow) {
-  max-width: 540px;
-  color: rgba(255, 255, 255, 0.72);
-  line-height: 1.6;
-}
 
-.property-search .search-form {
-  margin-top: 42px;
-  border-color: rgba(255, 255, 255, 0.25);
-}
 
-.property-search .search-field {
-  border-color: rgba(255, 255, 255, 0.25);
-}
 
-.property-search .search-field label,
-.property-search .search-field input,
-.property-search .search-field select {
-  color: white;
-}
 
-.property-search .search-field select option {
-  color: var(--ink);
-}
 
-.property-search .search-submit {
-  color: var(--forest-deep);
-  background: var(--ivory);
-}
 
-.property-search .form-error {
-  color: #ffd1c8;
-}
 
-.info-strip {
-  padding: 56px 0;
-  background: var(--ivory);
-}
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
 
-.info-grid > div {
-  padding: 0 32px;
-  border-right: 1px solid var(--line);
-}
 
-.info-grid > div:first-child {
-  padding-left: 0;
-}
 
-.info-grid > div:last-child {
-  border-right: 0;
-}
 
-.info-grid h2 {
-  margin: 0 0 11px;
-  color: var(--forest);
-  font-size: 0.72rem;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
 
-.info-grid p {
-  margin: 0;
-  font-size: 0.88rem;
-  font-weight: 700;
-  line-height: 1.7;
-}
 
-.info-grid span {
-  color: var(--muted);
-  font-size: 0.76rem;
-  font-weight: 500;
-}
 
 .rooms-head {
   padding-block: 70px 42px;
@@ -902,7 +558,7 @@ a {
 
 .results-heading h2 {
   margin: 0;
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: clamp(2rem, 4vw, 3.4rem);
   font-weight: 400;
 }
@@ -934,7 +590,7 @@ a {
 
 .room-result h3 {
   margin: 6px 0 12px;
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 1.7rem;
   font-weight: 400;
 }
@@ -985,7 +641,7 @@ a {
 
 .room-result-action > strong {
   margin: 4px 0 16px;
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 1.6rem;
   font-weight: 400;
 }
@@ -1096,7 +752,7 @@ a {
 .policy-page section h2 {
   margin: 0 0 10px;
   color: var(--forest);
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 1.55rem;
   font-weight: 400;
 }
@@ -1134,7 +790,7 @@ a {
 .staff-setup-page h1,
 .front-desk-title h1 {
   margin: 0;
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: clamp(3rem, 6vw, 6rem);
   font-weight: 400;
   letter-spacing: -0.055em;
@@ -1313,14 +969,14 @@ a {
 
 .front-desk-metrics strong {
   color: var(--forest);
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 1.8rem;
   font-weight: 400;
 }
 
 .front-desk-metrics small {
   color: var(--muted);
-  font-family: Inter, sans-serif;
+  font-family: var(--font-hospitality), sans-serif;
   font-size: 0.65rem;
 }
 
@@ -1340,7 +996,7 @@ a {
 
 .staff-section-heading h2 {
   margin: 0;
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 2.2rem;
   font-weight: 400;
   letter-spacing: -0.035em;
@@ -1382,7 +1038,7 @@ a {
 
 .room-board-row > strong {
   color: var(--forest);
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 1.2rem;
   font-weight: 400;
 }
@@ -1488,7 +1144,7 @@ a {
   bottom: 26px;
   left: 28px;
   color: white;
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 1.45rem;
 }
 
@@ -1501,7 +1157,7 @@ a {
 .booking-invalid h1 {
   max-width: 620px;
   margin: 20px 0 34px;
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: clamp(3.25rem, 6vw, 6.8rem);
   font-weight: 400;
   letter-spacing: -0.06em;
@@ -1564,7 +1220,7 @@ a {
 
 .booking-total strong {
   color: var(--forest);
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 2.25rem;
   font-weight: 400;
 }
@@ -1588,7 +1244,7 @@ a {
 
 .guest-signin-form h2 {
   margin: 0 0 8px;
-  font-family: Georgia, serif;
+  font-family: var(--font-editorial), Georgia, serif;
   font-size: 2rem;
   font-weight: 400;
 }
@@ -1718,23 +1374,9 @@ a {
     width: min(100% - 32px, 720px);
   }
 
-  .nav-contact {
-    display: none;
-  }
 
-  .home-hero,
-  .hero-copy {
-    min-height: 720px;
-  }
 
-  .hero-shade {
-    background: linear-gradient(0deg, rgba(4, 28, 21, 0.88), rgba(4, 28, 21, 0.25) 78%);
-  }
 
-  .hero-copy {
-    justify-content: flex-end;
-    padding-bottom: 82px;
-  }
 
   .search-form {
     grid-template-columns: 1fr 1fr;
@@ -1753,29 +1395,10 @@ a {
     margin: 12px 0 12px 20px;
   }
 
-  .property-layout,
-  .property-hero,
-  .essentials-layout,
-  .room-offer-layout {
-    grid-template-columns: 1fr;
-  }
 
-  .property-image-wrap {
-    min-height: 540px;
-  }
 
-  .promise-layout {
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
 
-  .property-hero {
-    padding-top: 60px;
-  }
 
-  .property-hero-image {
-    min-height: 520px;
-  }
 
   .room-result {
     grid-template-columns: 220px 1fr;
@@ -1829,10 +1452,6 @@ a {
     display: none;
   }
 
-  .brand-mark {
-    width: 31px;
-    height: 31px;
-  }
 
   .site-header nav {
     gap: 15px;
@@ -1843,52 +1462,15 @@ a {
     display: none;
   }
 
-  .nav-bookings {
-    padding: 9px 13px;
-  }
 
-  .home-hero,
-  .hero-copy {
-    min-height: min(720px, 87svh);
-  }
 
-  .hero-image {
-    object-position: 64% center;
-  }
 
-  .hero-copy {
-    justify-content: flex-end;
-    padding-bottom: 90px;
-  }
 
-  .hero-copy h1 {
-    font-size: clamp(3.25rem, 17vw, 4.5rem);
-  }
 
-  .hero-intro {
-    margin-block: 20px 22px;
-    font-size: 0.94rem;
-  }
 
-  .preview-ribbon {
-    right: auto;
-    left: 0;
-    width: 100%;
-    padding: 11px 14px;
-    text-align: center;
-  }
 
-  .booking-band {
-    padding-block: 34px;
-  }
 
-  .booking-band-heading {
-    display: block;
-  }
 
-  .booking-band-heading h2 {
-    font-size: 2.4rem;
-  }
 
   .search-form {
     grid-template-columns: 1fr;
@@ -1907,24 +1489,15 @@ a {
     margin: 18px 0 4px;
   }
 
-  .property-image-wrap {
-    min-height: 420px;
-    border-radius: 2px 72px 2px 2px;
-  }
 
-  .property-copy h2,
-  .property-hero h1,
-  .rooms-head h1,
+.rooms-head h1,
   .simple-page h1,
   .account-page h1,
   .policy-page h1 {
     font-size: clamp(2.8rem, 14vw, 4rem);
   }
 
-  .promise-layout h2,
-  .section-heading-row h2,
-  .property-search h2,
-  .essentials-layout h2 {
+.section-heading-row h2 {
     font-size: 2.8rem;
   }
 
@@ -1942,15 +1515,7 @@ a {
     gap: 10px;
   }
 
-  .property-hero {
-    gap: 46px;
-    padding-block: 52px 70px;
-  }
 
-  .property-hero-image {
-    min-height: 420px;
-    border-radius: 80px 2px 2px 2px;
-  }
 
   .section-heading-row {
     grid-template-columns: 1fr;
@@ -1958,52 +1523,15 @@ a {
     margin-bottom: 34px;
   }
 
-  .gallery-grid {
-    min-height: 0;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 420px 220px;
-  }
 
-  .gallery-item {
-    min-height: 0;
-  }
 
-  .gallery-item-1 {
-    grid-column: 1 / 3;
-    grid-row: 1;
-  }
 
-  .gallery-item-4 {
-    display: none;
-  }
 
-  .room-offer-image {
-    min-height: 420px;
-    border-radius: 2px 72px 2px 2px;
-  }
 
-  .essentials-list {
-    grid-template-columns: 1fr;
-  }
 
-  .property-search .search-field {
-    border-color: rgba(255, 255, 255, 0.25);
-  }
 
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
 
-  .info-grid > div,
-  .info-grid > div:first-child {
-    padding: 22px 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-  }
 
-  .info-grid > div:last-child {
-    border-bottom: 0;
-  }
 
   .rooms-head {
     padding-top: 48px;
@@ -2168,7 +1696,7 @@ a {
 .guest-signin-form input { padding-inline: 12px; background: var(--ivory); border: 1px solid var(--line); border-radius: 6px; text-transform: none; letter-spacing: normal; }
 .guest-signin-form input[readonly] { color: var(--muted); }
 .checkout-review { animation: calendar-enter 160ms ease-out; }
-.checkout-review h2 { margin: 24px 0; font-family: Georgia, serif; font-size: 2rem; font-weight: 400; }
+.checkout-review h2 { margin: 24px 0; scroll-margin-top: 24px; font-family: var(--font-editorial), Georgia, serif; font-size: 2rem; font-weight: 400; }
 .checkout-contact { margin: 0 0 14px; }
 .checkout-contact > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .checkout-contact dt { color: var(--muted); font-size: .75rem; }
@@ -2180,6 +1708,20 @@ a {
 .checkout-verification .button { margin-top: 10px; }
 .checkout-payment small { display: block; margin-top: 16px; color: var(--muted); font-size: .73rem; line-height: 1.5; }
 .checkout-payment button:disabled { opacity: .6; cursor: not-allowed; }
+.checkout-otp-form { display: grid; gap: 12px; margin: 22px 0; }
+.checkout-otp-form label { color: var(--muted); font-size: .75rem; font-weight: 700; }
+.checkout-otp-form input { width: min(100%, 300px); min-height: 54px; padding: 12px 18px; color: var(--ink); background: var(--ivory); border: 1px solid var(--line); border-radius: 6px; font: inherit; font-size: 1.35rem; letter-spacing: .3em; }
+.checkout-otp-form input:focus-visible { outline: 2px solid var(--emerald); outline-offset: 3px; }
+.checkout-otp-form input:disabled { opacity: .6; }
+.checkout-otp-form .button { justify-self: start; }
+.checkout-otp-form p { margin: 0; }
+.checkout-captcha { margin: 18px 0; min-height: 65px; }
+.checkout-resend { display: block; min-height: 44px; margin: 8px 0; color: var(--forest); background: transparent; border: 0; font-size: .8rem; cursor: pointer; }
+.checkout-resend:disabled { opacity: .55; cursor: not-allowed; }
+.checkout-verification .button:disabled { opacity: .6; cursor: not-allowed; }
+.checkout-next-step { display: flex; align-items: flex-start; gap: 8px; margin-top: 24px; color: var(--muted); font-size: .78rem; line-height: 1.6; }
+.checkout-next-step svg { flex-shrink: 0; margin-top: 2px; }
+.checkout-setup-notice { padding-left: 14px; border-left: 2px solid var(--ochre, #ba8845); }
 .checkout-verified { display: flex; gap: 8px; align-items: center; margin: 22px 0; color: var(--emerald); font-size: .85rem; }
 .room-result-action > strong.rate-on-request { font-size: 1.5rem; }
 .booking-photo-section { border-top: 1px solid var(--line); }
@@ -2201,14 +1743,13 @@ a {
 .date-field-value { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 32px; font-size: .95rem; font-weight: 750; }
 .date-field-value svg { flex-shrink: 0; opacity: .7; transition: transform 160ms ease; }
 .date-trigger[aria-expanded="true"] .date-field-value svg { transform: rotate(180deg); }
-.property-search .date-trigger, .property-search .date-field-label { color: white; }
 body:has(dialog[open]) { overflow: hidden; }
 .stay-calendar-dialog { position: fixed; inset: var(--calendar-top, 12px) auto auto var(--calendar-left, 12px); width: 358px; max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); margin: 0; padding: 20px; overflow-y: auto; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 16px 70px #08271f40; }
 .stay-calendar-dialog[open] { animation: calendar-enter 160ms ease-out; }
 .stay-calendar-dialog::backdrop { background: #08271f35; }
 .calendar-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
 .calendar-heading .eyebrow { margin: 0 0 5px; font-size: .6rem; }
-.calendar-heading h3 { margin: 0; font-family: Georgia, serif; font-size: 1.45rem; font-weight: 400; }
+.calendar-heading h3 { margin: 0; font-family: var(--font-editorial), Georgia, serif; font-size: 1.45rem; font-weight: 400; }
 .quiet-icon { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; padding: 0; color: inherit; background: transparent; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; }
 .quiet-icon:hover { background: #176a5210; }
 .calendar-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }

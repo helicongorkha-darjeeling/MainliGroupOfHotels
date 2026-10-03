@@ -1,5 +1,5 @@
 export const teestaRates = {
-  singleOccupancyPaise: 150_000,
+  singleOccupancyPaise: 250_000,
   doubleOccupancyPaise: 250_000,
   currency: "INR",
 } as const;
@@ -49,14 +49,5 @@ export function formatInr(paise: number) {
 }
 
 export function describeRoomSplit(quote: StayQuote) {
-  const parts = [];
-  if (quote.doubleOccupancyRooms > 0) {
-    parts.push(
-      `${quote.doubleOccupancyRooms} double-occupancy ${quote.doubleOccupancyRooms === 1 ? "room" : "rooms"}`,
-    );
-  }
-  if (quote.singleOccupancyRooms > 0) {
-    parts.push("1 single-occupancy room");
-  }
-  return parts.join(" + ");
+  return `${quote.rooms} double ${quote.rooms === 1 ? "room" : "rooms"}`;
 }

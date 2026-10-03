@@ -1,86 +1,55 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, BedDouble, MapPin } from "lucide-react";
-import { SearchForm } from "@/components/search-form";
+import { ArrowUpRight } from "lucide-react";
+import { BookingBar } from "@/components/booking-bar";
+import { HeroPhotographs } from "@/components/hero-photographs";
+import { Reveal } from "@/components/reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { Reveal } from "@/components/reveal";
-import { teesta } from "@/lib/property";
+
+const spaces = [
+  { title: "The lobby", eyebrow: "Arrive", photo: "teesta-lobby", description: "A closer look at where your stay begins." },
+  { title: "The restaurant", eyebrow: "Gather", photo: "teesta-dining-room", description: "Explore Teesta’s dining space before you arrive." },
+  { title: "The front desk", eyebrow: "Welcome", photo: "teesta-reception-desk", description: "Your room is allotted by the front desk, not online." },
+];
 
 export default function Home() {
-  return (
-    <main>
-      <section className="home-hero">
-        <SiteHeader overlay />
-        <Image
-          src="/images/teesta-exterior-front.webp"
-          alt="Exterior of Hotel Teesta in Darjeeling"
-          fill
-          preload
-          sizes="100vw"
-          className="hero-image"
-        />
-        <div className="hero-shade" />
-        <div className="site-shell hero-copy">
-          <p className="eyebrow light">Mainali Group of Hotels</p>
-          <h1>Stay close to<br />Darjeeling.</h1>
-          <p className="hero-intro">Comfortable double rooms from ₹2,500 a night, with solo stays from ₹1,500.</p>
-          <Link href="/stays/teesta" className="text-link light-link">
-            Discover Hotel Teesta <ArrowUpRight size={18} aria-hidden="true" />
-          </Link>
-        </div>
-        <div className="preview-ribbon">Hotel Teesta · Direct booking opening soon</div>
-      </section>
-
-      <section className="booking-band" aria-labelledby="find-stay-title">
-        <div className="site-shell">
-          <div className="booking-band-heading">
-            <p className="eyebrow">Plan your stay</p>
-            <h2 id="find-stay-title">Choose your dates</h2>
-          </div>
-          <SearchForm />
-          <p className="booking-note">See a clear starting price for your dates and party size. Final availability is confirmed before payment.</p>
-        </div>
-      </section>
-
-      <section className="property-feature section-space">
-        <div className="site-shell property-layout">
-          <Reveal className="property-image-wrap">
-            <Image
-              src={teesta.publicRoom.photo}
-              alt="A photographed guest room at Hotel Teesta"
-              fill
-              sizes="(max-width: 800px) 100vw, 56vw"
-              className="cover-image"
-              style={{ objectPosition: "50% 65%" }}
-            />
-            <span className="image-caption">Actual Hotel Teesta photography</span>
-          </Reveal>
-          <Reveal className="property-copy">
-            <p className="eyebrow">Our first stay</p>
-            <h2>Hotel Teesta</h2>
-            <p className="property-place"><MapPin size={17} aria-hidden="true" /> Darjeeling, West Bengal</p>
-            <p>A straightforward hill stay with double rooms for solo travellers, couples and groups booking more than one room.</p>
-            <div className="property-facts">
-              <span><BedDouble size={18} aria-hidden="true" /> Double rooms from ₹2,500 / night</span>
-              <span>Single occupancy from ₹1,500 / night</span>
-            </div>
-            <Link href="/stays/teesta" className="button button-outline">
-              View Hotel Teesta <ArrowUpRight size={17} aria-hidden="true" />
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="promise-section section-space">
-        <div className="site-shell promise-layout">
-          <p className="eyebrow">The Mainali approach</p>
-          <h2>Clear choices.<br />Human hospitality.</h2>
-          <p>Only confirmed room details, complete prices and approved policies will appear when direct booking opens.</p>
-        </div>
-      </section>
-
-      <SiteFooter />
-    </main>
-  );
+  return <main className="mainali-public-page">
+    <SiteHeader overlay />
+    <section className="mainali-hero" aria-labelledby="home-title">
+      <HeroPhotographs />
+      <div className="mainali-hero-copy site-shell">
+        <p className="eyebrow">Welcome to Mainali</p>
+        <h1 id="home-title">Timeless hospitality,<br /> from the Darjeeling hills.</h1>
+        <p>Your budget-friendly stay in central Darjeeling. Real rooms, familiar warmth, and a little more time for the hills.</p>
+        <Link href="/stays/teesta" className="button hero-outline">Discover Hotel Teesta</Link>
+      </div>
+    </section>
+    <BookingBar />
+    <section className="mainali-introduction section-space site-shell" aria-labelledby="welcome-title">
+      <Reveal><p className="eyebrow">A welcome from the hills</p><h2 id="welcome-title">Every journey deserves<br />a place to feel at home.</h2><span className="gold-divider" /><p>Discover Hotel Teesta in Chauk Bazaar, Darjeeling. Take a look around our rooms and hotel spaces, choose the layout that suits your party, and plan your stay with clear starting prices.</p></Reveal>
+    </section>
+    <section className="mainali-feature section-space" aria-labelledby="teesta-title">
+      <div className="site-shell editorial-split">
+        <Reveal className="editorial-photographs">
+          <div className="editorial-main-photo"><Image src="/images/teesta-double-room-window.webp" alt="Hotel Teesta double room with wooden furniture and a window" fill sizes="(max-width: 800px) 100vw, 45vw" className="cover-image" style={{objectPosition:"50% 65%"}} /></div>
+          <div className="editorial-inset-photo"><Image src="/images/teesta-exterior-front.webp" alt="The exterior of Hotel Teesta" fill sizes="(max-width: 800px) 40vw, 22vw" className="cover-image" /></div>
+        </Reveal>
+        <Reveal className="editorial-copy">
+          <p className="eyebrow">Our Darjeeling stay</p><h2 id="teesta-title">Hotel Teesta</h2><p className="editorial-location">Chauk Bazaar · Darjeeling, West Bengal</p>
+          <p>For a solo visit, time together, or a family journey. See our actual room photographs and find the right layout before you book.</p>
+          <div className="editorial-rates"><div><span>Double Room · Direct starting rate</span><strong>₹2,500+ <small>/ night</small></strong></div></div>
+          <p className="fine-print">Double Room starting rates. Other layouts are on request; final rates, taxes and availability are confirmed before payment.</p>
+          <Link href="/stays/teesta" className="button button-primary">Explore the hotel <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        </Reveal>
+      </div>
+    </section>
+    <section className="mainali-spaces section-space" aria-labelledby="spaces-title">
+      <div className="site-shell"><div className="editorial-heading"><p className="eyebrow">Beyond the room</p><h2 id="spaces-title">Get to know your stay.</h2></div>
+        <div className="spaces-grid">{spaces.map((space) => <Link href="/stays/teesta#photos" className="space-link" key={space.title}><Image src={"/images/" + space.photo + ".webp"} alt={space.title + " at Hotel Teesta"} fill sizes="(max-width: 640px) 100vw, 33vw" className="cover-image" /><div><p className="eyebrow">{space.eyebrow}</p><h3>{space.title}</h3><p>{space.description}</p><span>View photographs <ArrowUpRight size={16} aria-hidden="true" /></span></div></Link>)}</div>
+      </div>
+    </section>
+    <section className="mainali-final-cta section-space site-shell"><p className="eyebrow">Your next hill stay</p><h2>A room for your journey.</h2><p>Choose your dates, explore the layouts, and review your stay before any payment.</p><a href="#check-rooms" className="button button-primary">Plan your stay</a><Link href="/contact" className="text-link">Find Hotel Teesta <ArrowUpRight size={16} aria-hidden="true" /></Link></section>
+    <SiteFooter />
+  </main>;
 }

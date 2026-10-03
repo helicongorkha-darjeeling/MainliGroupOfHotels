@@ -21,6 +21,11 @@ export function SiteFooter() {
           <Link href="/policies/refunds">Refunds</Link>
           <Link href="/policies/privacy">Privacy</Link>
         </div>
+        <div>
+          <h2>Find us</h2>
+          <p>Hotel Teesta<br />Chauk Bazaar, Darjeeling<br />Botanical Garden Road</p>
+          <Link href="/contact">Location &amp; enquiries</Link>
+        </div>
       </div>
       <div className="site-shell footer-note">
         <span>Direct online bookings opening soon.</span>
