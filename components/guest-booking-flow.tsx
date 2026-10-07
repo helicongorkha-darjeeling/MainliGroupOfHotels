@@ -201,7 +201,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
           <label>Phone number<input name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+91 98765 43210" maxLength={30} value={phone} disabled={busy} onChange={(event) => setPhone(event.target.value)} required /></label>
           <label>Email address<input name="email" type="email" autoComplete="email" value={email} disabled={busy} maxLength={254} onChange={(event) => setEmail(event.target.value)} required /></label>
           <p>Continuing saves your contact details and selected stay for this checkout. No room is reserved and no payment is taken. <Link href="/policies/privacy">Privacy</Link></p>
-          <button className="button button-primary" type="submit" disabled={busy}>{busy ? <>Saving details… <LoaderCircle className="spin" size={17} /></> : <>Save details &amp; review checkout <ArrowRight size={17} aria-hidden="true" /></>}</button>
+          <button className="button button-primary" type="submit" disabled={busy}>{busy ? <>Please wait… <LoaderCircle className="spin" size={17} /></> : <>Checkout <ArrowRight size={17} aria-hidden="true" /></>}</button>
           <p role="status" aria-live="polite">{message}</p>
         </form>
         {authState === "signed_out" && supabase && <div className="booking-google-option">
