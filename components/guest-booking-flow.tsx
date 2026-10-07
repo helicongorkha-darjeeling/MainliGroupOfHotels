@@ -51,6 +51,9 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
   const draftIdRef = useRef<string | null>(null);
   const savingRef = useRef(false);
   const [draft, setDraft] = useState<CheckoutDraftReceipt | null>(null);
+  // Without the server key nothing can be saved, but guests can still walk the steps and see what's next.
+  const [checkoutClosed, setCheckoutClosed] = useState(false);
+  const canContinue = !!draft || checkoutClosed;
 
   useEffect(() => {
     let active = true;
@@ -111,6 +114,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
         roomType,
       });
       setDraft(receipt);
+      setCheckoutClosed(false);
       setFullName(result.data.fullName);
       setEmail(result.data.email);
       setPhone(result.data.phone);
@@ -124,6 +128,19 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
         draftIdRef.current = null;
         try { window.sessionStorage.removeItem(`teesta-checkout-draft:${bookingPath}`); } catch { /* The next attempt still creates a new ID. */ }
       }
+      if (error instanceof CheckoutSaveError && error.checkoutClosed) {
+        setDraft(null);
+        setCheckoutClosed(true);
+        setFullName(result.data.fullName);
+        setEmail(result.data.email);
+        setPhone(result.data.phone);
+        setOtp("");
+        setOtpSent(false);
+        setCaptchaToken("");
+        setMessage("");
+        setStep("checkout");
+        return;
+      }
       setMessage(error instanceof CheckoutSaveError ? error.message : "Your details couldn't be saved. Check your connection and retry. No room has been reserved.");
     } finally {
       savingRef.current = false;
@@ -132,7 +149,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
   }
 
   async function sendCode() {
-    if (!supabase || busy || savingRef.current || !draft || resendSeconds > 0) return;
+    if (!supabase || busy || savingRef.current || !canContinue || resendSeconds > 0) return;
     savingRef.current = true;
     setBusy(true);
     setMessage("");
@@ -155,7 +172,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
   }
 
   function bookNow() {
-    if (busy || !draft) return;
+    if (busy || !canContinue) return;
     setMessage("");
     if (verifiedPhone === phone) { setStep("payment"); return; }
     if (!otpReady) { setStep("otp"); return; }
@@ -164,7 +181,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
 
   async function verifyCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!supabase || busy || savingRef.current || !otpSent || !draft) return;
+    if (!supabase || busy || savingRef.current || !otpSent || !canContinue) return;
     savingRef.current = true;
     setBusy(true);
     setMessage("");
@@ -212,13 +229,14 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
         <section className="checkout-review" aria-labelledby="checkout-review-title">
           <h2 id="checkout-review-title" ref={checkoutRef} tabIndex={-1}>{step === "otp" ? "Verify your mobile." : step === "payment" ? "Payment." : "Review checkout."}</h2>
           {draft && <p className="checkout-verified"><CheckCircle2 size={17} /> Details saved · checkout draft {draft.draftId.slice(0, 8)}. No room reserved.</p>}
+          {checkoutClosed && <p className="checkout-setup-notice">Online booking isn&apos;t open yet, so your details stay on this device only. No room has been reserved; <Link href="/contact">contact the hotel</Link> to book this stay.</p>}
           {step === "checkout" && <dl className="checkout-contact"><div><dt>Guest</dt><dd>{fullName}</dd></div><div><dt>Phone</dt><dd>{phone}</dd></div><div><dt>Email</dt><dd>{email}</dd></div></dl>}
           <button className="text-link checkout-edit" type="button" disabled={busy} onClick={editDetails}><ArrowLeft size={15} /> Edit contact details</button>
           {step === "checkout" && <div className="checkout-verification">
             <h3><Smartphone size={18} /> Continue with your mobile</h3>
             <p>{verifiedPhone === phone ? "Your mobile is already verified for this signed-in session." : "Book now continues to mobile verification, then payment. It does not confirm or charge your booking."}</p>
             {otpReady && verifiedPhone !== phone && <CheckoutCaptcha key={challengeKey} siteKey={captchaSiteKey} onToken={setCaptchaToken} />}
-            <button className="button button-primary" type="button" onClick={bookNow} disabled={busy || !draft || (otpReady && verifiedPhone !== phone && (!captchaToken || resendSeconds > 0))}>
+            <button className="button button-primary" type="button" onClick={bookNow} disabled={busy || !canContinue || (otpReady && verifiedPhone !== phone && (!captchaToken || resendSeconds > 0))}>
               {busy ? <LoaderCircle className="spin" size={17} /> : <ArrowRight size={17} />} Book now
             </button>
             {resendSeconds > 0 && <p>Another code can be requested in {resendSeconds}s.</p>}

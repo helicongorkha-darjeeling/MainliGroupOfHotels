@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, BedDouble, CalendarDays, Users } from "lucide-react";
+import { ArrowLeft, BedDouble } from "lucide-react";
 import { SearchForm } from "@/components/search-form";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { teestaRoomTypes, planRoomChoice } from "@/lib/room-types";
 import { formatInr } from "@/lib/rates";
-import { formatHotelDate, hotelToday, nightsBetween, staySearchSchema } from "@/lib/stay";
+import { hotelToday, nightsBetween, staySearchSchema } from "@/lib/stay";
 
 export const metadata: Metadata = { title: "Find rooms" };
 
@@ -38,22 +38,16 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
   return (
     <main>
       <SiteHeader />
-      <section className="rooms-head site-shell">
+      <section className="rooms-search site-shell" aria-label="Your stay">
         <Link href="/stays/teesta" className="back-link"><ArrowLeft size={17} /> Hotel Teesta</Link>
-        <p className="eyebrow">Room search</p>
-        <h1>{parsed.success ? `${nights} ${nights === 1 ? "night" : "nights"} in Darjeeling` : "Choose your stay"}</h1>
-        {parsed.success && (
-          <div className="search-summary" aria-label="Selected stay">
-            <span><CalendarDays size={17} /> {formatHotelDate(parsed.data.checkIn)} — {formatHotelDate(parsed.data.checkOut)}</span>
-            <span><Users size={17} /> {parsed.data.guests} {parsed.data.guests === 1 ? "guest" : "guests"}</span>
-          </div>
-        )}
-      </section>
-
-      <section className="modify-search">
-        <div className="site-shell">
+        <div className="rooms-search-card">
+          <p className="eyebrow">Room search · Hotel Teesta</p>
           <SearchForm key={`${raw.checkIn}/${raw.checkOut}/${raw.guests}`} compact initialCheckIn={pastArrival ? "" : raw.checkIn} initialCheckOut={pastArrival ? "" : raw.checkOut} initialGuests={raw.guests} />
         </div>
+      </section>
+
+      <section className="rooms-head site-shell">
+        <h1>{parsed.success ? `${nights} ${nights === 1 ? "night" : "nights"} in Darjeeling` : "Choose your stay"}</h1>
       </section>
 
       <section className="results-section section-space">

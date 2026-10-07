@@ -1,7 +1,7 @@
 import { checkoutDraftReceiptSchema, type CheckoutDraftInput } from "./checkout-draft";
 
 export class CheckoutSaveError extends Error {
-  constructor(message: string, public readonly restartDraft = false) { super(message); }
+  constructor(message: string, public readonly restartDraft = false, public readonly checkoutClosed = false) { super(message); }
 }
 
 export async function saveCheckoutDraft(input: CheckoutDraftInput) {
@@ -13,9 +13,8 @@ export async function saveCheckoutDraft(input: CheckoutDraftInput) {
   if (!session.ok) {
     // Missing server configuration won't fix itself on retry, so say so plainly.
     const unavailable = session.status === 503 && (await session.json().catch(() => null))?.error === "checkout_unavailable";
-    throw new CheckoutSaveError(unavailable
-      ? "Online checkout isn't open yet, so your details weren't saved. No room has been reserved; please contact the hotel to book."
-      : "Your details couldn't be saved right now. Please try again. No room has been reserved.");
+    if (unavailable) throw new CheckoutSaveError("Online checkout isn't open yet, so your details weren't saved. No room has been reserved; please contact the hotel to book.", false, true);
+    throw new CheckoutSaveError("Your details couldn't be saved right now. Please try again. No room has been reserved.");
   }
   const response = await fetch("/api/booking-drafts", {
     method: "POST", credentials: "same-origin", cache: "no-store",
