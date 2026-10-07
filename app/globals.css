@@ -1290,22 +1290,9 @@ a {
   margin-top: 8px;
 }
 
-.booking-google-option {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-}
-
-.booking-google-option > p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.5;
-}
-
-.booking-google-option .guest-signin-form {
-  padding-top: 8px;
-  border-top: 0;
+.guest-signin-form > p.booking-signed-in {
+  color: var(--ink);
+  font-size: 0.86rem;
 }
 
 .guest-signin-form > p,
