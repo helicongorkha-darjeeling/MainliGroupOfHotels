@@ -3,11 +3,27 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { authCallbackUrl } from "@/lib/auth-redirect";
+
+/** Sends the browser to Google; resolves only if the redirect couldn't start. */
+export async function startGoogleSignIn(supabase: SupabaseClient, destination: string) {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: authCallbackUrl(window.location.origin, destination),
+      skipBrowserRedirect: true,
+      queryParams: { prompt: "select_account" },
+    },
+  });
+  if (error || !data.url) throw error ?? new Error("Missing authorization URL");
+  window.location.assign(data.url);
+}
 
 export function GoogleAuth({ signedIn = false, destination = "/my-bookings", authError = false }: {
   signedIn?: boolean;
-  destination?: "/members" | "/my-bookings";
+  // Must be an allow-listed guest path (see safeAuthDestination); anything else falls back to /my-bookings.
+  destination?: string;
   authError?: boolean;
 }) {
   const router = useRouter();
@@ -44,16 +60,7 @@ export function GoogleAuth({ signedIn = false, destination = "/my-bookings", aut
         window.location.assign(destination);
         return;
       }
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: authCallbackUrl(window.location.origin, destination),
-          skipBrowserRedirect: true,
-          queryParams: { prompt: "select_account" },
-        },
-      });
-      if (error || !data.url) throw error ?? new Error("Missing authorization URL");
-      window.location.assign(data.url);
+      await startGoogleSignIn(supabase, destination);
     } catch {
       setMessage(signedIn ? "Couldn't sign out. Please retry." : "Couldn't start Google sign-in. Please retry; if it persists, contact the hotel.");
       pending.current = false;

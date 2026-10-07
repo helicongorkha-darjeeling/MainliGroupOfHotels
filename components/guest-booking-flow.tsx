@@ -5,7 +5,8 @@ import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, Smartphone } from "lucide-react";
 import { CheckoutCaptcha } from "@/components/checkout-captcha";
-import { guestDetailsSchema } from "@/lib/guest-details";
+import { startGoogleSignIn } from "@/components/google-auth";
+import { guestDetailsSchema, normaliseGuestPhone } from "@/lib/guest-details";
 import { checkoutDraftIdSchema, type CheckoutDraftInput, type CheckoutDraftReceipt } from "@/lib/checkout-draft";
 import { CheckoutSaveError, saveCheckoutDraft } from "@/lib/save-checkout-draft";
 import { matchesVerifiedMobile, MobileCheckoutError, requestMobileOtp, verifyMobileOtp } from "@/lib/mobile-checkout";
@@ -42,36 +43,20 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
   const [captchaToken, setCaptchaToken] = useState("");
   const [challengeKey, setChallengeKey] = useState(0);
   const otpReady = !!supabase && phoneOtpEnabled && !!captchaSiteKey;
+  const googleFirst = !!supabase && authState === "signed_out";
+  // A phone sign-in would replace a Google session with a separate phone-only account.
+  const otpMode = authState === "signed_in" ? "link" : "sign_in";
   const countdownRunning = resendSeconds > 0;
   const checkoutRef = useRef<HTMLHeadingElement>(null);
   const detailsRef = useRef<HTMLInputElement>(null);
   const draftIdRef = useRef<string | null>(null);
   const savingRef = useRef(false);
   const [draft, setDraft] = useState<CheckoutDraftReceipt | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    if (!supabase) return;
-    supabase.auth.getUser().then(({ data }) => {
-      if (!active) return;
-      const user = data.user;
-      setAuthState(user ? "signed_in" : "signed_out");
-      if (user) {
-        setEmail(user.email ?? "");
-        setFullName(typeof user.user_metadata.full_name === "string" ? user.user_metadata.full_name : "");
-        setPhone(user.phone ? `+${user.phone.replace(/^\+/, "")}` : typeof user.user_metadata.phone_number === "string" ? user.user_metadata.phone_number : "");
-        if (user.phone && matchesVerifiedMobile(user, `+${user.phone.replace(/^\+/, "")}`)) {
-          setVerifiedPhone(`+${user.phone.replace(/^\+/, "")}`);
-        }
-      }
-    }).catch(() => {
-      if (active) {
-        setAuthState("signed_out");
-        setMessage("Sign-in couldn't be checked. You can still review your stay.");
-      }
-    });
-    return () => { active = false; };
-  }, [supabase]);
+  // Without the server key nothing can be saved, but guests can still walk the steps and see what's next.
+  const [checkoutClosed, setCheckoutClosed] = useState(false);
+  const canContinue = !!draft || checkoutClosed;
+  // Guests type only their mobile; Google supplies name and email. The mobile survives the Google round trip here.
+  const phoneKey = `teesta-checkout-phone:${bookingPath}`;
 
   useEffect(() => {
     if (step !== "details") {
@@ -87,10 +72,32 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
     return () => window.clearInterval(timer);
   }, [countdownRunning]);
 
-  async function reviewCheckout(event: FormEvent<HTMLFormElement>) {
+  async function continueWithGoogle(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!supabase || busy || savingRef.current) return;
+    const mobile = normaliseGuestPhone(phone.trim());
+    if (!mobile) { setMessage("Enter a 10-digit Indian mobile number or an international number with its country code."); return; }
+    savingRef.current = true;
+    setBusy(true);
+    setMessage("");
+    try {
+      try { window.sessionStorage.setItem(phoneKey, mobile); } catch { /* The guest can re-enter it after sign-in. */ }
+      await startGoogleSignIn(supabase, bookingPath);
+    } catch {
+      setMessage("Couldn't start Google sign-in. Please retry; if it persists, contact the hotel.");
+      savingRef.current = false;
+      setBusy(false);
+    }
+  }
+
+  function submitDetails(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void reviewCheckout();
+  }
+
+  async function reviewCheckout(details = { fullName, email, phone }) {
     if (busy || savingRef.current) return;
-    const result = guestDetailsSchema.safeParse({ fullName, email, phone });
+    const result = guestDetailsSchema.safeParse(details);
     if (!result.success) { setMessage(result.error.issues[0].message); return; }
     savingRef.current = true;
     setBusy(true);
@@ -108,6 +115,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
         roomType,
       });
       setDraft(receipt);
+      setCheckoutClosed(false);
       setFullName(result.data.fullName);
       setEmail(result.data.email);
       setPhone(result.data.phone);
@@ -121,6 +129,19 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
         draftIdRef.current = null;
         try { window.sessionStorage.removeItem(`teesta-checkout-draft:${bookingPath}`); } catch { /* The next attempt still creates a new ID. */ }
       }
+      if (error instanceof CheckoutSaveError && error.checkoutClosed) {
+        setDraft(null);
+        setCheckoutClosed(true);
+        setFullName(result.data.fullName);
+        setEmail(result.data.email);
+        setPhone(result.data.phone);
+        setOtp("");
+        setOtpSent(false);
+        setCaptchaToken("");
+        setMessage("");
+        setStep("checkout");
+        return;
+      }
       setMessage(error instanceof CheckoutSaveError ? error.message : "Your details couldn't be saved. Check your connection and retry. No room has been reserved.");
     } finally {
       savingRef.current = false;
@@ -128,13 +149,44 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
     }
   }
 
+  useEffect(() => {
+    let active = true;
+    if (!supabase) return;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!active) return;
+      const user = data.user;
+      setAuthState(user ? "signed_in" : "signed_out");
+      if (user) {
+        const googleName = typeof user.user_metadata.full_name === "string" ? user.user_metadata.full_name : "";
+        setEmail(user.email ?? "");
+        setFullName(googleName);
+        setPhone(user.phone ? `+${user.phone.replace(/^\+/, "")}` : typeof user.user_metadata.phone_number === "string" ? user.user_metadata.phone_number : "");
+        if (user.phone && matchesVerifiedMobile(user, `+${user.phone.replace(/^\+/, "")}`)) {
+          setVerifiedPhone(`+${user.phone.replace(/^\+/, "")}`);
+        }
+        let returningPhone: string | null = null;
+        try { returningPhone = window.sessionStorage.getItem(phoneKey); window.sessionStorage.removeItem(phoneKey); } catch { /* Storage may be disabled. */ }
+        // Back from Google after pressing Continue: carry straight on to the review step.
+        if (returningPhone) { setPhone(returningPhone); void reviewCheckout({ fullName: googleName, email: user.email ?? "", phone: returningPhone }); }
+      }
+    }).catch(() => {
+      if (active) {
+        setAuthState("signed_out");
+        setMessage("Sign-in couldn't be checked. You can still review your stay.");
+      }
+    });
+    return () => { active = false; };
+    // reviewCheckout only needs this render's props, which the component key pins to the stay.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabase, phoneKey]);
+
   async function sendCode() {
-    if (!supabase || busy || savingRef.current || !draft || resendSeconds > 0) return;
+    if (!supabase || busy || savingRef.current || !canContinue || resendSeconds > 0) return;
     savingRef.current = true;
     setBusy(true);
     setMessage("");
     try {
-      await requestMobileOtp(supabase.auth, phone, captchaToken, otpReady);
+      await requestMobileOtp(supabase.auth, phone, captchaToken, otpReady, otpMode);
       setOtpSent(true);
       setOtp("");
       setResendSeconds(60);
@@ -152,7 +204,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
   }
 
   function bookNow() {
-    if (busy || !draft) return;
+    if (busy || !canContinue) return;
     setMessage("");
     if (verifiedPhone === phone) { setStep("payment"); return; }
     if (!otpReady) { setStep("otp"); return; }
@@ -161,12 +213,12 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
 
   async function verifyCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!supabase || busy || savingRef.current || !otpSent || !draft) return;
+    if (!supabase || busy || savingRef.current || !otpSent || !canContinue) return;
     savingRef.current = true;
     setBusy(true);
     setMessage("");
     try {
-      const confirmedPhone = await verifyMobileOtp(supabase.auth, phone, otp, otpReady);
+      const confirmedPhone = await verifyMobileOtp(supabase.auth, phone, otp, otpReady, otpMode);
       setVerifiedPhone(confirmedPhone);
       setOtp("");
       setStep("payment");
@@ -191,27 +243,29 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
         <li aria-current={step === "checkout" || step === "otp" ? "step" : undefined}>3 · Verify mobile</li>
         <li aria-current={step === "payment" ? "step" : undefined}>4 · Payment</li>
       </ol>
-      {authState === "checking" ? <p className="booking-flow-status"><LoaderCircle className="spin" size={18} /> Checking secure sign-in…</p> : step === "details" ? (
-        <form className="guest-signin-form" onSubmit={reviewCheckout}>
+      {authState === "checking" ? <p className="booking-flow-status"><LoaderCircle className="spin" size={18} /> Checking secure sign-in…</p> : step === "details" ? (<>
+        <form className="guest-signin-form" onSubmit={googleFirst ? continueWithGoogle : submitDetails}>
           <h2>Who is booking?</h2>
-          <label>Full name<input ref={detailsRef} name="fullName" autoComplete="name" value={fullName} maxLength={120} disabled={busy} onChange={(event) => setFullName(event.target.value)} required /></label>
-          <label>Phone number<input name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+91 98765 43210" maxLength={30} value={phone} disabled={busy} onChange={(event) => setPhone(event.target.value)} required /></label>
-          <label>Email address<input name="email" type="email" autoComplete="email" value={email} disabled={busy} maxLength={254} onChange={(event) => setEmail(event.target.value)} required /></label>
-          <p>Continuing saves your contact details and selected stay for this checkout. No room is reserved and no payment is taken. <Link href="/policies/privacy">Privacy</Link></p>
-          <button className="button button-primary" type="submit" disabled={busy}>{busy ? <>Saving details… <LoaderCircle className="spin" size={17} /></> : <>Save details &amp; review checkout <ArrowRight size={17} aria-hidden="true" /></>}</button>
+          {authState === "signed_in" && email && <p className="booking-signed-in">Signed in with Google as <strong>{fullName || email}</strong>{fullName ? <> · {email}</> : null}</p>}
+          {(!googleFirst && (authState !== "signed_in" || fullName.trim().length < 2)) && <label>Full name<input ref={detailsRef} name="fullName" autoComplete="name" value={fullName} maxLength={120} disabled={busy} onChange={(event) => setFullName(event.target.value)} required /></label>}
+          <label>Mobile number<input ref={googleFirst || fullName.trim().length >= 2 ? detailsRef : undefined} name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+91 98765 43210" maxLength={30} value={phone} disabled={busy} onChange={(event) => setPhone(event.target.value)} required /></label>
+          {!supabase && <label>Email address<input name="email" type="email" autoComplete="email" value={email} disabled={busy} maxLength={254} onChange={(event) => setEmail(event.target.value)} required /></label>}
+          <p>{googleFirst ? "Continue signs you in with Google for your name and email, then brings you back to this stay." : "Continuing saves your contact details and selected stay for this checkout."} No room is reserved and no payment is taken. <Link href="/policies/privacy">Privacy</Link></p>
+          <button className="button button-primary" type="submit" disabled={busy}>{busy ? <>Please wait… <LoaderCircle className="spin" size={17} /></> : <>Continue <ArrowRight size={17} aria-hidden="true" /></>}</button>
           <p role="status" aria-live="polite">{message}</p>
         </form>
-      ) : (
+      </>) : (
         <section className="checkout-review" aria-labelledby="checkout-review-title">
           <h2 id="checkout-review-title" ref={checkoutRef} tabIndex={-1}>{step === "otp" ? "Verify your mobile." : step === "payment" ? "Payment." : "Review checkout."}</h2>
           {draft && <p className="checkout-verified"><CheckCircle2 size={17} /> Details saved · checkout draft {draft.draftId.slice(0, 8)}. No room reserved.</p>}
+          {checkoutClosed && <p className="checkout-setup-notice">Online booking isn&apos;t open yet, so your details stay on this device only. No room has been reserved; <Link href="/contact">contact the hotel</Link> to book this stay.</p>}
           {step === "checkout" && <dl className="checkout-contact"><div><dt>Guest</dt><dd>{fullName}</dd></div><div><dt>Phone</dt><dd>{phone}</dd></div><div><dt>Email</dt><dd>{email}</dd></div></dl>}
           <button className="text-link checkout-edit" type="button" disabled={busy} onClick={editDetails}><ArrowLeft size={15} /> Edit contact details</button>
           {step === "checkout" && <div className="checkout-verification">
             <h3><Smartphone size={18} /> Continue with your mobile</h3>
             <p>{verifiedPhone === phone ? "Your mobile is already verified for this signed-in session." : "Book now continues to mobile verification, then payment. It does not confirm or charge your booking."}</p>
             {otpReady && verifiedPhone !== phone && <CheckoutCaptcha key={challengeKey} siteKey={captchaSiteKey} onToken={setCaptchaToken} />}
-            <button className="button button-primary" type="button" onClick={bookNow} disabled={busy || !draft || (otpReady && verifiedPhone !== phone && (!captchaToken || resendSeconds > 0))}>
+            <button className="button button-primary" type="button" onClick={bookNow} disabled={busy || !canContinue || (otpReady && verifiedPhone !== phone && (!captchaToken || resendSeconds > 0))}>
               {busy ? <LoaderCircle className="spin" size={17} /> : <ArrowRight size={17} />} Book now
             </button>
             {resendSeconds > 0 && <p>Another code can be requested in {resendSeconds}s.</p>}
