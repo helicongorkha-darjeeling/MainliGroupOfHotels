@@ -4,6 +4,8 @@
 
 Guest details are saved as a private Supabase draft before review. Review has one **Book now** action instead of the guest email-link button. The next step requests an SMS OTP through Supabase Auth when the integration is enabled and a real CAPTCHA token is available. Supabase validates the code; the application also checks the current Auth user's canonical, confirmed mobile matches the draft contact. A matching previously verified session can continue without requesting another SMS. Email remains a contact field, not a verified identity.
 
+A guest already signed in with Google verifies the mobile by adding it to that same account (Supabase phone change: `updateUser({ phone })`, then `verifyOtp` with type `phone_change`), so verification no longer swaps their Google session for a separate phone-only account. A mobile already owned by another account is refused with a clear message. Signed-out guests can also continue with Google from `/book` and return to the same stay to have their details filled in.
+
 The payment section opens only after that mobile verification. It remains non-payable: no payment order, room reservation, receipt or confirmation is invented. The old guest-side physical-room hold call has been removed. Staff email authentication is unchanged.
 
 Verified on 3 October: the actual local guest form saves to hosted `booking_drafts` before review. Frontend and hosted draft pricing now use the same ₹2,500 starting Double Room price for one or two guests. The narrow price migration preserves service-role-only writing; synthetic pricing regression rows were rolled back.

@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { teestaRoomTypes, planRoomChoice } from "@/lib/room-types";
 import { formatInr } from "@/lib/rates";
-import { formatHotelDate, nightsBetween, staySearchSchema } from "@/lib/stay";
+import { formatHotelDate, hotelToday, nightsBetween, staySearchSchema } from "@/lib/stay";
 
 export const metadata: Metadata = { title: "Find rooms" };
 
@@ -22,7 +22,10 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
     checkOut: typeof params.checkOut === "string" ? params.checkOut : "",
     guests: typeof params.guests === "string" ? params.guests : "2",
   };
-  const parsed = staySearchSchema.safeParse(raw);
+  const searched = staySearchSchema.safeParse(raw);
+  // A bookmarked or shared search can go stale; /book rejects past arrivals, so don't offer them here.
+  const pastArrival = searched.success && searched.data.checkIn < hotelToday();
+  const parsed = pastArrival ? staySearchSchema.safeParse({}) : searched;
   const nights = parsed.success ? nightsBetween(parsed.data.checkIn, parsed.data.checkOut) : 0;
   const bookingQuery = parsed.success
     ? new URLSearchParams({
@@ -49,7 +52,7 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
 
       <section className="modify-search">
         <div className="site-shell">
-          <SearchForm key={`${raw.checkIn}/${raw.checkOut}/${raw.guests}`} compact initialCheckIn={raw.checkIn} initialCheckOut={raw.checkOut} initialGuests={raw.guests} />
+          <SearchForm key={`${raw.checkIn}/${raw.checkOut}/${raw.guests}`} compact initialCheckIn={pastArrival ? "" : raw.checkIn} initialCheckOut={pastArrival ? "" : raw.checkOut} initialGuests={raw.guests} />
         </div>
       </section>
 
@@ -79,7 +82,7 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
               </article>;
               })}
             </div>
-          ) : <p className="empty-result">Add your check-in, checkout and guest count above to see the right number of rooms and your starting price.</p>}
+          ) : pastArrival ? <p className="empty-result">Those dates have passed. Choose a new check-in date above to see rooms and your starting price.</p> : <p className="empty-result">Add your check-in, checkout and guest count above to see the right number of rooms and your starting price.</p>}
         </div>
       </section>
       <SiteFooter />

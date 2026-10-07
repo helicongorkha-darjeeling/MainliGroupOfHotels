@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, Smartphone } from "lucide-react";
 import { CheckoutCaptcha } from "@/components/checkout-captcha";
+import { GoogleAuth } from "@/components/google-auth";
 import { guestDetailsSchema } from "@/lib/guest-details";
 import { checkoutDraftIdSchema, type CheckoutDraftInput, type CheckoutDraftReceipt } from "@/lib/checkout-draft";
 import { CheckoutSaveError, saveCheckoutDraft } from "@/lib/save-checkout-draft";
@@ -42,6 +43,8 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
   const [captchaToken, setCaptchaToken] = useState("");
   const [challengeKey, setChallengeKey] = useState(0);
   const otpReady = !!supabase && phoneOtpEnabled && !!captchaSiteKey;
+  // A phone sign-in would replace a Google session with a separate phone-only account.
+  const otpMode = authState === "signed_in" ? "link" : "sign_in";
   const countdownRunning = resendSeconds > 0;
   const checkoutRef = useRef<HTMLHeadingElement>(null);
   const detailsRef = useRef<HTMLInputElement>(null);
@@ -134,7 +137,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
     setBusy(true);
     setMessage("");
     try {
-      await requestMobileOtp(supabase.auth, phone, captchaToken, otpReady);
+      await requestMobileOtp(supabase.auth, phone, captchaToken, otpReady, otpMode);
       setOtpSent(true);
       setOtp("");
       setResendSeconds(60);
@@ -166,7 +169,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
     setBusy(true);
     setMessage("");
     try {
-      const confirmedPhone = await verifyMobileOtp(supabase.auth, phone, otp, otpReady);
+      const confirmedPhone = await verifyMobileOtp(supabase.auth, phone, otp, otpReady, otpMode);
       setVerifiedPhone(confirmedPhone);
       setOtp("");
       setStep("payment");
@@ -191,7 +194,7 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
         <li aria-current={step === "checkout" || step === "otp" ? "step" : undefined}>3 · Verify mobile</li>
         <li aria-current={step === "payment" ? "step" : undefined}>4 · Payment</li>
       </ol>
-      {authState === "checking" ? <p className="booking-flow-status"><LoaderCircle className="spin" size={18} /> Checking secure sign-in…</p> : step === "details" ? (
+      {authState === "checking" ? <p className="booking-flow-status"><LoaderCircle className="spin" size={18} /> Checking secure sign-in…</p> : step === "details" ? (<>
         <form className="guest-signin-form" onSubmit={reviewCheckout}>
           <h2>Who is booking?</h2>
           <label>Full name<input ref={detailsRef} name="fullName" autoComplete="name" value={fullName} maxLength={120} disabled={busy} onChange={(event) => setFullName(event.target.value)} required /></label>
@@ -201,7 +204,11 @@ export function GuestBookingFlow({ bookingPath, checkIn, checkOut, guests, roomT
           <button className="button button-primary" type="submit" disabled={busy}>{busy ? <>Saving details… <LoaderCircle className="spin" size={17} /></> : <>Save details &amp; review checkout <ArrowRight size={17} aria-hidden="true" /></>}</button>
           <p role="status" aria-live="polite">{message}</p>
         </form>
-      ) : (
+        {authState === "signed_out" && supabase && <div className="booking-google-option">
+          <p>Have a Mainali guest account? Sign in with Google to fill in your details; you&apos;ll return to this stay.</p>
+          <GoogleAuth destination={bookingPath} />
+        </div>}
+      </>) : (
         <section className="checkout-review" aria-labelledby="checkout-review-title">
           <h2 id="checkout-review-title" ref={checkoutRef} tabIndex={-1}>{step === "otp" ? "Verify your mobile." : step === "payment" ? "Payment." : "Review checkout."}</h2>
           {draft && <p className="checkout-verified"><CheckCircle2 size={17} /> Details saved · checkout draft {draft.draftId.slice(0, 8)}. No room reserved.</p>}

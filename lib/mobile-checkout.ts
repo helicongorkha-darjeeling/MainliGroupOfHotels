@@ -1,7 +1,11 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { normaliseGuestPhone } from "./guest-details";
 
-type MobileAuth = Pick<SupabaseClient["auth"], "signInWithOtp" | "verifyOtp" | "getUser">;
+type MobileAuth = Pick<SupabaseClient["auth"], "signInWithOtp" | "updateUser" | "verifyOtp" | "getUser">;
+
+// "sign_in" starts a phone session. "link" adds the mobile to the guest's current account
+// (for example a Google sign-in) so verifying it doesn't replace that session with a new user.
+export type MobileOtpMode = "sign_in" | "link";
 
 export class MobileCheckoutError extends Error {}
 
@@ -20,17 +24,21 @@ function configuredPhone(phone: string, enabled: boolean) {
   return normalised;
 }
 
-export async function requestMobileOtp(auth: MobileAuth, phone: string, captchaToken: string, enabled: boolean) {
+export async function requestMobileOtp(auth: MobileAuth, phone: string, captchaToken: string, enabled: boolean, mode: MobileOtpMode = "sign_in") {
   const normalised = configuredPhone(phone, enabled);
   if (!captchaToken.trim()) throw new MobileCheckoutError("Complete the security check before requesting a code.");
   try {
-    const { error } = await auth.signInWithOtp({
-      phone: normalised,
-      options: { channel: "sms", shouldCreateUser: true, captchaToken },
-    });
+    const { error } = mode === "link"
+      ? await auth.updateUser({ phone: normalised })
+      : await auth.signInWithOtp({
+        phone: normalised,
+        options: { channel: "sms", shouldCreateUser: true, captchaToken },
+      });
     if (error) throw new MobileCheckoutError(error.status === 429
       ? "Please wait before requesting another code."
-      : "We couldn't request your SMS code. Check the number and try again shortly.");
+      : mode === "link" && error.code === "phone_exists"
+        ? "This mobile is already linked to another guest account. Sign out and continue with your mobile, or use a different number."
+        : "We couldn't request your SMS code. Check the number and try again shortly.");
     return normalised;
   } catch (error) {
     if (error instanceof MobileCheckoutError) throw error;
@@ -38,12 +46,12 @@ export async function requestMobileOtp(auth: MobileAuth, phone: string, captchaT
   }
 }
 
-export async function verifyMobileOtp(auth: MobileAuth, phone: string, code: string, enabled: boolean) {
+export async function verifyMobileOtp(auth: MobileAuth, phone: string, code: string, enabled: boolean, mode: MobileOtpMode = "sign_in") {
   const normalised = configuredPhone(phone, enabled);
   const token = code.trim();
   if (!/^\d{6}$/.test(token)) throw new MobileCheckoutError("Enter the six-digit code from your SMS.");
   try {
-    const { data, error } = await auth.verifyOtp({ phone: normalised, token, type: "sms" });
+    const { data, error } = await auth.verifyOtp({ phone: normalised, token, type: mode === "link" ? "phone_change" : "sms" });
     if (error || !data.session) throw new MobileCheckoutError("That code couldn't be verified. Retry or request a new code.");
     // Ask Supabase Auth for the current user, rather than trusting browser metadata.
     const current = await auth.getUser();

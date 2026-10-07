@@ -7,10 +7,11 @@ const confirmed = { phone: "919999999999", phone_confirmed_at: "2026-10-02T00:00
 
 function fixture() {
   const signInWithOtp = vi.fn().mockResolvedValue({ error: null });
+  const updateUser = vi.fn().mockResolvedValue({ data: { user: null }, error: null });
   const verifyOtp = vi.fn().mockResolvedValue({ data: { session: { user: confirmed } }, error: null });
   const getUser = vi.fn().mockResolvedValue({ data: { user: confirmed }, error: null });
-  const auth = { signInWithOtp, verifyOtp, getUser } as unknown as SupabaseClient["auth"];
-  return { auth, signInWithOtp, verifyOtp, getUser };
+  const auth = { signInWithOtp, updateUser, verifyOtp, getUser } as unknown as SupabaseClient["auth"];
+  return { auth, signInWithOtp, updateUser, verifyOtp, getUser };
 }
 
 describe("mobile checkout integration seam", () => {
@@ -87,5 +88,23 @@ describe("mobile checkout integration seam", () => {
     await expect(verifyMobileOtp(f.auth, phone, "123456", true)).rejects.toThrow("couldn't be confirmed");
     f.verifyOtp.mockRejectedValueOnce(new Error("private network details"));
     await expect(verifyMobileOtp(f.auth, phone, "123456", true)).rejects.toThrow("Unable to verify");
+  });
+
+  it("links the mobile to a signed-in guest's account instead of starting a separate phone session", async () => {
+    const f = fixture();
+    await expect(requestMobileOtp(f.auth, "99999 99999", "captcha-fixture", true, "link")).resolves.toBe(phone);
+    expect(f.updateUser).toHaveBeenCalledWith({ phone });
+    expect(f.signInWithOtp).not.toHaveBeenCalled();
+    await expect(verifyMobileOtp(f.auth, phone, "123456", true, "link")).resolves.toBe(phone);
+    expect(f.verifyOtp).toHaveBeenCalledWith({ phone, token: "123456", type: "phone_change" });
+    expect(f.getUser).toHaveBeenCalledOnce();
+  });
+
+  it("explains when a mobile already belongs to another guest account", async () => {
+    const f = fixture();
+    f.updateUser.mockResolvedValueOnce({ data: { user: null }, error: { status: 422, code: "phone_exists", message: "private auth details" } });
+    await expect(requestMobileOtp(f.auth, phone, "captcha-fixture", true, "link")).rejects.toThrow("already linked");
+    f.updateUser.mockResolvedValueOnce({ data: { user: null }, error: { status: 429, message: "private auth details" } });
+    await expect(requestMobileOtp(f.auth, phone, "captcha-fixture", true, "link")).rejects.toThrow("wait");
   });
 });

@@ -20,6 +20,7 @@
 - [x] Add the member phone-auth foundation and completed-reservation stay count; actual phone login and stay tracking remain inactive until their providers/schema are activated.
 - [x] Remove the placeholder logo circle and obsolete homepage/property CSS. Keep the Mainali text wordmark until an approved logo is supplied.
 - [x] Add guest Google sign-in to Members and My bookings through Supabase Auth (PKCE), with allow-listed return paths (`/book`, `/my-bookings`, `/members`), uncached signed-in pages, sign-out and a visible failure message. Signing in grants no reservation, payment, mobile verification or staff access.
+- [x] Connect Google sign-in to checkout: continue with Google from `/book`, and link a signed-in guest's mobile to that account instead of replacing the session; stale past-date room searches no longer lead to an invalid booking page.
 - [ ] Owner review of the responsive public experience.
 
 ## Phase 2 — inventory and staff access

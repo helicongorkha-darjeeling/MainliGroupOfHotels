@@ -7,7 +7,8 @@ import { authCallbackUrl } from "@/lib/auth-redirect";
 
 export function GoogleAuth({ signedIn = false, destination = "/my-bookings", authError = false }: {
   signedIn?: boolean;
-  destination?: "/members" | "/my-bookings";
+  // Must be an allow-listed guest path (see safeAuthDestination); anything else falls back to /my-bookings.
+  destination?: string;
   authError?: boolean;
 }) {
   const router = useRouter();
