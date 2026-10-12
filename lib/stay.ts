@@ -9,6 +9,8 @@ export const staySearchSchema = z
   .refine((value) => value.checkOut > value.checkIn, {
     message: "Checkout must be after check-in.",
     path: ["checkOut"],
+  }).refine((value) => nightsBetween(value.checkIn,value.checkOut)<=30, {
+    message: "Choose a stay of up to 30 nights.", path: ["checkOut"],
   });
 
 export function nightsBetween(checkIn: string, checkOut: string) {

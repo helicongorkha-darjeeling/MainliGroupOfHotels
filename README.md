@@ -1,8 +1,8 @@
-# Mainali Group of Hotels
+# Mainali Hospitality
 
-Mobile-first public website and booking foundation for Hotel Teesta, Darjeeling.
+Mobile-first public website and booking operations for Hotel Teesta, Darjeeling. Current operational status and provider setup are documented in [LIVE_BOOKING_SETUP.md](LIVE_BOOKING_SETUP.md): all 25 rooms are published, real tentative reservations hold inventory for 24 hours, and front-desk operations are protected by explicitly assigned staff roles. Online payment and email delivery await provider configuration; taxes and final policies await hotel approval.
 
-## Current state
+## Historical preview notes (superseded by LIVE_BOOKING_SETUP.md)
 
 The public experience is a guarded preview using the supplied ivory/gold design and Hotel Teesta's actual photographs. Home, Hotels, Experiences, Offers, Our Story, Contact and Members login have real destinations. The calendar defaults to today in Darjeeling and preserves dates and party size through room search and checkout. Double Rooms start at ₹2,500 per room per night for one or two guests; Triple, Four-person and Family-with-sofa layouts remain on request. Availability, phone OTP and payments are not live.
 

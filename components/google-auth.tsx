@@ -7,7 +7,7 @@ import { authCallbackUrl } from "@/lib/auth-redirect";
 
 export function GoogleAuth({ signedIn = false, destination = "/my-bookings", authError = false }: {
   signedIn?: boolean;
-  destination?: "/members" | "/my-bookings";
+  destination?: string;
   authError?: boolean;
 }) {
   const router = useRouter();

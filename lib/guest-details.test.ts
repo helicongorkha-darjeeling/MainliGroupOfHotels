@@ -21,13 +21,13 @@ describe("guest details", () => {
 
 describe("photo-based room choices", () => {
   it("preserves the known double-room price", () => {
-    expect(planRoomChoice(getTeestaRoomType()!, 4, 1).quote?.stayTotalPaise).toBe(500_000);
+    expect(planRoomChoice(getTeestaRoomType()!, 4, 1).quote?.stayTotalPaise).toBe(480_000);
   });
   it("does not reuse double-room pricing or inventory for other types", () => {
     for (const id of ["triple-room", "four-person-room", "family-room-sofa"]) {
       const room = getTeestaRoomType(id)!;
       expect(planRoomChoice(room, room.maxGuests, 2).rooms).toBe(1);
-      expect(planRoomChoice(room, room.maxGuests, 2).quote).toBeNull();
+      expect(planRoomChoice(room, room.maxGuests, 2).quote?.stayTotalPaise).toBe(room.maxGuests * 120_000 * 2);
       expect(room.categoryId).toBeNull();
     }
   });

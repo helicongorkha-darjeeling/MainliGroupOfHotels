@@ -39,7 +39,7 @@ export default function Home() {
           <p className="eyebrow">Our Darjeeling stay</p><h2 id="teesta-title">Hotel Teesta</h2><p className="editorial-location">Chauk Bazaar · Darjeeling, West Bengal</p>
           <p>For a solo visit, time together, or a family journey. See our actual room photographs and find the right layout before you book.</p>
           <div className="editorial-rates"><div><span>Double Room · Direct starting rate</span><strong>₹2,500+ <small>/ night</small></strong></div></div>
-          <p className="fine-print">Double Room starting rates. Other layouts are on request; final rates, taxes and availability are confirmed before payment.</p>
+          <p className="fine-print">₹2,000 for one guest, ₹2,500 for two; parties of three or more are ₹1,200 per guest per night. Seasonal rates may apply. Taxes are awaiting hotel confirmation.</p>
           <Link href="/stays/teesta" className="button button-primary">Explore the hotel <ArrowUpRight size={16} aria-hidden="true" /></Link>
         </Reveal>
       </div>

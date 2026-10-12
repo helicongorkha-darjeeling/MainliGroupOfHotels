@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, BedDouble, CalendarDays, ShieldCheck, Users } from "lucide-react";
-import { GuestBookingFlow } from "@/components/guest-booking-flow";
+import { ReservationCheckout } from "@/components/reservation-checkout";
+import { searchInventory } from "@/lib/server/reservations";
+import { createSessionSupabaseClient } from "@/lib/server/supabase-session";
+import { isAvailable } from "@/lib/reservations";
 import { PropertyGallery } from "@/components/property-gallery";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -42,6 +45,9 @@ export default async function BookPage({ searchParams }: BookPageProps) {
 
   const nights = nightsBetween(parsed.data.checkIn, parsed.data.checkOut);
   const plan = planRoomChoice(room, parsed.data.guests, nights);
+  const [inventory,session] = await Promise.all([searchInventory(parsed.data.checkIn,parsed.data.checkOut,parsed.data.guests),createSessionSupabaseClient()]);
+  const user=session?(await session.auth.getUser()).data.user:null;
+  const choice=inventory?.choices.find(c=>c.code===room.id);
   const bookingPath = `/book?${new URLSearchParams({
     checkIn: parsed.data.checkIn,
     checkOut: parsed.data.checkOut,
@@ -54,7 +60,7 @@ export default async function BookPage({ searchParams }: BookPageProps) {
       <SiteHeader />
       <section className="booking-shell site-shell">
         <div className="booking-visual">
-          <Image src={room.photo} alt={`${room.name} at Hotel Teesta`} fill loading="eager" fetchPriority="high" sizes="(max-width: 900px) 100vw, 48vw" className="cover-image" style={{ objectPosition: room.position }} />
+          <Image src={room.photo} alt={room.id==="six-person-room"?"Hotel Teesta exterior":`${room.name} at Hotel Teesta`} fill loading="eager" fetchPriority="high" sizes="(max-width: 900px) 100vw, 48vw" className="cover-image" style={{ objectPosition: room.position }} />
           <span>{room.name} · Hotel Teesta</span>
         </div>
 
@@ -69,19 +75,23 @@ export default async function BookPage({ searchParams }: BookPageProps) {
             <div><BedDouble size={18} /><span><strong>{room.name}</strong>{plan.description}</span></div>
           </div>
 
-          <div className="booking-total"><span>{plan.quote ? "Starting stay total" : "Stay rate"}</span><strong>{plan.quote ? `${formatInr(plan.quote.stayTotalPaise)}+` : "On request"}</strong></div>
+          <div className="booking-total"><span>Stay total</span><strong>{choice?`${formatInr(choice.quote.totalPaise)}${choice.quote.taxConfirmed?"":"+"}`:"Unavailable"}</strong></div>
+          {choice&&!choice.quote.taxConfirmed&&<p className="fine-print">Taxes are awaiting hotel confirmation. Tentative reservations are unpaid; the final payable total must be approved before payment opens.</p>}
           <p className="booking-assurance"><ShieldCheck size={17} /> Nothing is charged while we verify your identity and room availability.</p>
 
-          <GuestBookingFlow
+          {choice&&isAvailable(choice)?<ReservationCheckout
             key={bookingPath}
             bookingPath={bookingPath}
             checkIn={parsed.data.checkIn}
             checkOut={parsed.data.checkOut}
             guests={parsed.data.guests}
-            roomType={room.id}
-            phoneOtpEnabled={process.env.PHONE_OTP_ENABLED === "true"}
-            captchaSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? ""}
-          />
+            category={choice.code}
+            signedIn={!!user}
+            initialEmail={user?.email??""}
+            initialName={typeof user?.user_metadata.full_name==="string"?user.user_metadata.full_name:""}
+            initialPhone={user?.phone?`+${user.phone.replace(/^\+/,"")}`:""}
+            paymentsEnabled={!!inventory?.paymentsEnabled&&choice.quote.taxConfirmed}
+          />:<p className="preview-alert">{inventory?"These rooms are no longer available. Please choose another category or date.":"Availability could not be checked. Please retry before reserving."}</p>}
         </div>
       </section>
       <section className="booking-photo-section site-shell section-space" aria-labelledby="booking-photos-title">

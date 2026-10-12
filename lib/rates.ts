@@ -1,6 +1,7 @@
 export const teestaRates = {
-  singleOccupancyPaise: 250_000,
+  singleOccupancyPaise: 200_000,
   doubleOccupancyPaise: 250_000,
+  groupPerGuestPaise: 120_000,
   currency: "INR",
 } as const;
 
@@ -25,9 +26,8 @@ export function quoteTeestaStay(guests: number, nights: number): StayQuote {
   const doubleOccupancyRooms = Math.floor(guests / 2);
   const singleOccupancyRooms = guests % 2;
   const rooms = doubleOccupancyRooms + singleOccupancyRooms;
-  const nightlyTotalPaise =
-    doubleOccupancyRooms * teestaRates.doubleOccupancyPaise +
-    singleOccupancyRooms * teestaRates.singleOccupancyPaise;
+  const nightlyTotalPaise = guests >= 3 ? guests * teestaRates.groupPerGuestPaise
+    : guests === 1 ? teestaRates.singleOccupancyPaise : teestaRates.doubleOccupancyPaise;
 
   return {
     guests,

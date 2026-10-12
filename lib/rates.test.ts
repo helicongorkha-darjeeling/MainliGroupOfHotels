@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest";
 import { describeRoomSplit, quoteTeestaStay } from "./rates";
 
 describe("Hotel Teesta room quote", () => {
-  it("quotes one guest at the same Double Room rate", () => {
+  it("quotes the approved solo occupancy rate", () => {
     expect(quoteTeestaStay(1, 2)).toMatchObject({
       rooms: 1,
       singleOccupancyRooms: 1,
-      nightlyTotalPaise: 250_000,
-      stayTotalPaise: 500_000,
+      nightlyTotalPaise: 200_000,
+      stayTotalPaise: 400_000,
     });
   });
 
@@ -22,7 +22,7 @@ describe("Hotel Teesta room quote", () => {
 
   it("quotes two Double Rooms for an odd-numbered party", () => {
     const quote = quoteTeestaStay(3, 1);
-    expect(quote.stayTotalPaise).toBe(500_000);
+    expect(quote.stayTotalPaise).toBe(360_000);
     expect(describeRoomSplit(quote)).toBe("2 double rooms");
   });
 

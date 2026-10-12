@@ -17,8 +17,8 @@ describe("checkout draft input", () => {
   it("does not accept client-supplied booking, payment or pricing fields", () => {
     for (const field of ["status", "paid", "categoryId", "startingTotalPaise", "email_verified"]) expect(() => prepareCheckoutDraft({ ...input, [field]: "confirmed" }, now)).toThrow();
   });
-  it("keeps new layouts unpriced and rejects unknown layouts", () => {
-    expect(prepareCheckoutDraft({ ...input, roomType: "family-room-sofa", guests: 6 }, now)).toMatchObject({ rooms: 1, startingTotalPaise: null });
+  it("applies approved group prices and rejects unknown layouts", () => {
+    expect(prepareCheckoutDraft({ ...input, roomType: "family-room-sofa", guests: 6 }, now)).toMatchObject({ rooms: 1, startingTotalPaise: 1_440_000 });
     expect(() => prepareCheckoutDraft({ ...input, roomType: "unknown" }, now)).toThrow();
   });
   it("rejects past, reversed and excessive stay dates", () => {

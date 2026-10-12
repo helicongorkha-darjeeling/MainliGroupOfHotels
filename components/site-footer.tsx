@@ -28,7 +28,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="site-shell footer-note">
-        <span>Direct online bookings opening soon.</span>
+        <span>Direct tentative reservations · Hotel Teesta.</span>
         <span>© 2026 Mainali Hospitality</span>
       </div>
     </footer>

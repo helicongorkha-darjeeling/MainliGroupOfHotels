@@ -4,6 +4,11 @@
 # working directory name when running `supabase init`.
 project_id = "Hotel_Teesta"
 
+# Private actions validate the user's token with auth.getUser inside the function.
+# Webhooks use HMAC and scheduled jobs use a separate secret.
+[functions.hotel-booking]
+verify_jwt = false
+
 [api]
 enabled = true
 # Port to use for the API URL.
