@@ -30,6 +30,14 @@ begin
   execute 'reset role';
   perform public.hotel_staff_change(guest,jsonb_build_object('action','confirm','reservationId',booking->>'id'));
   perform public.hotel_staff_change(guest,jsonb_build_object('action','assign','reservationId',booking->>'id','rooms',jsonb_build_array('324')));
+  begin
+    perform public.hotel_staff_change(other_guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','out_of_service'));
+    raise exception 'Non-staff inventory change allowed';
+  exception when sqlstate 'PT403' then null; end;
+  begin
+    perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','out_of_service'));
+    raise exception 'Booked room was removed from inventory';
+  exception when sqlstate 'PT409' then null; end;
   perform public.hotel_staff_change(guest,jsonb_build_object('action','check_in','reservationId',booking->>'id'));
   update public.hotel_reservations set order_id='order_TestRace' where id=(booking->>'id')::uuid;
   retry:=public.hotel_record_payment('order_TestRace','pay_TestRace',(booking->>'total_paise')::bigint);
@@ -38,6 +46,10 @@ begin
   if retry->>'id'<>booking->>'id' then raise exception 'Payment replay is not idempotent'; end if;
   perform public.hotel_staff_change(guest,jsonb_build_object('action','check_out','reservationId',booking->>'id'));
   if (select housekeeping from public.hotel_inventory_rooms where number='324')<>'dirty' then raise exception 'Checkout did not mark room dirty'; end if;
+  perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','out_of_service'));
+  if public.hotel_capacity('six-person-room',today,today+2)<>0 then raise exception 'Out-of-service room remained bookable'; end if;
+  perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','clean'));
+  if public.hotel_capacity('six-person-room',today,today+2)<>1 then raise exception 'Returned room did not restore capacity'; end if;
   booking:=public.hotel_reserve(gen_random_uuid(),guest,'six-person-room',today+3,today+4,6,'Synthetic Guest','synthetic@example.invalid','+919999999999','tentative');
   update public.hotel_reservations set hold_until=now()-interval '1 second',order_id='order_TestLate' where id=(booking->>'id')::uuid;
   perform public.hotel_expire_holds();

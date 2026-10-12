@@ -1,8 +1,9 @@
 "use client";
-import { useState,type FormEvent } from "react";
+import { useEffect,useState,type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { formatInr } from "@/lib/rates";
 import { categoryLabels,type Reservation } from "@/lib/reservations";
+import { hotelToday } from "@/lib/stay";
 
 export type HotelOperationsData={
   role:"manager"|"reception";emailReady:boolean;paymentReady:boolean;schedulerReady:boolean;
@@ -14,6 +15,13 @@ export type HotelOperationsData={
 };
 export function HotelOperations({data}:{data:HotelOperationsData}) {
   const router=useRouter(),[busy,setBusy]=useState(false),[message,setMessage]=useState("");
+  const [query,setQuery]=useState(""),[status,setStatus]=useState("all");
+  useEffect(()=>{
+    const refresh=()=>{if(!busy&&document.visibilityState==="visible")router.refresh();};
+    const timer=window.setInterval(refresh,30000);
+    document.addEventListener("visibilitychange",refresh);
+    return ()=>{window.clearInterval(timer);document.removeEventListener("visibilitychange",refresh);};
+  },[busy,router]);
   async function change(input:Record<string,unknown>) {
     if(busy)return;setBusy(true);setMessage("");
     try {const response=await fetch("/api/staff/operations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(input)});const result=await response.json();if(!response.ok)throw new Error(result.error??"Change failed.");setMessage("Saved.");router.refresh();}
@@ -21,15 +29,21 @@ export function HotelOperations({data}:{data:HotelOperationsData}) {
   }
   function season(event:FormEvent<HTMLFormElement>){event.preventDefault();const form=new FormData(event.currentTarget);void change({action:"season",name:form.get("name"),startsOn:form.get("startsOn"),endsOn:form.get("endsOn"),soloPaise:Math.round(Number(form.get("solo"))*100),couplePaise:Math.round(Number(form.get("couple"))*100),perGuestPaise:Math.round(Number(form.get("perGuest"))*100)});}
   function settings(event:FormEvent<HTMLFormElement>){event.preventDefault();const form=new FormData(event.currentTarget);void change({action:"settings",taxRateBps:Math.round(Number(form.get("tax"))*100),checkInTime:form.get("checkInTime"),checkOutTime:form.get("checkOutTime"),cancellationTerms:form.get("cancellationTerms"),paymentsEnabled:form.get("paymentsEnabled")==="on"});}
-  const upcoming=data.reservations.filter(b=>["tentative","confirmed","payment_review"].includes(b.status));
+  const upcoming=data.reservations.filter(b=>b.check_out>=hotelToday()&&["tentative","confirmed","payment_review"].includes(b.status));
+  const search=query.trim().toLowerCase();
+  const reservations=data.reservations.filter(b=>(status==="all"||b.status===status)&&[b.reference,b.full_name,b.email,b.phone].some(value=>value.toLowerCase().includes(search)));
   return <div className="hotel-operations">
+    <nav className="operation-nav" aria-label="Dashboard sections"><a href="#reservations">Bookings</a><a href="#inventory">Inventory</a><a href="#follow-ups">Call list</a>{data.role==="manager"&&<><a href="#seasonal-rates">Rates</a><a href="#hotel-settings">Hotel settings</a></>}</nav>
+    <div className="operation-refresh"><p>Saved in Supabase · refreshes every 30 seconds while this page is visible.</p><button type="button" disabled={busy} onClick={()=>router.refresh()}>Refresh now</button></div>
     <div className="operation-metrics"><p><strong>{data.rooms.filter(r=>r.active).length}</strong> active rooms</p><p><strong>{data.reservations.filter(b=>b.status==="tentative").length}</strong> tentative holds</p><p><strong>{data.reservations.filter(b=>b.status==="confirmed").length}</strong> confirmed stays</p></div>
     <p className="operation-provider-status">Email: {data.emailReady?"configured":"setup required"} · Reminder scheduler: {data.schedulerReady?"configured":"secret required"} · Payments: {data.paymentReady?"credentials configured":"setup required"}</p>
     <p role="status" aria-live="polite">{message}</p>
-    <section><h2>Front-desk call list</h2><p>Follow up on tentative stays, upcoming arrivals, and payments needing review. Calling is handled by reception.</p>
+    <section id="follow-ups"><h2>Front-desk call list</h2><p>Follow up on tentative stays, upcoming arrivals, and payments needing review. Calling is handled by reception.</p>
       {upcoming.length===0?<p>No follow-ups yet.</p>:<div className="operation-cards">{upcoming.map(b=><article key={b.id}><strong>{b.full_name} · {b.reference}</strong><p>{b.check_in} — {b.check_out} · {b.status.replaceAll("_"," ")}</p><a href={`tel:${b.phone}`}>Call {b.phone}</a><a href={`mailto:${b.email}`}>Email guest</a></article>)}</div>}
     </section>
-    <section><h2>Reservations</h2><div className="operation-cards">{data.reservations.map(b=><article key={b.id}>
+    <section id="reservations"><h2>Reservations</h2><p>Latest 500 reservations, including past stays. Search by guest name, booking reference, phone or email.</p>
+      <div className="operation-filters"><label>Search bookings<input type="search" value={query} onChange={e=>setQuery(e.target.value)}/></label><label>Booking status<select value={status} onChange={e=>setStatus(e.target.value)}><option value="all">All statuses</option>{["tentative","payment_pending","confirmed","checked_in","checked_out","cancelled","expired","payment_review"].map(value=><option key={value} value={value}>{value.replaceAll("_"," ")}</option>)}</select></label></div>
+      {reservations.length===0&&<p>No reservations match this view.</p>}<div className="operation-cards">{reservations.map(b=><article key={b.id}>
       <p className="eyebrow">{b.status.replaceAll("_"," ")}</p><h3>{b.reference}</h3><p>{b.full_name} · {categoryLabels[b.category]} · {b.rooms} rooms · {b.guests} guests</p><p>{b.check_in} — {b.check_out}</p><p>Total {formatInr(b.total_paise)}{b.tax_paise===null?" + taxes pending":""} · Paid {formatInr(b.paid_paise)}</p>
       <p>Assigned rooms: {data.assignments.filter(a=>a.reservation_id===b.id).map(a=>a.room_number).join(", ")||"Awaiting reception assignment"}</p>
       {b.hold_until&&<p>Hold ends {new Intl.DateTimeFormat("en-IN",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Kolkata"}).format(new Date(b.hold_until))} IST</p>}
@@ -40,12 +54,12 @@ export function HotelOperations({data}:{data:HotelOperationsData}) {
       {b.status==="confirmed"&&<form className="operation-assignment" onSubmit={e=>{e.preventDefault();const form=new FormData(e.currentTarget);void change({action:"assign",reservationId:b.id,rooms:String(form.get("rooms")).split(",").map(n=>n.trim()).filter(Boolean)});}}><label>Assign {b.rooms} {categoryLabels[b.category]} room numbers<input name="rooms" placeholder="301, 302" required/></label><button disabled={busy}>Save assignment</button></form>}
       {b.status==="payment_review"&&<p className="preview-alert">Captured payment needs manual resolution/refund. This booking is not confirmed.</p>}
     </article>)}</div></section>
-    <section><h2>Room inventory &amp; housekeeping</h2><div className="operation-room-grid">{data.rooms.map(r=><label key={r.number}><strong>Room {r.number}</strong><span>{categoryLabels[r.category]}</span><select aria-label={`Room ${r.number} housekeeping`} value={r.housekeeping} disabled={busy} onChange={e=>change({action:"housekeeping",roomNumber:r.number,status:e.target.value})}>{["unknown","clean","dirty","out_of_service"].map(s=><option key={s} value={s}>{s.replaceAll("_"," ")}</option>)}</select></label>)}</div></section>
-    {data.role==="manager"&&<section><h2>Seasonal prices</h2><p>Rates apply by stay night. Existing reservations keep the price saved when they were created. Overlapping seasons are rejected.</p>
+    <section id="inventory"><h2>Room inventory &amp; housekeeping</h2><p>Out-of-service rooms are removed from bookable capacity. Existing bookings must be resolved before capacity can be reduced below them.</p><div className="operation-room-grid">{data.rooms.map(r=><label key={r.number}><strong>Room {r.number}</strong><span>{categoryLabels[r.category]} · {r.active?"Active":"Inactive"}</span><select aria-label={`Room ${r.number} housekeeping`} value={r.housekeeping} disabled={busy||!r.active} onChange={e=>change({action:"housekeeping",roomNumber:r.number,status:e.target.value})}>{["unknown","clean","dirty","out_of_service"].map(s=><option key={s} value={s}>{s.replaceAll("_"," ")}</option>)}</select></label>)}</div></section>
+    {data.role==="manager"&&<section id="seasonal-rates"><h2>Seasonal prices</h2><p>Rates apply by stay night. Existing reservations keep the price saved when they were created. Overlapping seasons are rejected.</p>
       {data.seasons.filter(s=>s.active).map(s=><p key={s.id}>{s.name}: {s.starts_on} — {s.ends_on} · solo {formatInr(s.solo_paise)} · couple {formatInr(s.couple_paise)} · group {formatInr(s.group_per_guest_paise)}/guest</p>)}
       <form className="operation-season-form" onSubmit={season}><label>Season name<input name="name" required maxLength={80}/></label><label>Starts on<input name="startsOn" type="date" required/></label><label>Ends on (exclusive)<input name="endsOn" type="date" required/></label><label>Solo rate (₹)<input name="solo" type="number" min="1" step="1" required/></label><label>Couple rate (₹)<input name="couple" type="number" min="1" step="1" required/></label><label>Group rate per guest (₹)<input name="perGuest" type="number" min="1" step="1" required/></label><button disabled={busy}>Publish seasonal rate</button></form>
     </section>}
-    {data.role==="manager"&&<section><h2>Approved launch settings</h2><p>Enter the hotel’s approved tax treatment, times and cancellation terms. A payment toggle does not substitute for working provider credentials.</p>
+    {data.role==="manager"&&<section id="hotel-settings"><h2>Approved launch settings</h2><p>Enter the hotel’s approved tax treatment, times and cancellation terms. A payment toggle does not substitute for working provider credentials.</p>
       <form className="operation-season-form" onSubmit={settings}><label>Approved tax rate (%)<input name="tax" type="number" min="0" max="100" step="0.01" required defaultValue={data.settings.tax_rate_bps===null?"":data.settings.tax_rate_bps/100}/></label>
       <label>Check-in time<input name="checkInTime" type="time" required defaultValue={data.settings.check_in_time?.slice(0,5)??""}/></label><label>Check-out time<input name="checkOutTime" type="time" required defaultValue={data.settings.check_out_time?.slice(0,5)??""}/></label>
       <label>Approved cancellation terms<textarea name="cancellationTerms" required minLength={20} maxLength={5000} defaultValue={data.settings.cancellation_terms??""}/></label>

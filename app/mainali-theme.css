@@ -402,6 +402,18 @@ button:disabled { cursor: not-allowed; }
 .room-unavailable { min-height: 48px; display: flex; align-items: center; color: var(--muted); }
 .operation-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
 .operation-metrics strong { display: block; font-size: 2rem; }
+.admin-toolbar, .operation-nav, .operation-refresh { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-block: 24px; }
+.admin-toolbar .guest-signin-form { width: auto; margin: 0; }
+.admin-toolbar .guest-signin-form p:empty { display: none; }
+.operation-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border: 1px solid var(--line); }
+.operation-refresh { justify-content: space-between; }
+.operation-refresh p { flex: 1 1 220px; color: var(--muted); font-size: .9rem; }
+.operation-filters { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-block: 20px; }
+.admin-account .staff-login-form { margin-top: 28px; width: 100%; }
+.staff-login-form input { min-width: 0; width: 100%; font-size: 16px; }
+.staff-auth-panel .button { width: 100%; }
+.staff-auth-panel .guest-signin-form { margin-bottom: 24px; }
+.staff-auth-panel > .text-link { display: inline-flex; align-items: center; min-height: 44px; }
 .hotel-operations section { margin-top: 48px; }
 .operation-cards { display: grid; gap: 20px; }
 .operation-cards article { border: 1px solid var(--line); padding: 24px; overflow-wrap: anywhere; }
@@ -417,5 +429,5 @@ button:disabled { cursor: not-allowed; }
 .operation-room-grid > label { border: 1px solid var(--line); padding: 16px; }
 .operation-season-form { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
 @media(max-width:800px) { .operation-room-grid, .operation-season-form { grid-template-columns: repeat(2,minmax(0,1fr)); } }
-@media(max-width:640px) { .operation-metrics { gap: 12px; font-size: .8rem; } .operation-assignment, .operation-season-form { grid-template-columns: 1fr; } .operation-cards article { padding: 18px; } .operation-actions button, .reservation-payment .button, .reservation-receipt .button { width: 100%; } }
+@media(max-width:640px) { .operation-metrics { gap: 12px; font-size: .8rem; } .operation-assignment, .operation-season-form, .operation-filters { grid-template-columns: 1fr; } .operation-cards article { padding: 18px; } .operation-actions button, .reservation-payment .button, .reservation-receipt .button { width: 100%; } }
 @media(max-width:380px) { .operation-room-grid { grid-template-columns: 1fr; } }

@@ -142,7 +142,7 @@ Deno.serve(async(req:Request)=>{
     if(input.action==="staff") {
       await db.rpc("hotel_expire_holds");
       const [rooms,reservations,categories,seasons,settings,assignments]=await Promise.all([
-        db.from("hotel_inventory_rooms").select("*").order("number"),db.from("hotel_reservations").select("*").gte("check_out",new Date().toISOString().slice(0,10)).order("check_in").limit(500),
+        db.from("hotel_inventory_rooms").select("*").order("number"),db.from("hotel_reservations").select("*").order("created_at",{ascending:false}).limit(500),
         db.from("hotel_inventory_categories").select("*"),db.from("hotel_seasonal_rates").select("*"),db.from("hotel_booking_settings").select("*").single(),db.from("hotel_room_assignments").select("reservation_id,room_number"),
       ]);
       if([rooms,reservations,categories,seasons,settings,assignments].some(r=>r.error))throw new Error("database");

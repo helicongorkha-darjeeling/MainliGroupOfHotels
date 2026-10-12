@@ -1,13 +1,13 @@
-const guestDestinations = new Set(["/book", "/my-bookings", "/members"]);
+const authDestinations = new Set(["/book", "/my-bookings", "/members", "/admin", "/admin/security"]);
 export const authReturnCookieName = "mainali-auth-return";
 
-/** Never accept an external host, staff route, backslash, or control character. */
+/** Only explicit same-origin destinations; admin pages independently enforce staff access. */
 export function safeAuthDestination(requested: string | null | undefined, origin: string) {
   const fallback = "/my-bookings";
   if (!requested || requested.length > 2048 || !requested.startsWith("/") || requested.startsWith("//") || /[\\\u0000-\u001f\u007f]/.test(requested)) return fallback;
   try {
     const target = new URL(requested, origin);
-    if (target.origin !== new URL(origin).origin || !guestDestinations.has(target.pathname)) return fallback;
+    if (target.origin !== new URL(origin).origin || !authDestinations.has(target.pathname)) return fallback;
     return target.pathname + target.search;
   } catch {
     return fallback;

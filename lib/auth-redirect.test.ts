@@ -4,7 +4,7 @@ import { authCallbackUrl, authReturnCookie, authReturnDestination, safeAuthDesti
 const origin = "https://mainli-group-of-hotels.vercel.app";
 describe("guest auth redirects", () => {
   it("keeps guest destinations and stay parameters", () => {
-    for (const destination of ["/members", "/my-bookings", "/book?checkIn=2026-10-10&guests=2"]) {
+    for (const destination of ["/members", "/my-bookings", "/book?checkIn=2026-10-10&guests=2", "/admin", "/admin/security"]) {
       expect(safeAuthDestination(destination, origin)).toBe(destination);
     }
   });
