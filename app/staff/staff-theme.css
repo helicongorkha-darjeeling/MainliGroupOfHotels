@@ -1,0 +1,163 @@
+/* Staff screens are deliberately simpler than the guest-facing editorial pages. */
+.staff-auth-page { font-size: max(16px, 1rem); }
+.staff-auth-page .staff-login-form label, .staff-auth-page .staff-login-form p, .staff-auth-page .guest-signin-form p, .staff-auth-page .staff-setup-note, .staff-auth-page .eyebrow { font-size: max(16px, 1rem); line-height: 1.55; letter-spacing: normal; text-transform: none; }
+.staff-auth-page .staff-login-form label { font-weight: 600; }
+.staff-auth-page .staff-login-form input { min-height: 54px; font-size: max(16px, 1rem); }
+.staff-auth-page .button, .staff-auth-page button { min-height: 48px; font-size: max(16px, 1rem); line-height: 1.5; letter-spacing: normal; text-transform: none; }
+.staff-auth-page .staff-auth-panel > .text-link { min-height: 48px; font-size: max(16px, 1rem); line-height: 1.5; letter-spacing: normal; }
+.staff-shell, .staff-app, .staff-check-in, .staff-walk-in, .staff-stay { --staff-forest: #193c31; --staff-forest-soft: #e7efe8; color: #24332b; font-size: max(16px, 1rem); line-height: 1.55; }
+.staff-shell { min-height: 100dvh; background: var(--ivory, #f7f3ec); padding-bottom: env(safe-area-inset-bottom); }
+.staff-shell.staff-app { padding-bottom: env(safe-area-inset-bottom); }
+.staff-shell *, .staff-app *, .staff-check-in *, .staff-walk-in *, .staff-stay * { box-sizing: border-box; min-width: 0; }
+.staff-shell-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line, #ddd4c4); background: #fffcf6; }
+.staff-shell-header .brand-logo { width: 128px; }
+.staff-shell-header nav { display: flex; gap: 10px; flex-wrap: wrap; }
+.staff-shell-header a, .staff-shell-header button { display: inline-flex; align-items: center; min-height: 48px; font-size: max(16px, 1rem); }
+.staff-shell-main { width: min(100%, 1060px); margin: 0 auto; padding: 20px 16px 24px; }
+.staff-shell-main > h1 { margin: 0 0 18px; font-family: var(--font-editorial), Georgia, serif; font-weight: 400; font-size: clamp(2rem, 7vw, 2.9rem); line-height: 1.14; overflow-wrap: anywhere; }
+.staff-shell .text-link, .staff-shell .fine-print, .staff-shell .eyebrow { font-size: max(16px, 1rem); letter-spacing: normal; text-transform: none; }
+.staff-shell .button { min-height: 48px; font-size: max(16px, 1rem); letter-spacing: normal; text-transform: none; }
+.staff-app { width: 100%; padding-bottom: 88px; }
+.staff-app h1, .staff-app h2, .staff-check-in h2, .staff-walk-in h2, .staff-stay h2 { margin: 0 0 12px; font-family: var(--font-editorial), Georgia, serif; font-weight: 400; line-height: 1.18; font-size: clamp(1.8rem, 6vw, 2.4rem); overflow-wrap: anywhere; }
+.staff-app.hotel-operations h2 { font-size: clamp(1.7rem, 5.5vw, 2.2rem); margin: 0 0 16px; line-height: 1.2; }
+.staff-app h3, .staff-app.hotel-operations h3, .staff-check-in h3, .staff-walk-in h3, .staff-stay h3 { margin: 0 0 12px; font-family: var(--font-hospitality), sans-serif; font-size: 18px; line-height: 1.4; font-weight: 650; overflow-wrap: anywhere; }
+.staff-app p, .staff-check-in p, .staff-walk-in p, .staff-stay p { margin: 8px 0 14px; overflow-wrap: anywhere; }
+.staff-app small, .staff-check-in small, .staff-walk-in small, .staff-stay small { font-size: max(16px, 1rem); }
+.staff-app a, .staff-check-in a, .staff-walk-in a, .staff-stay a { overflow-wrap: anywhere; }
+.staff-app a:not(.staff-primary):not(.staff-booking-card), .staff-check-in a:not(.staff-primary), .staff-stay a:not(.staff-primary) { color: var(--staff-forest); text-decoration: underline; text-underline-offset: 4px; }
+.staff-app button, .staff-check-in button, .staff-walk-in button, .staff-stay button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; max-width: 100%; padding: 12px 16px; border: 1px solid #c8cebd; border-radius: 10px; background: #fffefa; color: var(--staff-forest); font-size: max(16px, 1rem); font-family: inherit; font-weight: 600; line-height: 1.4; cursor: pointer; overflow-wrap: anywhere; }
+.staff-app button:hover:not(:disabled), .staff-check-in button:hover:not(:disabled), .staff-walk-in button:hover:not(:disabled), .staff-stay button:hover:not(:disabled) { background: #eaf0e8; }
+.staff-app button:disabled, .staff-check-in button:disabled, .staff-walk-in button:disabled, .staff-stay button:disabled, .staff-disabled { opacity: .55; cursor: default; }
+.staff-app :focus-visible, .staff-check-in :focus-visible, .staff-walk-in :focus-visible, .staff-stay :focus-visible { outline: 3px solid #b28b45; outline-offset: 3px; }
+.staff-app .staff-primary, .staff-check-in .staff-primary, .staff-walk-in .staff-primary, .staff-stay .staff-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; width: 100%; padding: 13px 16px; background: var(--staff-forest); color: #fffdf6; border: 1px solid var(--staff-forest); border-radius: 10px; font-size: max(16px, 1rem); font-weight: 600; line-height: 1.5; text-decoration: none; text-align: center; }
+.staff-app .staff-primary:hover:not(:disabled), .staff-check-in .staff-primary:hover:not(:disabled), .staff-walk-in .staff-primary:hover:not(:disabled), .staff-stay .staff-primary:hover:not(:disabled) { background: #285745; }
+.staff-app .staff-danger, .staff-stay .staff-danger { color: #862f21; background: #fff7f3; border-color: #ceada0; }
+.staff-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.staff-title-row > svg, .staff-notice > svg, .staff-private-note > svg, .staff-view-heading button > svg, .staff-primary > svg { flex-shrink: 0; }
+.staff-kicker { color: var(--gold-dark, #8a6a3b); font-weight: 600; }
+.staff-lead { color: #566356; }
+.staff-help { color: #5d665c; font-size: max(16px, 1rem); line-height: 1.55; }
+.staff-notice { display: flex; align-items: flex-start; gap: 10px; padding: 14px; margin: 14px 0 18px; border: 1px solid #d4c6a7; border-radius: 9px; background: #f7efdd; color: #66512c; overflow-wrap: anywhere; }
+.staff-notice-error { color: #812e25; border-color: #d4aea8; background: #fff0ea; }
+.staff-refresh-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+.staff-refresh-row > span { color: #566356; flex: 1 1 140px; }
+.staff-refresh-row button { flex: 0 0 auto; }
+.staff-home-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.staff-app .staff-home-grid > button { display: grid; grid-template-columns: 1fr auto; align-content: start; align-items: center; justify-items: start; gap: 10px 8px; min-height: 134px; padding: 16px; border-color: #d8d2c0; background: #fffcf6; text-align: left; box-shadow: 0 2px 8px #24332b04; }
+.staff-home-grid strong { justify-self: end; font-size: 30px; font-variant-numeric: tabular-nums; line-height: 1; }
+.staff-home-grid span, .staff-home-grid small { grid-column: 1 / -1; }
+.staff-home-grid small { color: #7b5235; font-weight: 400; }
+.staff-home-links { display: grid; gap: 8px; margin: 22px 0; }
+.staff-app .staff-home-links > button, .staff-app .staff-home-links > a { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 13px 16px; color: var(--staff-forest); background: #fffcf6; border: 1px solid #d8d2c0; border-radius: 10px; text-align: left; font-size: max(16px, 1rem); font-weight: 500; text-decoration: none; }
+.staff-home-links > button > svg:last-child, .staff-home-links > a > svg:last-child { margin-left: auto; }
+.staff-view-heading { margin: 12px 0 24px; }
+.staff-view-heading .staff-back { margin-bottom: 16px; background: transparent; border-color: transparent; padding-left: 0; }
+.staff-card, .staff-booking-card { display: block; padding: 18px; border: 1px solid #d8d2c0; border-radius: 12px; background: #fffcf6; margin-bottom: 16px; overflow-wrap: anywhere; }
+.staff-app a.staff-booking-card { color: inherit; text-decoration: none; }
+.staff-booking-card:hover { background: #f0f4eb; }
+.staff-booking-card p:last-child { margin-bottom: 0; color: #657064; }
+.staff-booking-list { display: grid; gap: 0; }
+.staff-filters { display: grid; gap: 14px; margin: 20px 0; }
+.staff-filters label, .staff-form label { display: grid; gap: 8px; font-size: max(16px, 1rem); line-height: 1.45; font-weight: 500; }
+.staff-form { display: grid; gap: 20px; }
+.staff-form input, .staff-form select, .staff-form textarea, .staff-filters input, .staff-filters select, .staff-app.hotel-operations .staff-form input, .staff-app.hotel-operations .staff-form select, .staff-app.hotel-operations .staff-form textarea { width: 100%; max-width: 100%; min-width: 0; min-height: 52px; margin: 0; padding: 12px; border: 1px solid #b9c2b2; border-radius: 8px; color: #25362a; background: #fff; font: inherit; font-size: max(16px, 1rem); font-weight: 400; }
+.staff-form input[type=date], .staff-form input[type=time], .staff-form input[type=datetime-local] { display: block; -webkit-appearance: none; appearance: none; }
+.staff-form textarea, .staff-app.hotel-operations .staff-form textarea { min-height: 105px; resize: vertical; }
+.staff-form input[type=file] { padding: 12px 8px; font-size: max(16px, 1rem); }
+.staff-form input[type=file]::file-selector-button { min-height: 48px; margin-right: 8px; border: 1px solid #b9c2b2; border-radius: 6px; color: var(--staff-forest); background: #f0f4eb; padding: 8px; font: inherit; }
+.staff-form fieldset { display: grid; gap: 18px; padding: 20px 14px; margin: 0; border: 1px solid #d8d2c0; border-radius: 10px; background: #fffcf6; }
+.staff-form legend { padding: 0 8px; font-size: 18px; font-weight: 600; color: var(--staff-forest); }
+.staff-form fieldset p { margin: 0; }
+.staff-field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.staff-form .staff-checkbox { display: flex; align-items: center; gap: 12px; min-height: 48px; }
+.staff-form .staff-checkbox > input, .staff-form .staff-pick-room input { width: 24px; height: 24px; min-height: 24px; flex: 0 0 24px; accent-color: var(--staff-forest); }
+.staff-form-actions, .staff-action-stack { display: grid; gap: 12px; }
+.staff-sticky-action { position: sticky; z-index: 3; bottom: 0; margin-top: 18px; padding: 12px 0 max(12px, env(safe-area-inset-bottom)); background: var(--ivory, #f7f3ec); }
+.staff-card .staff-sticky-action { background: #fffcf6; }
+.staff-main-action { margin: 18px 0; }
+.staff-app details > summary, .staff-stay details > summary { min-height: 48px; padding: 10px 0; cursor: pointer; color: var(--staff-forest); font-weight: 600; font-size: max(16px, 1rem); list-style-position: inside; }
+.staff-app details > summary svg, .staff-stay details > summary svg { display: inline-block; vertical-align: middle; margin-right: 5px; }
+.staff-app details[open] > summary, .staff-stay details[open] > summary { margin-bottom: 12px; border-bottom: 1px solid #d8d2c0; }
+.staff-empty { padding: 32px 18px; text-align: center; border: 1px dashed #bbc4b2; border-radius: 12px; background: #fffcf6; }
+.staff-chip { display: inline-flex; align-items: center; width: fit-content; max-width: 100%; padding: 5px 9px; border-radius: 6px; font-size: max(16px, 1rem); font-weight: 500; line-height: 1.4; color: #45503f; background: #e8eadf; text-transform: capitalize; text-align: left; }
+.staff-chip-clean, .staff-chip-confirmed, .staff-chip-active, .staff-chip-vacant { color: #27513b; background: #e4eddf; }
+.staff-chip-dirty, .staff-chip-departing_today, .staff-chip-tentative, .staff-chip-payment_pending { color: #795026; background: #f6e6c6; }
+.staff-chip-out_of_service, .staff-chip-cancelled, .staff-chip-payment_review { color: #7c3427; background: #f4ddd4; }
+.staff-chip-occupied, .staff-chip-checked_in, .staff-chip-arriving_today { color: #304f68; background: #dfeaf0; }
+.staff-room-chips, .staff-room-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.staff-room-grid, .staff-room-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.staff-app .staff-room-tile { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 10px; padding: 15px 12px; min-height: 186px; background: #fffcf6; text-align: left; border-top: 4px solid #b1b6a0; }
+.staff-app .staff-room-clean, .staff-cleaning-room.staff-room-clean { border-top-color: #527247; }
+.staff-app .staff-room-dirty, .staff-cleaning-room.staff-room-dirty { border-top-color: #bb8840; }
+.staff-app .staff-room-out_of_service, .staff-cleaning-room.staff-room-out_of_service { border-top-color: #a25843; }
+.staff-room-tile > strong { font-size: 27px; line-height: 1.2; }
+.staff-room-tile > span:not(.staff-chip), .staff-room-tile > small { font-weight: 400; }
+.staff-room-tile > small { color: #5a6658; }
+.staff-app .staff-pick-room, .staff-form .staff-pick-room { display: flex; align-items: flex-start; gap: 10px; padding: 14px; min-height: 72px; border: 1px solid #bbc4b2; border-radius: 9px; background: #fffefa; text-align: left; }
+.staff-pick-room > span { display: flex; flex-direction: column; gap: 8px; }
+.staff-pick-room .staff-chip { font-size: max(16px, 1rem); }
+.staff-app .staff-pick-room.is-picked, .staff-form .staff-pick-room.is-picked { background: #e7efe2; border: 2px solid var(--staff-forest); padding: 13px; }
+.staff-private-note { display: flex; align-items: flex-start; gap: 10px; color: #53664e; }
+.staff-camera-field { padding: 14px; border: 1px dashed #9eaf91; border-radius: 8px; }
+.staff-camera-field > span:first-child { display: flex; align-items: center; gap: 10px; }
+.staff-stepper { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0 0 26px; padding: 0; list-style: none; }
+.staff-stepper li { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-size: max(16px, 1rem); color: #63705f; }
+.staff-stepper li > span { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #bac4b1; border-radius: 50%; }
+.staff-stepper li[aria-current=step] { color: var(--staff-forest); font-weight: 600; }
+.staff-stepper li[aria-current=step] > span { color: white; background: var(--staff-forest); border-color: var(--staff-forest); }
+.staff-price { font-family: var(--font-editorial), Georgia, serif; font-size: 26px; color: var(--staff-forest); }
+.staff-folio dl, .staff-guest-details { margin: 0; }
+.staff-folio dl > div, .staff-guest-details > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(100px, auto); gap: 12px; padding: 12px 0; border-bottom: 1px solid #e0dccb; }
+.staff-folio dt, .staff-guest-details dt { overflow-wrap: anywhere; }
+.staff-folio dd, .staff-guest-details dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.staff-folio-total, .staff-balance { font-weight: 600; color: var(--staff-forest); }
+.staff-folio .staff-balance { border-bottom: 0; margin-top: 6px; }
+.staff-folio .staff-balance dd { font-size: 22px; }
+.staff-contact { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; }
+.staff-payment-result { margin-top: 18px; }
+.staff-payment-result img { display: block; width: min(100%, 260px); height: auto; margin: 16px auto; }
+.staff-payment-entry { padding: 12px 0; border-bottom: 1px solid #e0dccb; }
+.staff-payment-entry p { margin: 5px 0; }
+.staff-account-list { margin-top: 22px; }
+.staff-account-controls { display: grid; gap: 18px; padding-top: 20px; }
+.staff-filter-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 20px 0; }
+.staff-filter-tabs button { justify-content: space-between; }
+.staff-filter-tabs button[aria-pressed=true] { background: var(--staff-forest); border-color: var(--staff-forest); color: white; }
+.staff-filter-tabs button[aria-pressed=true]:hover { color: var(--staff-forest); }
+.staff-cleaning-list { display: grid; gap: 14px; }
+.staff-cleaning-room { padding: 18px; border: 1px solid #d8d2c0; border-top: 4px solid #b1b6a0; border-radius: 10px; background: #fffcf6; }
+.staff-cleaning-room h2 { font-family: var(--font-hospitality), sans-serif; font-weight: 600; font-size: 23px; }
+.staff-cleaning-room p { color: #53634e; }
+.staff-app .staff-bottom-nav { position: fixed; z-index: 5; inset: auto 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; width: 100%; padding: 8px 12px max(8px, env(safe-area-inset-bottom)); border-top: 1px solid #c9c9b6; background: #fffcf6; box-shadow: 0 -3px 14px #1b33160b; }
+.staff-app .staff-bottom-nav button { display: flex; flex-direction: column; gap: 3px; align-items: center; min-height: 60px; padding: 6px; border: 0; border-radius: 8px; background: transparent; font-size: max(16px, 1rem); font-weight: 500; }
+.staff-app .staff-bottom-nav button[aria-current=page] { background: #e7efe2; color: #1b4b31; font-weight: 600; }
+.staff-invoice-tools { margin-bottom: 18px; }
+.staff-invoice-paper { background: white; border: 1px solid #d8d2c0; padding: 20px 16px; }
+.staff-invoice-paper header { padding-bottom: 20px; border-bottom: 1px solid #d8d2c0; }
+.staff-invoice-paper header .brand-logo { width: 150px; margin-bottom: 20px; }
+.staff-invoice-paper section { margin: 28px 0; }
+.staff-invoice-paper h2 { font-size: 21px; }
+.staff-invoice-paper footer { margin-top: 32px; padding-top: 18px; border-top: 1px solid #d8d2c0; }
+.staff-invoice-parties { display: grid; gap: 20px; }
+@media (min-width: 640px) {
+  .staff-shell-header { padding-inline: 28px; }
+  .staff-shell-main { padding: 28px 28px 24px; }
+  .staff-home-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .staff-room-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .staff-cleaning-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .staff-filters { grid-template-columns: 2fr 1fr; }
+  .staff-form { max-width: 690px; }
+  .staff-form-actions { grid-template-columns: 2fr 1fr; }
+  .staff-invoice-paper { padding: 40px; }
+  .staff-invoice-parties { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .staff-app .staff-bottom-nav { padding-inline: max(16px, calc((100vw - 620px) / 2)); }
+}
+@media (min-width: 960px) { .staff-room-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media print {
+  .staff-print-hide, .staff-shell-header, .staff-shell-main > h1, .staff-shell-main > .staff-toolbar, .staff-invoice-tools { display: none !important; }
+  .staff-shell, .staff-shell-main, .staff-app, .staff-invoice-paper { padding: 0; margin: 0; border: 0; width: 100%; max-width: none; background: white; color: black; }
+  .staff-invoice-paper { font-size: 11pt; }
+  .staff-invoice-paper section { break-inside: avoid; }
+  .staff-invoice-paper .brand-logo { width: 130px; }
+  @page { margin: 16mm; }
+}

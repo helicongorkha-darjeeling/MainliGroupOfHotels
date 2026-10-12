@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "@daypicker/react/style.css";
 import "./globals.css";
 import "./mainali-theme.css";
+import "./staff/staff-theme.css";
 
 const serif = localFont({ src: "./fonts/cormorant-garamond.woff2", weight: "300 700", variable: "--font-editorial", display: "swap" });
 const sans = localFont({ src: "./fonts/jost.woff2", weight: "100 900", variable: "--font-hospitality", display: "swap" });

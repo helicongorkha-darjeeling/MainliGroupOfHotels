@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createSessionSupabaseClient } from "@/lib/server/supabase-session";
+import { readStaffRole } from "@/lib/server/staff-access";
 
 const housekeepingUpdateSchema = z.object({
   roomId: z.uuid(),
@@ -11,6 +12,9 @@ const housekeepingUpdateSchema = z.object({
 });
 
 export async function updateHousekeeping(formData: FormData) {
+  const access = await readStaffRole();
+  if (!access.user) redirect("/staff/login");
+  if (access.role !== "manager" && access.role !== "reception") throw new Error("Front desk access required.");
   const parsed = housekeepingUpdateSchema.safeParse({
     roomId: formData.get("roomId"),
     status: formData.get("status"),

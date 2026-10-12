@@ -4,12 +4,12 @@ import { authCallbackUrl, authReturnCookie, authReturnDestination, safeAuthDesti
 const origin = "https://mainli-group-of-hotels.vercel.app";
 describe("guest auth redirects", () => {
   it("keeps guest destinations and stay parameters", () => {
-    for (const destination of ["/members", "/my-bookings", "/book?checkIn=2026-10-10&guests=2", "/admin", "/admin/security"]) {
+    for (const destination of ["/members", "/my-bookings", "/book?checkIn=2026-10-10&guests=2", "/admin", "/admin/security", "/staff", "/staff/operations", "/staff/housekeeping"]) {
       expect(safeAuthDestination(destination, origin)).toBe(destination);
     }
   });
-  it("rejects external, staff and malformed destinations", () => {
-    for (const destination of [null, "", "https://evil.example/my-bookings", "//evil.example/my-bookings", "/\\evil.example/my-bookings", "/staff", "/auth/callback", "/members\n", "/%5c%5cevil.example/my-bookings", "/%2F%2Fevil.example", "/members/../staff", "/MEMBERS", "/members/", "/members" + "x".repeat(2048)]) {
+  it("rejects external, unapproved and malformed destinations", () => {
+    for (const destination of [null, "", "https://evil.example/my-bookings", "//evil.example/my-bookings", "/\\evil.example/my-bookings", "/staff/team", "/auth/callback", "/members\n", "/%5c%5cevil.example/my-bookings", "/%2F%2Fevil.example", "/members/../staff/team", "/MEMBERS", "/members/", "/members" + "x".repeat(2048)]) {
       expect(safeAuthDestination(destination, origin)).toBe("/my-bookings");
     }
   });
@@ -27,7 +27,7 @@ describe("guest auth redirects", () => {
     expect(authReturnDestination(value, origin)).toBe(destination);
     expect(cookie).toContain("Max-Age=600; SameSite=Lax; Secure");
     expect(authReturnCookie("http://localhost:3000", "/members")).not.toContain("Secure");
-    for (const value of [undefined, "%ZZ", encodeURIComponent("//evil.example"), encodeURIComponent("/staff")]) {
+    for (const value of [undefined, "%ZZ", encodeURIComponent("//evil.example"), encodeURIComponent("/staff/team")]) {
       expect(authReturnDestination(value, origin)).toBe("/my-bookings");
     }
   });

@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.117.2";
+import { handleStaffAction, isStaffRole, paymentReviewNotice, publicInvoice, recordBalanceWebhook, staffActionAllowed, staffLogin, type StaffInput } from "./staff.ts";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
   auth:{persistSession:false,autoRefreshToken:false},
@@ -14,6 +15,9 @@ async function readBody(req:Request) {
   try {while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>16384){await reader.cancel();throw new Error("invalid_body");}chunks.push(value);}}finally{reader.releaseLock();}
   const all=new Uint8Array(size);let offset=0;for(const c of chunks){all.set(c,offset);offset+=c.length;}
   return new TextDecoder().decode(all);
+}
+function parseJson(raw:string) {
+  try {return JSON.parse(raw);}catch {throw new Error("invalid_body");}
 }
 async function hmac(secret:string,message:string) {
   const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
@@ -63,7 +67,7 @@ Deno.serve(async(req:Request)=>{
         if(!booking){failed++;continue;}
         const subjects:Record<string,string>={tentative_receipt:"Your tentative reservation",hold_reminder:"Your room hold expires soon",confirmation:"Your stay is confirmed",arrival_reminder:"Your upcoming Hotel Teesta stay",payment_review:"Payment received — hotel review required"};
         const deadline=booking.hold_until?new Intl.DateTimeFormat("en-IN",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Kolkata"}).format(new Date(booking.hold_until)):null;
-        const text=`Hello ${booking.full_name},\n\n${subjects[job.kind]}: ${booking.reference}.\nStay: ${booking.check_in} to ${booking.check_out}; ${booking.guests} guests; ${booking.rooms} rooms.\n${deadline?`Your tentative hold expires at ${deadline} IST. It releases unless confirmed.\n`:""}${job.kind==="payment_review"?"Your booking is not confirmed. The hotel must resolve or refund the captured payment. Do not pay again.\n":""}\nView your reservation: https://mainli-group-of-hotels.vercel.app/my-bookings\n\nMainali Hospitality · Hotel Teesta\nThis is a reservation update, not a marketing message.`;
+        const text=`Hello ${booking.full_name},\n\n${subjects[job.kind]}: ${booking.reference}.\nStay: ${booking.check_in} to ${booking.check_out}; ${booking.guests} guests; ${booking.rooms} rooms.\n${deadline?`Your tentative hold expires at ${deadline} IST. It releases unless confirmed.\n`:""}${job.kind==="payment_review"?`${paymentReviewNotice(booking.status)}\n`:""}\nView your reservation: https://mainli-group-of-hotels.vercel.app/my-bookings\n\nMainali Hospitality · Hotel Teesta\nThis is a reservation update, not a marketing message.`;
         try {
           const response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{Authorization:`Bearer ${apiKey}`,"Content-Type":"application/json","Idempotency-Key":`mainali-reservation/${job.id}`},body:JSON.stringify({from:sender,to:[booking.email],subject:`${subjects[job.kind]} · ${booking.reference}`,text}),signal:AbortSignal.timeout(10000)});
           if(!response.ok)throw new Error(`provider_http_${response.status}`);
@@ -77,13 +81,28 @@ Deno.serve(async(req:Request)=>{
       const secret=Deno.env.get("RAZORPAY_WEBHOOK_SECRET");
       if(!secret)return reply({error:"Webhook not configured."},503);
       if(!signatureMatches(req.headers.get("x-razorpay-signature"),await hmac(secret,raw)))return reply({error:"Invalid signature."},401);
-      const event=JSON.parse(raw);
+      const event=parseJson(raw);
+      if(!event||typeof event!=="object"||Array.isArray(event))throw new Error("invalid_body");
+      if(await recordBalanceWebhook(event,{db,provider,env:(name)=>Deno.env.get(name)}))return reply({received:true});
       if(event.event!=="payment.captured"&&event.event!=="order.paid")return reply({received:true});
       const payment=event.payload?.payment?.entity;
-      if(!payment?.id||!payment?.order_id)return reply({error:"Invalid payment event."},400);
+      // Balance QR payments have no order. Payment Links receive their own paid event.
+      if(!payment?.id)return reply({error:"Invalid payment event."},400);
+      if(!payment.order_id)return reply({received:true});
+      const {data:orderBooking,error:orderError}=await db.from("hotel_reservations").select("id").eq("order_id",payment.order_id).maybeSingle();
+      if(orderError)throw new Error("database");
+      if(!orderBooking)return reply({received:true});
       await verifiedPayment(payment.order_id,payment.id);return reply({received:true});
     }
-    const input=JSON.parse(raw);
+    const parsed=parseJson(raw);
+    if(!parsed||typeof parsed!=="object"||Array.isArray(parsed)||typeof parsed.action!=="string")throw new Error("invalid_body");
+    const input=parsed as StaffInput;
+    if(input.action==="staff-login")return staffLogin(input,{db,reply:(body,status)=>reply(body,status,origin),signIn:async(email,password)=>{
+      const authClient=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_ANON_KEY")!,{auth:{persistSession:false,autoRefreshToken:false}});
+      const {data,error}=await authClient.auth.signInWithPassword({email,password});
+      return {userId:error?null:data.user?.id??null,session:error?null:data.session as unknown as Record<string,unknown>|null};
+    }});
+    if(input.action==="invoice-public")return publicInvoice(input,{db,reply:(body,status)=>reply(body,status,origin)});
     if(input.action==="readiness"||input.action==="settings") {
       const {data:settings,error}=await db.from("hotel_booking_settings").select("online_enabled,payments_enabled,tax_rate_bps,cancellation_terms,check_in_time,check_out_time").eq("slug","hotel-teesta").single();
       if(error)throw new Error("database");
@@ -100,9 +119,13 @@ Deno.serve(async(req:Request)=>{
     const {data:auth,error:authError}=await db.auth.getUser(token);
     const user=auth.user;
     if(authError||!user||(!user.email_confirmed_at&&!user.phone_confirmed_at))return reply({error:"Verified sign-in required."},401,origin);
+    const {data:staff,error:staffError}=await db.from("hotel_staff").select("role").eq("user_id",user.id).eq("active",true).maybeSingle();
+    if(staffError)throw new Error("database");
+    if(staff?.role==="housekeeping"&&!staffActionAllowed("housekeeping",input.action,input.change))return reply({error:"Housekeeping access is read-only."},403,origin);
     if(input.action==="reserve") {
-      const a=input.args;
-      const emailMatches=user.email_confirmed_at&&user.email?.toLowerCase()===a?.guest_email?.toLowerCase();
+      if(!input.args||typeof input.args!=="object"||Array.isArray(input.args))throw new Error("invalid_body");
+      const a=input.args as Record<string,unknown>;
+      const emailMatches=user.email_confirmed_at&&typeof a.guest_email==="string"&&user.email?.toLowerCase()===a.guest_email.toLowerCase();
       const phoneMatches=user.phone_confirmed_at&&`+${user.phone?.replace(/^\+/,"")}`===a?.guest_phone;
       if(!emailMatches&&!phoneMatches)return reply({error:"Use your signed-in email or verified mobile."},403,origin);
       const {data,error}=await db.rpc("hotel_reserve",{request_key:a.request_key,guest_user:user.id,category_code:a.category_code,stay_in:a.stay_in,stay_out:a.stay_out,
@@ -120,7 +143,7 @@ Deno.serve(async(req:Request)=>{
       if(error||!booking)return reply({error:"Reservation not found."},404,origin);
       if(input.action==="verify") {
         const config=paymentConfig();
-        if(!booking.order_id||!signatureMatches(input.signature,await hmac(config.secret,`${booking.order_id}|${input.paymentId}`)))return reply({error:"Payment verification failed."},400,origin);
+        if(!booking.order_id||typeof input.paymentId!=="string"||typeof input.signature!=="string"||!signatureMatches(input.signature,await hmac(config.secret,`${booking.order_id}|${input.paymentId}`)))return reply({error:"Payment verification failed."},400,origin);
         return reply({data:await verifiedPayment(booking.order_id,input.paymentId)},200,origin);
       }
       if(!["tentative","payment_pending"].includes(booking.status)||Date.parse(booking.hold_until)<=Date.now())return reply({error:"Your hold has ended. Choose rooms again."},409,origin);
@@ -137,24 +160,8 @@ Deno.serve(async(req:Request)=>{
       }
       return reply({data:{orderId,keyId:config.id,amount:booking.total_paise,currency:"INR",reference:booking.reference,mode:config.mode,prefill:{name:booking.full_name,email:booking.email,contact:booking.phone}}},200,origin);
     }
-    const {data:staff}=await db.from("hotel_staff").select("role").eq("user_id",user.id).eq("active",true).maybeSingle();
-    if(!staff)return reply({error:"Hotel staff access required."},403,origin);
-    if(input.action==="staff") {
-      await db.rpc("hotel_expire_holds");
-      const [rooms,reservations,categories,seasons,settings,assignments]=await Promise.all([
-        db.from("hotel_inventory_rooms").select("*").order("number"),db.from("hotel_reservations").select("*").order("created_at",{ascending:false}).limit(500),
-        db.from("hotel_inventory_categories").select("*"),db.from("hotel_seasonal_rates").select("*"),db.from("hotel_booking_settings").select("*").single(),db.from("hotel_room_assignments").select("reservation_id,room_number"),
-      ]);
-      if([rooms,reservations,categories,seasons,settings,assignments].some(r=>r.error))throw new Error("database");
-      return reply({data:{rooms:rooms.data,reservations:reservations.data,categories:categories.data,seasons:seasons.data,settings:settings.data,assignments:assignments.data,role:staff.role,
-        emailReady:!!Deno.env.get("RESEND_API_KEY")&&!!Deno.env.get("RESEND_FROM_EMAIL"),paymentReady:!!Deno.env.get("RAZORPAY_KEY_ID")&&!!Deno.env.get("RAZORPAY_KEY_SECRET"),schedulerReady:!!Deno.env.get("HOTEL_CRON_SECRET")}},200,origin);
-    }
-    if(input.action==="staff-change") {
-      const {data,error}=await db.rpc("hotel_staff_change",{actor:user.id,change:input.change});
-      if(error)return reply({error:["PT400","PT409","PT403"].includes(error.code)?error.message:"Change failed."},409,origin);
-      return reply({data},200,origin);
-    }
-    return reply({error:"Unknown action."},400,origin);
+    if(!staff||!isStaffRole(staff.role))return reply({error:"Hotel staff access required."},403,origin);
+    return handleStaffAction(input,{db,user,role:staff.role,env:(name)=>Deno.env.get(name),provider,reply:(body,status)=>reply(body,status,origin)});
   }catch(e){
     const message=e instanceof Error?e.message:"unknown";
     const messages:Record<string,string>={payment_setup:"Secure payment setup is incomplete.",payment_provider:"The payment provider is unavailable. Retry shortly.",payment_pending:"Payment capture is pending. Your booking is not yet confirmed.",payment_mismatch:"Payment could not be reconciled. Contact the hotel.",invalid_body:"Invalid request."};

@@ -1,11 +1,15 @@
 -- Run through the connected SQL tool. All fixtures, permissions and settings are rolled back.
 begin;
 do $test$
-declare guest uuid:=gen_random_uuid(); other_guest uuid:=gen_random_uuid(); today date:=(now() at time zone 'Asia/Kolkata')::date;
+declare guest uuid:=gen_random_uuid(); other_guest uuid:=gen_random_uuid(); housekeeper uuid:=gen_random_uuid(); today date:=(now() at time zone 'Asia/Kolkata')::date;
   request_key uuid:=gen_random_uuid(); booking jsonb; retry jsonb; quote jsonb; visible integer;
 begin
   insert into auth.users(id,email,email_confirmed_at) values(guest,'category-test-'||guest||'@example.invalid',now()),(other_guest,'category-test-'||other_guest||'@example.invalid',now());
   insert into public.hotel_staff(user_id,role) values(guest,'manager');
+  if to_regclass('public.hotel_stays') is not null then
+    insert into auth.users(id,email,email_confirmed_at) values(housekeeper,'category-test-'||housekeeper||'@example.invalid',now());
+    insert into public.hotel_staff(user_id,role) values(housekeeper,'housekeeping');
+  end if;
   perform public.hotel_staff_change(guest,jsonb_build_object('action','settings','taxRateBps',0,'checkInTime','14:00','checkOutTime','11:00','cancellationTerms','Synthetic policy for rolled-back verification only.','paymentsEnabled',true));
   if (public.hotel_quote(today,today+2,1)->>'totalPaise')::bigint<>400000 then raise exception 'Solo quote mismatch'; end if;
   if (public.hotel_quote(today,today+2,2)->>'totalPaise')::bigint<>500000 then raise exception 'Couple quote mismatch'; end if;
@@ -38,7 +42,16 @@ begin
     perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','out_of_service'));
     raise exception 'Booked room was removed from inventory';
   exception when sqlstate 'PT409' then null; end;
-  perform public.hotel_staff_change(guest,jsonb_build_object('action','check_in','reservationId',booking->>'id'));
+  -- The mobile staff migration requires clean assigned rooms and captured private ID photos.
+  if to_regclass('public.hotel_stays') is not null then
+    perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','clean','housekeeperId',housekeeper));
+    insert into storage.objects(bucket_id,name) values('hotel-guest-id',(booking->>'id')||'/'||guest||'/synthetic.front.jpg'),('hotel-guest-id',(booking->>'id')||'/'||guest||'/synthetic.back.jpg');
+    perform public.hotel_staff_change(guest,jsonb_build_object('action','id_photo','reservationId',booking->>'id','side','front','path',(booking->>'id')||'/'||guest||'/synthetic.front.jpg'));
+    perform public.hotel_staff_change(guest,jsonb_build_object('action','id_photo','reservationId',booking->>'id','side','back','path',(booking->>'id')||'/'||guest||'/synthetic.back.jpg'));
+    perform public.hotel_staff_change(guest,jsonb_build_object('action','check_in','reservationId',booking->>'id','fullName','Synthetic Guest','phone','+919999999999','address','Synthetic test address','nationality','Indian','adults',6,'children',0,'idType','passport','idNumber','TEST1234'));
+  else
+    perform public.hotel_staff_change(guest,jsonb_build_object('action','check_in','reservationId',booking->>'id'));
+  end if;
   update public.hotel_reservations set order_id='order_TestRace' where id=(booking->>'id')::uuid;
   retry:=public.hotel_record_payment('order_TestRace','pay_TestRace',(booking->>'total_paise')::bigint);
   if retry->>'status'<>'checked_in' then raise exception 'Capture demoted a checked-in or front-desk-confirmed stay'; end if;
@@ -48,7 +61,7 @@ begin
   if (select housekeeping from public.hotel_inventory_rooms where number='324')<>'dirty' then raise exception 'Checkout did not mark room dirty'; end if;
   perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','out_of_service'));
   if public.hotel_capacity('six-person-room',today,today+2)<>0 then raise exception 'Out-of-service room remained bookable'; end if;
-  perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','clean'));
+  perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','clean','housekeeperId',case when to_regclass('public.hotel_stays') is not null then housekeeper else null end));
   if public.hotel_capacity('six-person-room',today,today+2)<>1 then raise exception 'Returned room did not restore capacity'; end if;
   booking:=public.hotel_reserve(gen_random_uuid(),guest,'six-person-room',today+3,today+4,6,'Synthetic Guest','synthetic@example.invalid','+919999999999','tentative');
   update public.hotel_reservations set hold_until=now()-interval '1 second',order_id='order_TestLate' where id=(booking->>'id')::uuid;

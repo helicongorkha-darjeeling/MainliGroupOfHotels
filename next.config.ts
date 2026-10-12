@@ -6,7 +6,7 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"} https://checkout.razorpay.com https://challenges.cloudflare.com`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' blob: data:",
+  "img-src 'self' blob: data: https://*.supabase.co https://api.razorpay.com https://cdn.razorpay.com https://rzp.io",
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co https://api.razorpay.com https://*.razorpay.com https://challenges.cloudflare.com",
   "frame-src https://api.razorpay.com https://*.razorpay.com https://challenges.cloudflare.com",
@@ -14,10 +14,11 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
+  ...(isProduction ? ["upgrade-insecure-requests"] : []),
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   images: {
     formats: ["image/avif", "image/webp"],
   },
@@ -39,7 +40,18 @@ const nextConfig: NextConfig = {
       });
     }
 
-    return [{ source: "/:path*", headers }];
+    return [
+      { source: "/:path*", headers },
+      { source: "/staff/check-in/:path*", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
+      { source: "/staff/walk-in", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
+      { source: "/staff/operations", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
+      { source: "/admin", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
+      { source: "/invoice/:path*", headers: [
+        { key: "Referrer-Policy", value: "no-referrer" },
+        { key: "Cache-Control", value: "private, no-store" },
+        { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+      ] },
+    ];
   },
 };
 
