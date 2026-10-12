@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { authCallbackUrl, authReturnCookie } from "@/lib/auth-redirect";
 
-export function GoogleAuth({ signedIn = false, destination = "/my-bookings", authError = false }: {
+export function GoogleAuth({ signedIn = false, destination = "/my-bookings", authError = false, buttonLabel, description }: {
   signedIn?: boolean;
   destination?: string;
   authError?: boolean;
+  buttonLabel?: string;
+  description?: string;
 }) {
   const router = useRouter();
   const supabase = useMemo(() => {
@@ -65,10 +67,10 @@ export function GoogleAuth({ signedIn = false, destination = "/my-bookings", aut
 
   return <div className="guest-signin-form member-login-form">
     <button type="button" className={signedIn ? "button button-outline" : "button button-primary"} onClick={act} disabled={!supabase || busy}>
-      {busy ? "Please wait…" : signedIn ? "Sign out" : "Continue with Google"}
+      {busy ? "Please wait…" : signedIn ? "Sign out" : buttonLabel ?? "Continue with Google"}
     </button>
     {!supabase && <p className="checkout-setup-notice">Sign-in is temporarily unavailable. Please contact the hotel.</p>}
-    {!signedIn && <p>No password needed. Your Google account signs you in; it does not verify your mobile number.</p>}
+    {!signedIn && <p>{description ?? "No password needed. Your Google account signs you in; it does not verify your mobile number."}</p>}
     <p role="status" aria-live="polite">{message}</p>
   </div>;
 }

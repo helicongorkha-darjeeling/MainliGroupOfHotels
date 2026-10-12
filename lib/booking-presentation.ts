@@ -6,7 +6,7 @@ export function seasonalSavings(subtotalPaise: number, standardSubtotalPaise?: n
 export function roomAvailability(availableRooms: number) {
   if (availableRooms <= 0) return "Sold out for these dates";
   const rooms = `${availableRooms} ${availableRooms === 1 ? "room" : "rooms"}`;
-  return availableRooms <= 3 ? `Only ${rooms} left for these dates` : `${rooms} available for these dates`;
+  return availableRooms <= 3 ? `Only ${rooms} left for these dates` : "Rooms available for these dates";
 }
 
 export function remainingHoldSeconds(holdUntil: string, now: number) {

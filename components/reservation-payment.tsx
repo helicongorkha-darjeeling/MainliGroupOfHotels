@@ -29,7 +29,7 @@ export function ReservationPayment({reservationId,holdUntil,amountPaise,autoStar
       const response=await fetch("/api/payments/order",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({reservationId}),signal:AbortSignal.timeout(30000)});
       const body=await response.json();if(!response.ok)throw new Error(body.error??"Payment is unavailable.");
       const order=body.data;
-      const widget=new checkout({key:order.keyId,order_id:order.orderId,amount:order.amount,currency:order.currency,name:"Mainali Hospitality",description:`${order.reference}${order.mode==="test"?" · Test payment":""}`,
+      const widget=new checkout({key:order.keyId,order_id:order.orderId,amount:order.amount,currency:order.currency,name:"Mainali Hospitality",description:`${order.reference}${order.mode==="test"?" · Test payment":""}`,prefill:order.prefill,
         modal:{ondismiss:()=>finish("Checkout closed. You can retry before the original payment deadline.")},
         handler:async(result:PaymentResult)=>{
           try {

@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import { formatHoldCountdown, remainingHoldSeconds, roomAvailability, seasonalSavings } from "./booking-presentation";
 
 describe("genuine booking availability and savings", () => {
-  it("shows the actual count and limits urgency to low inventory", () => {
-    expect(roomAvailability(14)).toBe("14 rooms available for these dates");
+  it("shows exact low inventory and does not manufacture scarcity for larger stocks", () => {
+    expect(roomAvailability(14)).toBe("Rooms available for these dates");
+    expect(roomAvailability(4)).toBe("Rooms available for these dates");
+    expect(roomAvailability(3)).toBe("Only 3 rooms left for these dates");
     expect(roomAvailability(2)).toBe("Only 2 rooms left for these dates");
     expect(roomAvailability(1)).toBe("Only 1 room left for these dates");
     expect(roomAvailability(0)).toBe("Sold out for these dates");

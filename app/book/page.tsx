@@ -8,6 +8,7 @@ import { roomAvailability } from "@/lib/booking-presentation";
 import { searchInventory } from "@/lib/server/reservations";
 import { createSessionSupabaseClient } from "@/lib/server/supabase-session";
 import { isAvailable } from "@/lib/reservations";
+import { normaliseGuestPhone } from "@/lib/guest-details";
 import { PropertyGallery } from "@/components/property-gallery";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -60,16 +61,16 @@ export default async function BookPage({ searchParams }: BookPageProps) {
   return (
     <main className="booking-page">
       <SiteHeader />
-      <section className={`booking-shell site-shell${user?"":" booking-auth-shell"}`}>
-        {user&&<div className="booking-visual">
+      <section className="booking-shell site-shell">
+        <div className="booking-visual">
           <Image src={room.photo} alt={room.id==="six-person-room"?"Hotel Teesta exterior":`${room.name} at Hotel Teesta`} fill loading="eager" fetchPriority="high" sizes="(max-width: 900px) 100vw, 48vw" className="cover-image" style={{ objectPosition: room.position }} />
           <span>{room.name} · Hotel Teesta</span>
-        </div>}
+        </div>
 
         <div className="booking-panel">
           <Link href={`/rooms?${bookingPath.split("?")[1]}`} className="back-link"><ArrowLeft size={17} /> Change room</Link>
           <p className="eyebrow">Your booking · Hotel Teesta</p>
-          <h1>{user?"Review & pay.":"Sign in to book."}</h1>
+          <h1>Review &amp; pay.</h1>
 
           {choice&&isAvailable(choice)?<ReservationCheckout
             key={bookingPath}
@@ -81,7 +82,7 @@ export default async function BookPage({ searchParams }: BookPageProps) {
             signedIn={!!user}
             initialEmail={user?.email??""}
             initialName={typeof user?.user_metadata.full_name==="string"?user.user_metadata.full_name:""}
-            initialPhone={user?.phone?`+${user.phone.replace(/^\+/,"")}`:""}
+            initialPhone={user?.phone?`+${user.phone.replace(/^\+/,"")}`:typeof user?.user_metadata.booking_contact_phone==="string"?normaliseGuestPhone(user.user_metadata.booking_contact_phone)??"":""}
             paymentsEnabled={!!inventory?.paymentsEnabled&&choice.quote.taxConfirmed}
             reviewedTotalPaise={choice.quote.totalPaise}
             authError={params.auth==="failed"}

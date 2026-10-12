@@ -135,7 +135,7 @@ Deno.serve(async(req:Request)=>{
         if(!saved){const {data:existing}=await db.from("hotel_reservations").select("order_id").eq("id",booking.id).single();orderId=existing?.order_id;}else orderId=saved.order_id;
         if(!orderId)throw new Error("payment_pending");
       }
-      return reply({data:{orderId,keyId:config.id,amount:booking.total_paise,currency:"INR",reference:booking.reference,mode:config.mode}},200,origin);
+      return reply({data:{orderId,keyId:config.id,amount:booking.total_paise,currency:"INR",reference:booking.reference,mode:config.mode,prefill:{name:booking.full_name,email:booking.email,contact:booking.phone}}},200,origin);
     }
     const {data:staff}=await db.from("hotel_staff").select("role").eq("user_id",user.id).eq("active",true).maybeSingle();
     if(!staff)return reply({error:"Hotel staff access required."},403,origin);
