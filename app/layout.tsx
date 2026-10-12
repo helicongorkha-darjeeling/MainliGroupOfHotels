@@ -9,10 +9,10 @@ const sans = localFont({ src: "./fonts/jost.woff2", weight: "100 900", variable:
 
 export const metadata: Metadata = {
   title: {
-    default: "Mainali Group of Hotels",
-    template: "%s | Mainali Group of Hotels",
+    default: "Mainali Hospitality",
+    template: "%s | Mainali Hospitality",
   },
-  description: "Budget-friendly stays in central Darjeeling. Explore real Hotel Teesta room photographs and plan your stay directly with Mainali Group of Hotels.",
+  description: "Budget-friendly stays in central Darjeeling. Explore real Hotel Teesta room photographs and plan your stay directly with Mainali Hospitality.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

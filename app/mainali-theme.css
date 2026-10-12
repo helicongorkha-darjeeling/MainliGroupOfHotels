@@ -28,12 +28,15 @@ body { font-family: var(--font-hospitality), sans-serif; font-weight: 400; line-
 .mainali-topbar > div { display: flex; align-items: center; justify-content: space-between; height: 100%; }
 .mainali-topbar a { padding-block: 6px; white-space: nowrap; }
 .topbar-account-links { display: flex; gap: 24px; flex-shrink: 0; }
-.site-header { position: sticky; top: 0; height: 84px; z-index: 20; transition: color .25s, background .25s; }
+.site-header { position: sticky; top: 0; height: 96px; z-index: 20; transition: color .25s, background .25s; }
 .site-header-overlay { color: #fff; background: transparent; border: 0; }
 .site-header-solid { color: var(--ink); background: var(--ivory); border-bottom: 1px solid var(--line); }
-.header-over-hero { margin-bottom: -84px; }
+.header-over-hero { margin-bottom: -96px; }
 .header-inner { gap: 28px; }
 .brand-lockup { color: inherit; flex-shrink: 0; }
+.brand-logo { display: block; width: 160px; height: auto; }
+.brand-lockup-inverted .brand-logo { filter: brightness(0) invert(1); }
+.header-book-short { display: none; }
 .brand-lockup strong { font-family: var(--font-editorial), Georgia, serif; font-size: 1.9rem; font-weight: 400; letter-spacing: .12em; line-height: 1; }
 .brand-lockup small { display: block; margin-top: 6px; font-size: .55rem; font-weight: 400; letter-spacing: .45em; text-align: center; opacity: 1; }
 .site-header nav { display: flex; gap: clamp(20px, 2.5vw, 40px); font-size: .73rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
@@ -167,8 +170,8 @@ body { font-family: var(--font-hospitality), sans-serif; font-weight: 400; line-
 @media (max-width: 800px) {
   .site-header nav.desktop-navigation, .header-book-link { display: none; }
   .menu-toggle { display: block; }
-  .site-header { height: 68px; }
-  .header-over-hero { margin-bottom: -68px; }
+  .site-header { height: 88px; }
+  .header-over-hero { margin-bottom: -88px; }
   .mainali-hero-copy h1 { font-size: clamp(2.6rem, 7vw, 4.2rem); }
   .mainali-booking-bar { grid-template-columns: 1fr; }
   .booking-destination { padding: 18px var(--gutter); border-right: 0; border-bottom: 1px solid var(--line); }
@@ -183,12 +186,24 @@ body { font-family: var(--font-hospitality), sans-serif; font-weight: 400; line-
   .footer-grid > div:first-child { grid-column: auto; }
 }
 @media (max-width: 640px) {
+  .site-header { height: 80px; }
+  .header-over-hero { margin-bottom: -80px; }
+  .header-inner { gap: 12px; }
+  .brand-logo { width: clamp(112px, 33vw, 128px); }
+  .header-book-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; margin-left: auto; padding: 8px 12px; font-size: .65rem; letter-spacing: .08em; white-space: nowrap; }
+  .header-book-full { display: none; }
+  .header-book-short { display: inline; }
+  .menu-toggle { flex-shrink: 0; }
+  .mainali-menu { padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+  .mobile-menu-head { margin-bottom: 20px; }
+  .mainali-menu nav { margin-bottom: 24px; }
+  .mainali-menu nav a { min-height: 48px; padding: 10px 0; font-size: 1.45rem; }
   .topbar-account-links { gap: 12px; }
   .mainali-topbar { letter-spacing: .04em; }
   .mainali-topbar { font-size: .57rem; letter-spacing: .08em; }
   .brand-lockup strong { font-size: 1.65rem; }
   .brand-lockup small { display: block; font-size: .5rem; }
-  .mainali-hero { min-height: 600px; height: calc(90svh - 36px); }
+  .mainali-hero { min-height: 540px; height: auto; }
   .mainali-hero-copy { padding-block: 110px 125px; }
   .mainali-hero-copy h1 { font-size: clamp(2.5rem, 10.5vw, 3.6rem); margin-block: 20px 28px; }
   .mainali-hero-copy h1 br { display: none; }
@@ -218,7 +233,36 @@ body { font-family: var(--font-hospitality), sans-serif; font-weight: 400; line-
   .footer-grid { gap: 34px 24px; }
   .footer-grid > div:first-child { grid-column: 1 / -1; margin-bottom: 0; }
   .footer-grid > div:last-child { grid-column: 1 / -1; }
-  #room-layouts, #photos, #location { scroll-margin-top: 68px; }
+  #room-layouts, #photos, #location { scroll-margin-top: 96px; }
+  .rooms-head { padding-block: 28px 24px; }
+  .rooms-head .back-link { min-height: 44px; margin-bottom: 12px; }
+  .rooms-head h1 { margin-block: 12px 20px; font-size: clamp(2.2rem, 10vw, 2.75rem); }
+  .search-summary { flex-direction: row; flex-wrap: wrap; gap: 8px 16px; font-size: .8rem; }
+  .modify-search { padding-block: 8px; }
+  .search-form-compact { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .search-form-compact .search-field { min-width: 0; padding: 14px 0; }
+  .search-form-compact .search-field-date:first-child { border-right: 1px solid var(--line); }
+  .search-form-compact .search-field-date:nth-child(2) .date-trigger { padding-left: 12px; }
+  .search-form-compact .search-field:has(select) { grid-column: 1 / -1; }
+  .search-form-compact .search-submit { grid-column: 1 / -1; min-height: 48px; margin-block: 12px 0; }
+  .search-form-compact .form-error:empty { display: none; }
+  .results-section { padding-block: 32px 64px; }
+  .results-heading { margin-top: 0; }
+  .room-result-body > p:not(.room-caveat) { align-items: flex-start; }
+  .room-result-body > p > svg { flex-shrink: 0; }
+  .booking-panel { padding: 28px var(--gutter) 48px; }
+  .booking-panel .back-link { min-height: 44px; margin-bottom: 16px; }
+  .booking-panel h1, .booking-invalid h1 { font-size: clamp(2.7rem, 12vw, 3.65rem); line-height: 1.05; }
+  .booking-visual { min-height: 220px; }
+  .guest-signin-form input, .search-field select { font-size: 16px; }
+  .guest-signin-form .button { width: 100%; }
+  .footer-grid a:not(.brand-lockup) { display: flex; align-items: center; min-height: 44px; }
+}
+@media (max-width: 480px) {
+  .mainali-topbar { height: 44px; font-size: .65rem; letter-spacing: .04em; }
+  .mainali-topbar > div > span { display: none; }
+  .mainali-topbar > div { justify-content: flex-end; }
+  .mainali-topbar a { display: inline-flex; align-items: center; min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .mainali-hero-photo { transform: none; transition: none; }

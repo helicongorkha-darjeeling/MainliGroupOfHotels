@@ -19,7 +19,7 @@ export default function Home() {
     <section className="mainali-hero" aria-labelledby="home-title">
       <HeroPhotographs />
       <div className="mainali-hero-copy site-shell">
-        <p className="eyebrow">Welcome to Mainali</p>
+        <p className="eyebrow">Welcome to Mainali Hospitality</p>
         <h1 id="home-title">Timeless hospitality,<br /> from the Darjeeling hills.</h1>
         <p>Your budget-friendly stay in central Darjeeling. Real rooms, familiar warmth, and a little more time for the hills.</p>
         <Link href="/stays/teesta" className="button hero-outline">Discover Hotel Teesta</Link>

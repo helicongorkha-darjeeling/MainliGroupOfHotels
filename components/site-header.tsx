@@ -47,7 +47,7 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
         <nav className="desktop-navigation" aria-label="Primary navigation">
           {links.map((link) => <Link href={link.href} key={link.href} aria-current={pathname === link.href || (link.href === "/hotels" && pathname.startsWith("/stays/")) ? "page" : undefined}>{link.label}</Link>)}
         </nav>
-        <Link href="/stays/teesta#check-rooms" className="header-book-link">Book your stay</Link>
+        <Link href="/stays/teesta#check-rooms" className="header-book-link" aria-label="Book your stay"><span className="header-book-full">Book your stay</span><span className="header-book-short" aria-hidden="true">Book stay</span></Link>
         <button ref={trigger} type="button" className="menu-toggle" aria-label="Open menu" aria-haspopup="dialog" aria-expanded={open} onClick={() => { setOpen(true); menu.current?.showModal(); }}><Menu size={27} strokeWidth={1.3} /></button>
       </div>
     </header>

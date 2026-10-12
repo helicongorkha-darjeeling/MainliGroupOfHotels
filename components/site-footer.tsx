@@ -29,7 +29,7 @@ export function SiteFooter() {
       </div>
       <div className="site-shell footer-note">
         <span>Direct online bookings opening soon.</span>
-        <span>© 2026 Mainali Group of Hotels</span>
+        <span>© 2026 Mainali Hospitality</span>
       </div>
     </footer>
   );

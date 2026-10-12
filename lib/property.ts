@@ -8,7 +8,7 @@ export type PropertyPhoto = {
 
 export const teesta = {
   name: "Hotel Teesta",
-  group: "Mainali Group of Hotels",
+  group: "Mainali Hospitality",
   place: "Darjeeling",
   status: "draft" as const,
   liveBookingEnabled: false,
