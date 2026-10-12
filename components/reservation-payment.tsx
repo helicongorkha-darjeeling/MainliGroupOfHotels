@@ -30,6 +30,12 @@ export function ReservationPayment({reservationId,holdUntil,amountPaise,autoStar
       const body=await response.json();if(!response.ok)throw new Error(body.error??"Payment is unavailable.");
       const order=body.data;
       const widget=new checkout({key:order.keyId,order_id:order.orderId,amount:order.amount,currency:order.currency,name:"Mainali Hospitality",description:`${order.reference}${order.mode==="test"?" · Test payment":""}`,prefill:order.prefill,
+        config:{display:{
+          blocks:{upi:{name:"Pay with UPI",instruments:[{method:"upi"}]}},
+          sequence:["block.upi"],
+          preferences:{show_default_blocks:true},
+          hide:[{method:"upi",flows:["collect"]}],
+        }},
         modal:{ondismiss:()=>finish("Checkout closed. You can retry before the original payment deadline.")},
         handler:async(result:PaymentResult)=>{
           try {
