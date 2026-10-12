@@ -1,4 +1,4 @@
-const authDestinations = new Set(["/book", "/my-bookings", "/members", "/admin", "/admin/security"]);
+const authDestinations = new Set(["/book", "/my-bookings", "/members", "/admin", "/admin/security", "/staff", "/staff/operations", "/staff/housekeeping"]);
 export const authReturnCookieName = "mainali-auth-return";
 
 /** Only explicit same-origin destinations; admin pages independently enforce staff access. */

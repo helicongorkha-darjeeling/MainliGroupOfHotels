@@ -3,7 +3,7 @@ const mocks = vi.hoisted(() => ({ user: vi.fn(), gateway: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("./booking-http", () => ({ signedInGuest: mocks.user }));
 vi.mock("./booking-gateway", () => ({ bookingGateway: mocks.gateway }));
-import { readStaffAccess } from "./staff-access";
+import { readStaffAccess, readStaffRole } from "./staff-access";
 
 beforeEach(() => { vi.clearAllMocks(); });
 describe("admin dashboard access", () => {
@@ -31,5 +31,23 @@ describe("admin dashboard access", () => {
       mocks.gateway.mockResolvedValue({ data, error: null });
       expect((await readStaffAccess()).data).toBe(data);
     }
+  });
+  it("never serializes guest details or invoices into a housekeeping response", async () => {
+    mocks.user.mockResolvedValue({ id: "housekeeper" });
+    mocks.gateway.mockResolvedValue({ error: null, data: { role: "housekeeping", staffCoreReady: true,
+      reservations: [{ full_name: "Private guest", phone: "Private phone" }], invoices: ["Private invoice"],
+      rooms: [{ number: "301", category: "double-room", active: true, housekeeping: "dirty", occupancy: "vacant", guest_name: "Private guest", reservation_id: "Private stay", checked_in_at: "Private time" }],
+    } });
+    const { data } = await readStaffAccess();
+    expect(data).toEqual({ role: "housekeeping", staffCoreReady: true, rooms: [{ number: "301", category: "double-room", name: undefined, active: true, housekeeping: "dirty", occupancy: "vacant" }] });
+    expect(JSON.stringify(data)).not.toContain("Private");
+  });
+  it("uses a fresh gateway role check and ignores browser metadata", async () => {
+    mocks.user.mockResolvedValue({ id: "staff", user_metadata: { role: "manager" } });
+    mocks.gateway.mockResolvedValue({ data: { role: "housekeeping" }, error: null });
+    expect((await readStaffRole()).role).toBe("housekeeping");
+    expect(mocks.gateway).toHaveBeenCalledWith("staff-role");
+    mocks.gateway.mockResolvedValue({ data: null, error: { message: "Inactive account", code: "PT403" } });
+    expect((await readStaffRole()).status).toBe(403);
   });
 });

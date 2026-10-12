@@ -5,7 +5,7 @@ import { readPublicSupabaseEnvironment } from "./env";
 export async function bookingGateway(action:string,input:Record<string,unknown>={}) {
   const env=readPublicSupabaseEnvironment();
   if(!env.success)return {data:null,error:{message:"Booking connection is not configured.",code:"PT503"}};
-  const session=["search","settings","readiness"].includes(action)?null:await createSessionSupabaseClient();
+  const session=["search","settings","readiness","staff-login","invoice-public"].includes(action)?null:await createSessionSupabaseClient();
   const token=session?(await session.auth.getSession()).data.session?.access_token:null;
   try {
     const response=await fetch(`${env.data.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/hotel-booking`,{

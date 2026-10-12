@@ -12,10 +12,11 @@ export const reservationInputSchema = guestDetailsSchema.extend({
 
 export type ReservationInput = z.infer<typeof reservationInputSchema>;
 export type Reservation = {
-  id:string; reference:string; user_id:string; category:string; check_in:string; check_out:string;
+  id:string; reference:string; user_id:string|null; category:string; check_in:string; check_out:string;
   guests:number; rooms:number; full_name:string; email:string; phone:string; status:string;
   hold_until:string|null; total_paise:number; subtotal_paise:number; tax_paise:number|null; paid_paise:number;
   order_id:string|null; payment_id:string|null; created_at:string;
+  payment_review_reason?:string|null;
 };
 export type InventoryChoice = {code:string; name:string; capacity:number; rooms:number; availableRooms:number; bookable:boolean;
   quote:{subtotalPaise:number;standardSubtotalPaise?:number;taxPaise:number|null;totalPaise:number;taxConfirmed:boolean;nights:number;nightlyPrices:{date:string;amountPaise:number;rateName:string}[]}};

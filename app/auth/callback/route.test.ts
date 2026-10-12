@@ -35,12 +35,15 @@ describe("production Google callback", () => {
     mocks.client.mockResolvedValueOnce(null);
     expect((await GET(new Request(`${origin}/auth/callback?code=synthetic-code&next=/members`))).headers.get("location")).toBe(`${origin}/members?auth=failed`);
   });
-  it("supports legacy stay links while removing stale errors and rejecting external or staff destinations", async () => {
+  it("supports legacy stay links while rejecting external and unapproved destinations", async () => {
     const stay = "/book?checkIn=2026-10-20&guests=2&auth=failed";
     expect((await GET(new Request(`${origin}/auth/callback?code=synthetic-code&next=${encodeURIComponent(stay)}`))).headers.get("location")).toBe(`${origin}/book?checkIn=2026-10-20&guests=2`);
-    for (const next of ["https://untrusted.example", "//untrusted.example", "/staff"]) {
+    for (const next of ["https://untrusted.example", "//untrusted.example", "/staff/team"]) {
       expect((await GET(new Request(`${origin}/auth/callback?code=synthetic-code&next=${encodeURIComponent(next)}`))).headers.get("location")).toBe(`${origin}/my-bookings`);
     }
+  });
+  it("returns staff Google sign-in to the role-protected staff dispatcher", async () => {
+    expect((await GET(new Request(`${origin}/auth/callback?code=synthetic-code&next=/staff`))).headers.get("location")).toBe(`${origin}/staff`);
   });
   it("handles configuration and exchange exceptions with a sign-in error instead of a server error", async () => {
     mocks.client.mockRejectedValueOnce(new Error("Unavailable"));

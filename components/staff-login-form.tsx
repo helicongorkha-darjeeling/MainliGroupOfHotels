@@ -1,26 +1,16 @@
 "use client";
 
-import { FormEvent, useMemo, useRef, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LockKeyhole, UserRound } from "lucide-react";
 
-type StaffLoginFormProps = {
-  supabaseUrl: string;
-  publishableKey: string;
-  adminEmail: string;
-};
-
-export function StaffLoginForm({ supabaseUrl, publishableKey, adminEmail }: StaffLoginFormProps) {
+export function StaffLoginForm() {
   const router = useRouter();
   const [identifier, setIdentifier] = useState("Admin");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
   const submitting = useRef(false);
-  const supabase = useMemo(() => createBrowserClient(supabaseUrl, publishableKey, {
-    global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(15000) }) },
-  }), [supabaseUrl, publishableKey]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,16 +20,18 @@ export function StaffLoginForm({ supabaseUrl, publishableKey, adminEmail }: Staf
     setMessage("");
 
     try {
-      const login = identifier.trim();
-      const email = login.toLowerCase() === "admin" ? adminEmail : login;
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      const response = await fetch("/api/staff/sign-in", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: identifier.trim(), password }), signal: AbortSignal.timeout(25000),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "Sign-in failed.");
       setPassword("");
-      router.replace("/admin");
+      router.replace(result.destination === "/staff/housekeeping" ? "/staff/housekeeping" : "/staff/operations");
       router.refresh();
     } catch {
       setPassword("");
-      setMessage("Sign-in failed. Check your username and password, or use Google to sign in and set your password.");
+      setMessage("Sign-in failed. Check your username and password, or ask your manager.");
     } finally {
       submitting.current = false;
       setPending(false);

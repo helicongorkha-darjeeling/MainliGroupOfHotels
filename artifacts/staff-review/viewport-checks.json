@@ -1,0 +1,239 @@
+[
+  {
+    "screen": "home",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "arrivals",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "in_house",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "departures",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "rooms",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "housekeeping",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "team",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "check-in",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "stay",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "invoice",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "settings",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "walk-in",
+    "viewport": "390x844",
+    "bodyFont": "16px",
+    "scrollWidth": 375,
+    "smallButtons": [],
+    "width": 375
+  },
+  {
+    "screen": "home",
+    "viewport": "360x844",
+    "bodyFont": "16px",
+    "scrollWidth": 345,
+    "width": 345
+  },
+  {
+    "screen": "rooms",
+    "viewport": "360x844",
+    "bodyFont": "16px",
+    "scrollWidth": 345,
+    "width": 345
+  },
+  {
+    "screen": "walk-in",
+    "viewport": "360x844",
+    "bodyFont": "16px",
+    "scrollWidth": 345,
+    "width": 345
+  },
+  {
+    "screen": "check-in",
+    "viewport": "360x844",
+    "bodyFont": "16px",
+    "scrollWidth": 345,
+    "width": 345
+  },
+  {
+    "screen": "stay",
+    "viewport": "360x844",
+    "bodyFont": "16px",
+    "scrollWidth": 345,
+    "width": 345
+  },
+  {
+    "screen": "housekeeping",
+    "viewport": "360x844",
+    "bodyFont": "16px",
+    "scrollWidth": 345,
+    "width": 345
+  },
+  {
+    "screen": "team",
+    "viewport": "360x844",
+    "bodyFont": "16px",
+    "scrollWidth": 345,
+    "width": 345
+  },
+  {
+    "screen": "invoice",
+    "viewport": "360x844",
+    "bodyFont": "16px",
+    "scrollWidth": 345,
+    "width": 345
+  },
+  {
+    "screen": "home",
+    "viewport": "360x844",
+    "largeText": true,
+    "bodyFont": "20px",
+    "scrollWidth": 345,
+    "smallButtons": [],
+    "width": 345
+  },
+  {
+    "screen": "rooms",
+    "viewport": "360x844",
+    "largeText": true,
+    "bodyFont": "20px",
+    "scrollWidth": 345,
+    "smallButtons": [],
+    "width": 345
+  },
+  {
+    "screen": "check-in",
+    "viewport": "360x844",
+    "largeText": true,
+    "bodyFont": "20px",
+    "scrollWidth": 345,
+    "smallButtons": [],
+    "width": 345
+  },
+  {
+    "screen": "stay",
+    "viewport": "360x844",
+    "largeText": true,
+    "bodyFont": "20px",
+    "scrollWidth": 345,
+    "smallButtons": [],
+    "width": 345
+  },
+  {
+    "screen": "housekeeping",
+    "viewport": "360x844",
+    "largeText": true,
+    "bodyFont": "20px",
+    "scrollWidth": 345,
+    "smallButtons": [],
+    "width": 345
+  },
+  {
+    "screen": "team",
+    "viewport": "360x844",
+    "largeText": true,
+    "bodyFont": "20px",
+    "scrollWidth": 345,
+    "smallButtons": [],
+    "width": 345
+  },
+  {
+    "screen": "invoice",
+    "viewport": "360x844",
+    "largeText": true,
+    "bodyFont": "20px",
+    "scrollWidth": 345,
+    "smallButtons": [],
+    "width": 345
+  },
+  {
+    "screen": "home",
+    "width": 430,
+    "height": 844,
+    "client": 415,
+    "scroll": 415,
+    "body": "16px"
+  },
+  {
+    "screen": "rooms",
+    "width": 768,
+    "height": 1024,
+    "client": 753,
+    "scroll": 753
+  },
+  {
+    "screen": "stay",
+    "width": 1280,
+    "height": 900,
+    "client": 1265,
+    "scroll": 1265
+  }
+]
