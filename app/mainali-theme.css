@@ -402,6 +402,9 @@ button:disabled { cursor: not-allowed; }
 .room-unavailable { min-height: 48px; display: flex; align-items: center; color: var(--muted); }
 .operation-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
 .operation-metrics strong { display: block; font-size: 2rem; }
+.admin-dashboard h1, .admin-account h1 { margin-block: 24px; font-family: var(--font-editorial), Georgia, serif; font-size: clamp(2.5rem,5vw,4rem); line-height: 1.08; }
+.hotel-operations h2 { margin-bottom: 16px; font-family: var(--font-editorial), Georgia, serif; font-size: clamp(1.65rem,3vw,2.2rem); line-height: 1.2; }
+.hotel-operations h3 { margin-block: 12px; font-size: 1.1rem; font-weight: 600; }
 .admin-toolbar, .operation-nav, .operation-refresh { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-block: 24px; }
 .admin-toolbar .guest-signin-form { width: auto; margin: 0; }
 .admin-toolbar .guest-signin-form p:empty { display: none; }
