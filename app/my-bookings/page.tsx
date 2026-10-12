@@ -39,7 +39,7 @@ export default async function MyBookingsPage({ searchParams }: { searchParams: P
               {booking.tax_paise===null&&<p className="fine-print">Taxes awaiting hotel confirmation.</p>}
               {!expired&&booking.hold_until&&<p>Held until {new Intl.DateTimeFormat("en-IN",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Kolkata"}).format(new Date(booking.hold_until))} IST.</p>}
               {booking.status==="payment_review"&&<p className="preview-alert">Payment needs hotel review. This reservation is not confirmed; do not pay again.</p>}
-              {!expired&&["tentative","payment_pending"].includes(booking.status)&&booking.tax_paise!==null&&<ReservationPayment reservationId={booking.id} />}
+              {!expired&&["tentative","payment_pending"].includes(booking.status)&&booking.tax_paise!==null&&<ReservationPayment reservationId={booking.id} holdUntil={booking.hold_until} amountPaise={booking.total_paise} />}
               {!expired&&["tentative","payment_pending"].includes(booking.status)&&booking.paid_paise===0&&<CancelReservation reservationId={booking.id}/>}
             </article>;
           })}

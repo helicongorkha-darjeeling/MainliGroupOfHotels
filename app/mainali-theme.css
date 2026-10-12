@@ -346,6 +346,49 @@ button:disabled { cursor: not-allowed; }
   .channel-checklist > div > span { grid-column: 2; }
 }
 
+/* Booking review and real inventory/payment deadlines. */
+.booking-auth-shell { grid-template-columns: minmax(0, 1fr); min-height: auto; max-width: 760px; }
+.booking-auth-shell .booking-panel { width: 100%; max-width: none; padding-block: 48px 72px; }
+.booking-page .booking-panel .back-link { margin-bottom: 28px; }
+.booking-steps { display: grid; grid-template-columns: 1fr 1.25fr 1.25fr; gap: 12px; padding: 0; margin: 0 0 24px; list-style: none; }
+.booking-steps li { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: .75rem; line-height: 1.35; }
+.booking-steps li > span { display: grid; place-items: center; width: 25px; height: 25px; flex: 0 0 25px; border: 1px solid var(--line); border-radius: 50%; font-variant-numeric: tabular-nums; }
+.booking-steps li[aria-current=step], .booking-steps li[data-complete=true] { color: var(--ink); }
+.booking-steps li[aria-current=step] > span { background: var(--night); border-color: var(--night); color: var(--ivory); }
+.checkout-sign-in > p { margin-block: 16px 24px; color: var(--muted); }
+.room-availability { display: inline-block; padding: 8px 10px; margin-block: 10px; background: #e9eee6; color: #314a31; font-size: .8rem; line-height: 1.4; }
+.room-availability-low { background: #f5e9dc; color: #7a401c; }
+.seasonal-savings { display: grid; gap: 4px; padding-block: 12px; font-size: .82rem; line-height: 1.45; }
+.seasonal-savings > span, .seasonal-savings small { color: var(--muted); }
+.seasonal-savings > strong { color: #314a31; font-size: .86rem; font-weight: 600; }
+.seasonal-savings del { margin-left: 4px; }
+.booking-price-details { margin-top: 16px; padding: 14px 0; border-block: 1px solid var(--line); font-size: .84rem; }
+.booking-price-details summary { cursor: pointer; min-height: 28px; }
+.booking-price-details dl { display: grid; gap: 12px; margin: 16px 0 0; }
+.booking-price-details dl > div { display: flex; justify-content: space-between; gap: 16px; }
+.booking-price-details dt small { display: block; color: var(--muted); }
+.booking-price-details dd { margin: 0; text-align: right; }
+.checkout-room-review .booking-assurance { margin-bottom: 12px; align-items: flex-start; }
+.checkout-payment-notice { padding: 14px; border: 1px solid var(--line); background: var(--ivory); }
+.checkout-pay-action { display: grid; gap: 8px; }
+.checkout-pay-action small { color: var(--muted); font-size: .76rem; }
+.payment-hold { padding: 16px; margin-block: 20px; background: #f5e9dc; color: #7a401c; }
+.payment-hold p { display: flex; justify-content: space-between; gap: 16px; margin: 0 0 8px; align-items: center; }
+.payment-hold strong { font-size: 1.3rem; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.payment-hold small { display: block; line-height: 1.5; }
+.payment-hold-ended { background: var(--ivory); color: var(--muted); }
+@media(max-width:640px) {
+  .booking-auth-shell .booking-panel { padding-block: 28px 48px; }
+  .booking-page .booking-visual { height: 180px; min-height: 180px; }
+  .booking-steps { gap: 8px; }
+  .booking-steps li { flex-direction: column; align-items: flex-start; gap: 6px; font-size: .72rem; }
+  .booking-page .booking-total { flex-wrap: wrap; gap: 10px; }
+  .booking-price-details dl > div { font-size: .8rem; }
+  .checkout-pay-action { position: sticky; bottom: 0; padding-block: 12px; background: var(--ivory); }
+  .checkout-pay-action .button { width: 100%; }
+  .payment-hold p { align-items: flex-start; }
+}
+
 /* Operational reservation and staff controls. */
 .reservation-options { border: 1px solid var(--line); padding: 18px; display: grid; gap: 16px; }
 .reservation-options legend { font-size: .9rem; padding-inline: 6px; text-transform: none; letter-spacing: normal; }

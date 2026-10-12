@@ -44,7 +44,8 @@ export function formatInr(paise: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: teestaRates.currency,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: paise % 100 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
   }).format(paise / 100);
 }
 

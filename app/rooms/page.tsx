@@ -8,6 +8,8 @@ import { SiteHeader } from "@/components/site-header";
 import { getTeestaRoomType } from "@/lib/room-types";
 import { searchInventory } from "@/lib/server/reservations";
 import { isAvailable } from "@/lib/reservations";
+import { roomAvailability } from "@/lib/booking-presentation";
+import { SeasonalSavings } from "@/components/seasonal-savings";
 import { formatInr } from "@/lib/rates";
 import { formatHotelDate, nightsBetween, staySearchSchema } from "@/lib/stay";
 
@@ -74,14 +76,15 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
                   <span className="room-kicker">{recommended===room.id?"Recommended for your party":"Hotel Teesta"}</span>
                   <h3>{room.name}</h3>
                   <p><BedDouble size={17} /> Up to {room.maxGuests} guests per room · {choice.rooms} {choice.rooms === 1 ? "room" : "rooms"} for your party</p>
-                  <p className="room-caveat">{room.description} {choice.availableRooms} {choice.availableRooms===1?"room available":"rooms available"} for every night of your stay.</p>
+                  <p className="room-caveat">{room.description}</p>
+                  <span className={`room-availability${choice.availableRooms>0&&choice.availableRooms<=3?" room-availability-low":""}`}>{roomAvailability(choice.availableRooms)}</span>
                 </div>
                 <div className="room-result-action">
                   <span>Stay total · {nights} {nights === 1 ? "night" : "nights"}</span>
                   <strong>{formatInr(choice.quote.totalPaise)}{!choice.quote.taxConfirmed&&"+"}</strong>
-                  {choice.quote.standardSubtotalPaise&&choice.quote.standardSubtotalPaise>choice.quote.subtotalPaise?<small className="seasonal-price-reference">Standard room total {formatInr(choice.quote.standardSubtotalPaise)} · seasonal rate applied</small>:null}
-                  {available?<Link className="button button-primary" href={`/book?${bookingQuery}&roomType=${room.id}`} aria-label={`Choose ${room.name}`}>Choose room</Link>:<span className="room-unavailable">{choice.bookable?"Sold out for these dates":"Not open online"}</span>}
-                  <small className="booking-test-note">{choice.quote.taxConfirmed?"Includes configured taxes":"Taxes awaiting hotel confirmation"} · tentative hold available</small>
+                  <SeasonalSavings quote={choice.quote}/>
+                  {available?<Link className="button button-primary" href={`/book?${bookingQuery}&roomType=${room.id}`} aria-label={`Book now: ${room.name}`}>Book now</Link>:<span className="room-unavailable">{choice.bookable?"Sold out for these dates":"Not open online"}</span>}
+                  <small className="booking-test-note">{choice.quote.taxConfirmed?"Includes configured taxes":"Taxes awaiting hotel confirmation"} · Review before payment</small>
                 </div>
               </article>;
               })}

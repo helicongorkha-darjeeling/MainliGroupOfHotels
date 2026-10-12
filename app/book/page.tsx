@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, BedDouble, CalendarDays, ShieldCheck, Users } from "lucide-react";
 import { ReservationCheckout } from "@/components/reservation-checkout";
+import { SeasonalSavings } from "@/components/seasonal-savings";
+import { roomAvailability } from "@/lib/booking-presentation";
 import { searchInventory } from "@/lib/server/reservations";
 import { createSessionSupabaseClient } from "@/lib/server/supabase-session";
 import { isAvailable } from "@/lib/reservations";
@@ -58,26 +60,16 @@ export default async function BookPage({ searchParams }: BookPageProps) {
   return (
     <main className="booking-page">
       <SiteHeader />
-      <section className="booking-shell site-shell">
-        <div className="booking-visual">
+      <section className={`booking-shell site-shell${user?"":" booking-auth-shell"}`}>
+        {user&&<div className="booking-visual">
           <Image src={room.photo} alt={room.id==="six-person-room"?"Hotel Teesta exterior":`${room.name} at Hotel Teesta`} fill loading="eager" fetchPriority="high" sizes="(max-width: 900px) 100vw, 48vw" className="cover-image" style={{ objectPosition: room.position }} />
           <span>{room.name} · Hotel Teesta</span>
-        </div>
+        </div>}
 
         <div className="booking-panel">
           <Link href={`/rooms?${bookingPath.split("?")[1]}`} className="back-link"><ArrowLeft size={17} /> Change room</Link>
           <p className="eyebrow">Your booking · Hotel Teesta</p>
-          <h1>Review your stay.</h1>
-
-          <div className="booking-stay-summary">
-            <div><CalendarDays size={18} /><span><strong>{formatHotelDate(parsed.data.checkIn)} — {formatHotelDate(parsed.data.checkOut)}</strong>{nights} {nights === 1 ? "night" : "nights"}</span></div>
-            <div><Users size={18} /><span><strong>{parsed.data.guests} {parsed.data.guests === 1 ? "guest" : "guests"}</strong>{plan.rooms} {plan.rooms === 1 ? "room" : "rooms"}</span></div>
-            <div><BedDouble size={18} /><span><strong>{room.name}</strong>{plan.description}</span></div>
-          </div>
-
-          <div className="booking-total"><span>Stay total</span><strong>{choice?`${formatInr(choice.quote.totalPaise)}${choice.quote.taxConfirmed?"":"+"}`:"Unavailable"}</strong></div>
-          {choice&&!choice.quote.taxConfirmed&&<p className="fine-print">Taxes are awaiting hotel confirmation. Tentative reservations are unpaid; the final payable total must be approved before payment opens.</p>}
-          <p className="booking-assurance"><ShieldCheck size={17} /> Nothing is charged while we verify your identity and room availability.</p>
+          <h1>{user?"Review & pay.":"Sign in to book."}</h1>
 
           {choice&&isAvailable(choice)?<ReservationCheckout
             key={bookingPath}
@@ -91,13 +83,32 @@ export default async function BookPage({ searchParams }: BookPageProps) {
             initialName={typeof user?.user_metadata.full_name==="string"?user.user_metadata.full_name:""}
             initialPhone={user?.phone?`+${user.phone.replace(/^\+/,"")}`:""}
             paymentsEnabled={!!inventory?.paymentsEnabled&&choice.quote.taxConfirmed}
-          />:<p className="preview-alert">{inventory?"These rooms are no longer available. Please choose another category or date.":"Availability could not be checked. Please retry before reserving."}</p>}
+            reviewedTotalPaise={choice.quote.totalPaise}
+            authError={params.auth==="failed"}
+          >
+            <div className="booking-stay-summary">
+              <div><BedDouble size={18}/><span><strong>{room.name}</strong>{plan.description}</span></div>
+              <div><CalendarDays size={18}/><span><strong>{formatHotelDate(parsed.data.checkIn)} — {formatHotelDate(parsed.data.checkOut)}</strong>{nights} {nights===1?"night":"nights"}</span></div>
+              <div><Users size={18}/><span><strong>{parsed.data.guests} {parsed.data.guests===1?"guest":"guests"}</strong>{choice.rooms} {choice.rooms===1?"room":"rooms"}</span></div>
+            </div>
+            <p className={`room-availability${choice.availableRooms<=3?" room-availability-low":""}`}>{roomAvailability(choice.availableRooms)} · {room.name}</p>
+            <p className="fine-print">Availability is checked again when you proceed to payment.</p>
+            <SeasonalSavings quote={choice.quote}/>
+            <details className="booking-price-details"><summary>Price breakdown · {nights} {nights===1?"night":"nights"}</summary><dl>
+              {choice.quote.nightlyPrices.map(night=><div key={night.date}><dt>{formatHotelDate(night.date)}<small>{night.rateName}</small></dt><dd>{formatInr(night.amountPaise)}</dd></div>)}
+              <div><dt>Room subtotal</dt><dd>{formatInr(choice.quote.subtotalPaise)}</dd></div>
+              <div><dt>Taxes</dt><dd>{choice.quote.taxConfirmed?formatInr(choice.quote.taxPaise??0):"Awaiting confirmation"}</dd></div>
+            </dl></details>
+            <div className="booking-total"><span>{choice.quote.taxConfirmed?"Stay total":"Room total"}</span><strong>{formatInr(choice.quote.totalPaise)}{!choice.quote.taxConfirmed&&"+"}</strong></div>
+            {!choice.quote.taxConfirmed&&<p className="fine-print">Taxes are awaiting hotel confirmation. The final payable total will be shown before payment opens.</p>}
+            <p className="booking-assurance"><ShieldCheck size={17}/> Payment confirms your room after a fresh availability check.</p>
+          </ReservationCheckout>:<p className="preview-alert">{inventory?"These rooms are no longer available. Please choose another category or date.":"Availability could not be checked. Please retry before booking."}</p>}
         </div>
       </section>
-      <section className="booking-photo-section site-shell section-space" aria-labelledby="booking-photos-title">
+      {user&&<section className="booking-photo-section site-shell section-space" aria-labelledby="booking-photos-title">
         <div className="section-heading-row"><div><p className="eyebrow">Before your stay</p><h2 id="booking-photos-title">Rooms &amp; hotel spaces</h2></div><p>Explore the rooms, bathroom, lobby, restaurant and front desk.</p></div>
         <PropertyGallery photos={teesta.gallery} />
-      </section>
+      </section>}
       <SiteFooter />
     </main>
   );
