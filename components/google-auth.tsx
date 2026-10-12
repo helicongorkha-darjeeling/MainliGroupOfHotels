@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
-import { authCallbackUrl } from "@/lib/auth-redirect";
+import { authCallbackUrl, authReturnCookie } from "@/lib/auth-redirect";
 
 export function GoogleAuth({ signedIn = false, destination = "/my-bookings", authError = false }: {
   signedIn?: boolean;
@@ -44,10 +44,11 @@ export function GoogleAuth({ signedIn = false, destination = "/my-bookings", aut
         window.location.assign(destination);
         return;
       }
+      document.cookie = authReturnCookie(window.location.origin, destination);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: authCallbackUrl(window.location.origin, destination),
+          redirectTo: authCallbackUrl(window.location.origin),
           skipBrowserRedirect: true,
           queryParams: { prompt: "select_account" },
         },

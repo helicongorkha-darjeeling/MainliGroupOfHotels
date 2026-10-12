@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { authCallbackUrl, safeAuthDestination } from "./auth-redirect";
+import { authCallbackUrl, authReturnCookie, authReturnDestination, safeAuthDestination } from "./auth-redirect";
 
 const origin = "https://mainli-group-of-hotels.vercel.app";
 describe("guest auth redirects", () => {
@@ -15,9 +15,20 @@ describe("guest auth redirects", () => {
   });
   it("drops fragments and never places a next path in the callback host", () => {
     expect(safeAuthDestination("/members#fragment", origin)).toBe("/members");
-    const callback = new URL(authCallbackUrl(origin, "//evil.example/my-bookings"));
+    const callback = new URL(authCallbackUrl(origin));
     expect(callback.origin).toBe(origin);
     expect(callback.pathname).toBe("/auth/callback");
-    expect(callback.searchParams.get("next")).toBe("/my-bookings");
+    expect(callback.search).toBe("");
+  });
+  it("preserves a stay in a bounded production cookie and validates its return path", () => {
+    const destination = "/book?checkIn=2026-10-20&checkOut=2026-10-21&guests=3&roomType=triple-room";
+    const cookie = authReturnCookie(origin, destination);
+    const value = cookie.split(";")[0].split("=")[1];
+    expect(authReturnDestination(value, origin)).toBe(destination);
+    expect(cookie).toContain("Max-Age=600; SameSite=Lax; Secure");
+    expect(authReturnCookie("http://localhost:3000", "/members")).not.toContain("Secure");
+    for (const value of [undefined, "%ZZ", encodeURIComponent("//evil.example"), encodeURIComponent("/staff")]) {
+      expect(authReturnDestination(value, origin)).toBe("/my-bookings");
+    }
   });
 });

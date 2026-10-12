@@ -1,4 +1,5 @@
 const guestDestinations = new Set(["/book", "/my-bookings", "/members"]);
+export const authReturnCookieName = "mainali-auth-return";
 
 /** Never accept an external host, staff route, backslash, or control character. */
 export function safeAuthDestination(requested: string | null | undefined, origin: string) {
@@ -13,8 +14,20 @@ export function safeAuthDestination(requested: string | null | undefined, origin
   }
 }
 
-export function authCallbackUrl(origin: string, destination: string) {
-  const callback = new URL("/auth/callback", origin);
-  callback.searchParams.set("next", safeAuthDestination(destination, origin));
-  return callback.toString();
+export function authCallbackUrl(origin: string) {
+  return new URL("/auth/callback", origin).toString();
+}
+
+/** A fixed OAuth callback can be allowed exactly, while this short-lived cookie preserves the stay. */
+export function authReturnCookie(origin: string, destination: string) {
+  const value = encodeURIComponent(safeAuthDestination(destination, origin));
+  return `${authReturnCookieName}=${value}; Path=/auth/callback; Max-Age=600; SameSite=Lax${new URL(origin).protocol === "https:" ? "; Secure" : ""}`;
+}
+
+export function authReturnDestination(value: string | undefined, origin: string) {
+  try {
+    return safeAuthDestination(value ? decodeURIComponent(value) : undefined, origin);
+  } catch {
+    return "/my-bookings";
+  }
 }

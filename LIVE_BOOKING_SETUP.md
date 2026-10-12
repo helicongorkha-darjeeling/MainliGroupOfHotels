@@ -26,6 +26,12 @@ Configure Razorpay captured-payment webhook events (`payment.captured` and `orde
 
 Next.js needs `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and the appropriate `NEXT_PUBLIC_SITE_URL` in local/Vercel configuration. Booking mutations use the authenticated Edge gateway; its service-role credential remains inside Supabase. Legacy `BOOKING_MODE`, local Razorpay credentials and the old expiry route do not control the new category reservation system.
 
+## Google sign-in URLs
+
+In hosted Supabase **Authentication → URL Configuration**, the Site URL must be `https://mainli-group-of-hotels.vercel.app`. Add the exact allowed callback `https://mainli-group-of-hotels.vercel.app/auth/callback`. Optional development callbacks are `http://localhost:3000/auth/callback` and `http://127.0.0.1:3000/auth/callback`. The hosted Auth configuration is separate from `supabase/config.toml`, which configures a local Supabase stack.
+
+Google's Authorized redirect URI remains `https://yefndxkljepxhoeclknl.supabase.co/auth/v1/callback`; Google returns to Supabase first. The website requests a fixed callback without booking query parameters, stores the validated stay destination in a ten-minute cookie and deletes it on return. Start sign-in from the production website in the same browser that will receive the callback. A localhost PKCE cookie cannot authenticate a different production host. After changing settings, restart sign-in instead of reusing an old Google or callback URL.
+
 ## Verification before enabling paid bookings
 
 1. Test Google sign-in on localhost and production with the correct Supabase redirect allowlist.
@@ -35,6 +41,6 @@ Next.js needs `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 5. Configure Resend and both scheduler secrets. Verify an actual receipt and reminder, including job retry state.
 6. Switch to live provider credentials only after these checks and final hotel policy approval.
 
-The production build and 63 unit/API tests pass. The rollback-only hosted SQL regression in `supabase/tests/category_core_regression.sql` checks prices, seasonal nights, capacity, expiry, ownership isolation, staff operations and payment-state races. Two simultaneous database requests for the only Six-person room were also checked: exactly one hold succeeded and the other received a capacity conflict; all synthetic accounts and bookings were removed afterward. These checks do not substitute for real OAuth, provider capture or email-delivery tests, which still require account configuration.
+The production build and 67 unit/API tests pass. The rollback-only hosted SQL regression in `supabase/tests/category_core_regression.sql` checks prices, seasonal nights, capacity, expiry, ownership isolation, staff operations and payment-state races. Two simultaneous database requests for the only Six-person room were also checked: exactly one hold succeeded and the other received a capacity conflict; all synthetic accounts and bookings were removed afterward. These checks do not substitute for real OAuth, provider capture or email-delivery tests, which still require account configuration.
 
 The September foundation migrations and seed are historical prototypes. The hosted project already contains booking drafts and the October category migrations; do not blindly replay historical seeds or `db reset` against production.
