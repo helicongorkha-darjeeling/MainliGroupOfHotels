@@ -85,6 +85,20 @@
 .staff-chip-out_of_service, .staff-chip-cancelled, .staff-chip-payment_review { color: #7c3427; background: #f4ddd4; }
 .staff-chip-occupied, .staff-chip-checked_in, .staff-chip-arriving_today { color: #304f68; background: #dfeaf0; }
 .staff-room-chips, .staff-room-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.staff-room-dashboard > .staff-title-row { margin-top: 24px; }
+.staff-room-dashboard > .staff-title-row h3 { display: flex; align-items: center; gap: 10px; }
+.staff-room-dashboard .staff-room-status-panel { margin-top: 24px; }
+.staff-room-dashboard .staff-room-status-panel > button { width: 100%; }
+.staff-room-open .staff-sticky-action { bottom: calc(76px + env(safe-area-inset-bottom)); }
+.staff-room-quick-actions { display: grid; gap: 12px; margin: 18px 0; }
+.staff-room-quick-actions > button { width: 100%; }
+.staff-embedded-guest { margin: 20px 0; }
+.staff-stay-facts { display: grid; gap: 14px; margin: 20px 0; }
+.staff-stay-facts > div { display: grid; gap: 4px; }
+.staff-stay-facts dt { color: #566356; }
+.staff-stay-facts dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.staff-room-quote { color: var(--staff-forest); }
+.staff-room-quote strong { font-size: 1.25rem; }
 .staff-room-grid, .staff-room-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .staff-app .staff-room-tile { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 10px; padding: 15px 12px; min-height: 186px; background: #fffcf6; text-align: left; border-top: 4px solid #b1b6a0; }
 .staff-app .staff-room-clean, .staff-cleaning-room.staff-room-clean { border-top-color: #527247; }

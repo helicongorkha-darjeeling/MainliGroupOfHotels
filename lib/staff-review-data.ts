@@ -38,7 +38,7 @@ export const reviewInvoice: StaffInvoice = {
   issued_at: `${today}T05:00:00Z`, issued_by: ids[0], share_enabled: false,
   snapshot: { legal_name: "Sample hotel name — review only", legal_address: "Sample legal address — owner to supply", gstin: null,
     guest_name: reservations[2].full_name, address: stays[2].address!, check_in: yesterday, check_out: today, rooms: ["303"], folio: folios[2],
-    items: [{ kind: "charge", description: "Sample laundry charge", amount_paise: 30000 }],
+    items: [{ kind: "charge", description: "Food bill · Dinner", amount_paise: 30000 }],
     nightly_prices: [{ date: yesterday, amountPaise: 250000, rateName: "Sample saved rate" }],
   },
 };
@@ -53,7 +53,7 @@ export const staffReviewData: HotelOperationsData = {
     source: index === 2 ? "booking_com" : index === 1 || index === 3 ? "direct_website" : null,
   })), reservations, assignments: [{ reservation_id: ids[0], room_number: "304" }, { reservation_id: ids[1], room_number: "302" }, { reservation_id: ids[2], room_number: "303" }],
   seasons: [], settings: { tax_rate_bps: 500, payments_enabled: false, check_in_time: "14:00", check_out_time: "11:00", cancellation_terms: "Sample terms for local screen review only.", legal_name: "Sample hotel name", legal_address: "Sample legal address", gstin: null },
-  stays, folios, invoices: [], folioItems: [{ id: "sample-item", reservation_id: ids[1], kind: "charge", description: "Sample laundry charge", amount_paise: 30000, tax_rate_bps: 500, created_by: ids[0], created_at: `${today}T03:00:00Z` }],
+  stays, folios, invoices: [], folioItems: [{ id: "sample-item", reservation_id: ids[1], kind: "charge", description: "Food bill · Dinner", amount_paise: 30000, tax_rate_bps: 500, created_by: ids[0], created_at: `${today}T03:00:00Z` }],
   folioPayments: [], balanceRequests: [], staffMembers: [
     { user_id: ids[0], name: "Example manager", username: "sample_manager", role: "manager", active: true },
     { user_id: ids[1], name: "Example front desk", username: "sample_reception", role: "reception", active: true },

@@ -42,8 +42,10 @@ describe("production Google callback", () => {
       expect((await GET(new Request(`${origin}/auth/callback?code=synthetic-code&next=${encodeURIComponent(next)}`))).headers.get("location")).toBe(`${origin}/my-bookings`);
     }
   });
-  it("returns staff Google sign-in to the role-protected staff dispatcher", async () => {
-    expect((await GET(new Request(`${origin}/auth/callback?code=synthetic-code&next=/staff`))).headers.get("location")).toBe(`${origin}/staff`);
+  it("keeps Google OAuth on guest pages even when an old staff destination is requested", async () => {
+    for (const next of ["/staff", "/staff/operations", "/admin", "/admin/security"]) {
+      expect((await GET(new Request(`${origin}/auth/callback?code=synthetic-code&next=${encodeURIComponent(next)}`))).headers.get("location")).toBe(`${origin}/my-bookings`);
+    }
   });
   it("handles configuration and exchange exceptions with a sign-in error instead of a server error", async () => {
     mocks.client.mockRejectedValueOnce(new Error("Unavailable"));

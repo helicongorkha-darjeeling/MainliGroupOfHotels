@@ -1,0 +1,708 @@
+[
+  {
+    "screen": "room-register-390",
+    "controls": [
+      {
+        "font": "16px",
+        "height": 25,
+        "label": "Review screen"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Refresh"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Back"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "adults"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "children"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "fullName"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "phone"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "email"
+      },
+      {
+        "font": "16px",
+        "height": 105,
+        "label": "address"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "AadhaarPassportVoter IDDriving LicencePANOther"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "idNumber"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Direct websiteWalk-inPhoneMakeMyTripGoibiboBooking"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Check in"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Mark room dirty"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Mark out of service"
+      },
+      {
+        "font": "16px",
+        "height": 60,
+        "label": "Home"
+      },
+      {
+        "font": "16px",
+        "height": 60,
+        "label": "Rooms"
+      },
+      {
+        "font": "16px",
+        "height": 60,
+        "label": "Bookings"
+      }
+    ],
+    "fileInputs": 0,
+    "scrollWidth": 375,
+    "viewport": 390,
+    "width": 375
+  },
+  {
+    "screen": "room-occupied-390",
+    "controls": [
+      {
+        "font": "16px",
+        "height": 25,
+        "label": "Review screen"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Back"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Add food bill"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Take payment · ₹1,940"
+      },
+      {
+        "font": "16px",
+        "height": 105,
+        "label": "reason"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Approve, check out & create invoice"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "description"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "amount"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Add charge"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "description"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "amount"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Add discount"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "checkOut"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Save check-out date"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "checkedInAt"
+      },
+      {
+        "font": "16px",
+        "height": 105,
+        "label": "reason"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Save corrected check-in time"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Mark out of service"
+      }
+    ],
+    "fileInputs": 0,
+    "scrollWidth": 375,
+    "viewport": 390,
+    "width": 375
+  },
+  {
+    "screen": "food-bill-390",
+    "controls": [
+      {
+        "font": "16px",
+        "height": 25,
+        "label": "Review screen"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Back"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Back"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "description"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "amount"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Add food bill"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Mark room dirty"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Mark out of service"
+      }
+    ],
+    "fileInputs": 0,
+    "scrollWidth": 375,
+    "viewport": 390,
+    "width": 375
+  },
+  {
+    "screen": "invoice-food-390",
+    "controls": [
+      {
+        "font": "16px",
+        "height": 25,
+        "label": "Review screen"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Print invoice"
+      }
+    ],
+    "fileInputs": 0,
+    "scrollWidth": 375,
+    "viewport": 390,
+    "width": 375
+  },
+  {
+    "screen": "typed-id-390",
+    "controls": [
+      {
+        "font": "16px",
+        "height": 25,
+        "label": "Review screen"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Back"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "adults"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "children"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "fullName"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "phone"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "email"
+      },
+      {
+        "font": "16px",
+        "height": 105,
+        "label": "address"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "AadhaarPassportVoter IDDriving LicencePANOther"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "idNumber"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Direct websiteWalk-inPhoneMakeMyTripGoibiboBooking"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "INPUT"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Check in"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Mark out of service"
+      }
+    ],
+    "fileInputs": 0,
+    "scrollWidth": 375,
+    "viewport": 390,
+    "width": 375
+  },
+  {
+    "screen": "add-staff-390",
+    "controls": [
+      {
+        "font": "16px",
+        "height": 25,
+        "label": "Review screen"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Add staff member"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "name"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "username"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Front deskHousekeepingManager"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "password"
+      },
+      {
+        "font": "16px",
+        "height": 52,
+        "label": "Create staff account"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Cancel"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Manage access"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Manage access"
+      },
+      {
+        "font": "16px",
+        "height": 48.390625,
+        "label": "Manage access"
+      }
+    ],
+    "fileInputs": 0,
+    "scrollWidth": 375,
+    "viewport": 390,
+    "width": 375
+  },
+  {
+    "screen": "room-register-360-large",
+    "controls": [
+      {
+        "font": "20px",
+        "height": 31,
+        "label": "Review screen"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Back"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "INPUT"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "INPUT"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "INPUT"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "adults"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "children"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "fullName"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "phone"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "email"
+      },
+      {
+        "font": "20px",
+        "height": 105,
+        "label": "address"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "INPUT"
+      },
+      {
+        "font": "20px",
+        "height": 57,
+        "label": "AadhaarPassportVoter IDDriving LicencePANOther"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "idNumber"
+      },
+      {
+        "font": "20px",
+        "height": 57,
+        "label": "Direct websiteWalk-inPhoneMakeMyTripGoibiboBooking"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "INPUT"
+      },
+      {
+        "font": "20px",
+        "height": 58,
+        "label": "Check in"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Mark out of service"
+      }
+    ],
+    "fileInputs": 0,
+    "scrollWidth": 345,
+    "viewport": 360,
+    "width": 345
+  },
+  {
+    "screen": "room-occupied-360-large",
+    "controls": [
+      {
+        "font": "20px",
+        "height": 31,
+        "label": "Review screen"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Back"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Add food bill"
+      },
+      {
+        "font": "20px",
+        "height": 58,
+        "label": "Take payment · ₹1,940"
+      },
+      {
+        "font": "20px",
+        "height": 105,
+        "label": "reason"
+      },
+      {
+        "font": "20px",
+        "height": 82,
+        "label": "Approve, check out & create invoice"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "description"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "amount"
+      },
+      {
+        "font": "20px",
+        "height": 58,
+        "label": "Add charge"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "description"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "amount"
+      },
+      {
+        "font": "20px",
+        "height": 58,
+        "label": "Add discount"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "checkOut"
+      },
+      {
+        "font": "20px",
+        "height": 58,
+        "label": "Save check-out date"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "checkedInAt"
+      },
+      {
+        "font": "20px",
+        "height": 105,
+        "label": "reason"
+      },
+      {
+        "font": "20px",
+        "height": 88,
+        "label": "Save corrected check-in time"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Mark room dirty"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Mark out of service"
+      }
+    ],
+    "fileInputs": 0,
+    "scrollWidth": 345,
+    "viewport": 360,
+    "width": 345
+  },
+  {
+    "screen": "food-bill-360-large",
+    "controls": [
+      {
+        "font": "20px",
+        "height": 31,
+        "label": "Review screen"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Back"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Back"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "description"
+      },
+      {
+        "font": "20px",
+        "height": 55,
+        "label": "amount"
+      },
+      {
+        "font": "20px",
+        "height": 58,
+        "label": "Add food bill"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Mark room dirty"
+      },
+      {
+        "font": "20px",
+        "height": 54,
+        "label": "Mark out of service"
+      }
+    ],
+    "fileInputs": 0,
+    "scrollWidth": 345,
+    "viewport": 360,
+    "width": 345
+  }
+]

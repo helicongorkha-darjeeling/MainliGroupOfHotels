@@ -7,12 +7,13 @@ import { StaffHousekeeping } from "./staff-housekeeping";
 import { StaffWalkIn } from "./staff-walk-in";
 import { StaffCheckIn } from "./staff-check-in";
 import { StaffStay } from "./staff-stay";
+import { StaffRoomDashboard } from "./staff-room-dashboard";
 import { StaffInvoice } from "./staff-invoice";
 import { StaffRequestProvider, type StaffRequest } from "./staff-ui";
 import { staffReviewData, reviewInvoice } from "@/lib/staff-review-data";
 import { folioAmounts } from "@/lib/folio";
 import { nightsBetween } from "@/lib/stay";
-const screens = ["home", "arrivals", "in_house", "departures", "rooms", "walk-in", "check-in", "stay", "housekeeping", "team", "invoice", "settings"] as const;
+const screens = ["home", "arrivals", "in_house", "departures", "rooms", "room-register", "room-occupied", "walk-in", "check-in", "stay", "housekeeping", "team", "invoice", "settings"] as const;
 const reviewRequest: StaffRequest = async <T,>(endpoint: string, input?: Record<string, unknown>): Promise<T> => {
   if (endpoint === "/api/staff/availability" && input) {
     const guests = Number(input.guests); const subtotal = (guests === 1 ? 200000 : guests === 2 ? 250000 : guests * 120000) * nightsBetween(String(input.checkIn), String(input.checkOut));
@@ -36,7 +37,7 @@ export function StaffScreenReview() {
     <label className="staff-review-control">Review screen<select aria-label="Review screen" value={screen} onChange={event => setScreen(event.target.value as typeof screen)}>{screens.map(value => <option key={value} value={value}>{value.replaceAll("_", " ")}</option>)}</select></label>
     <label className="staff-review-control"><input type="checkbox" checked={largeText} onChange={event => setLargeText(event.target.checked)}/> Large text (125%)</label>
     <StaffRequestProvider request={reviewRequest}>
-      {screen === "walk-in" ? <StaffWalkIn data={staffReviewData} onBack={home} onComplete={home}/> : screen === "check-in" ? <StaffCheckIn data={staffReviewData} reservation={staffReviewData.reservations[0]} onBack={home} onComplete={home}/> : screen === "stay" ? <StaffStay data={staffReviewData} reservation={staffReviewData.reservations[1]} onBack={home}/> : screen === "team" ? <StaffAccounts data={staffReviewData}/> : screen === "housekeeping" ? <StaffHousekeeping data={{role:"housekeeping",staffCoreReady:true,rooms:staffReviewData.rooms.map(({number,category,active,housekeeping,occupancy})=>({number,category,active,housekeeping,occupancy}))}}/> : screen === "invoice" ? <StaffInvoice invoice={reviewInvoice}/> : <HotelOperations key={screen} data={staffReviewData} initialView={screen as StaffOperationsView}/>}
+      {screen === "room-register" ? <StaffRoomDashboard data={staffReviewData} roomNumber="305" onBack={home}/> : screen === "room-occupied" ? <StaffRoomDashboard data={staffReviewData} roomNumber="302" onBack={home}/> : screen === "walk-in" ? <StaffWalkIn data={staffReviewData} onBack={home} onComplete={home}/> : screen === "check-in" ? <StaffCheckIn data={staffReviewData} reservation={staffReviewData.reservations[0]} onBack={home} onComplete={home}/> : screen === "stay" ? <StaffStay data={staffReviewData} reservation={staffReviewData.reservations[1]} onBack={home}/> : screen === "team" ? <StaffAccounts data={staffReviewData}/> : screen === "housekeeping" ? <StaffHousekeeping data={{role:"housekeeping",staffCoreReady:true,rooms:staffReviewData.rooms.map(({number,category,active,housekeeping,occupancy})=>({number,category,active,housekeeping,occupancy}))}}/> : screen === "invoice" ? <StaffInvoice invoice={reviewInvoice}/> : <HotelOperations key={screen} data={staffReviewData} initialView={screen as StaffOperationsView}/>}
     </StaffRequestProvider>
   </div></main>;
 }

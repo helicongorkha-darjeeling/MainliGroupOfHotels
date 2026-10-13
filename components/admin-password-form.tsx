@@ -23,7 +23,7 @@ export function AdminPasswordForm({ supabaseUrl, publishableKey }: { supabaseUrl
       form.reset();
       setMessage("Password saved. You can now sign in with your login name and this password.");
     } catch {
-      setMessage("Password could not be saved. Sign in again with Google and retry. If your account requires verification, complete it in Supabase first.");
+      setMessage("Password could not be saved. Sign in again with your current staff password and retry. If you cannot sign in, ask another manager or the account owner to reset access.");
     } finally { pending.current = false; setBusy(false); }
   }
   return <form className="staff-login-form" onSubmit={submit}>

@@ -17,6 +17,12 @@ describe("admin dashboard access", () => {
     mocks.gateway.mockResolvedValue({ data: null, error: { message: "Hotel staff access required." } });
     expect((await readStaffAccess()).data).toBeNull();
   });
+  it("preserves a password reauthentication denial for page redirects and API status", async () => {
+    mocks.user.mockResolvedValue({ id: "oauth-staff", user_metadata: { amr: [{ method: "password" }] } });
+    mocks.gateway.mockResolvedValue({ data: null, error: { code: "PT401", message: "Sign in with your staff username and password to continue." } });
+    expect(await readStaffAccess()).toMatchObject({ data: null, errorCode: "PT401" });
+    expect(await readStaffRole()).toMatchObject({ role: null, status: 401 });
+  });
   it("fails closed for missing or unexpected staff roles", async () => {
     mocks.user.mockResolvedValue({ id: "guest" });
     for (const data of [null, { role: "admin" }, { role: "guest" }]) {
@@ -36,6 +42,7 @@ describe("admin dashboard access", () => {
     mocks.user.mockResolvedValue({ id: "housekeeper" });
     mocks.gateway.mockResolvedValue({ error: null, data: { role: "housekeeping", staffCoreReady: true,
       reservations: [{ full_name: "Private guest", phone: "Private phone" }], invoices: ["Private invoice"],
+      guestProfiles: [{ full_name: "Private guest", id_number: "Private ID", passport_number: "Private passport", visa_number: "Private visa" }],
       rooms: [{ number: "301", category: "double-room", active: true, housekeeping: "dirty", occupancy: "vacant", guest_name: "Private guest", reservation_id: "Private stay", checked_in_at: "Private time" }],
     } });
     const { data } = await readStaffAccess();

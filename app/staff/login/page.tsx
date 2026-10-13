@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { StaffLoginForm } from "@/components/staff-login-form";
 import { readPublicSupabaseEnvironment } from "@/lib/server/env";
-import { GoogleAuth } from "@/components/google-auth";
 
 export const metadata: Metadata = { title: "Admin & staff sign in", robots: { index: false, follow: false } };
 
@@ -16,13 +15,13 @@ export default function StaffLoginPage() {
       <section className="staff-auth-panel">
         <p className="eyebrow">Private hotel operations</p>
         <h1>Admin &amp; staff sign in</h1>
-        <p>Use Admin for the owner account, or the username your manager gave you.</p>
+        <p>Sign in with your staff name and password. Use Admin for the owner account.</p>
         {environment.success ? (
           <StaffLoginForm />
         ) : (
           <div className="staff-setup-note"><strong>Supabase setup required</strong><span>Add the public Supabase URL and publishable key to enable secure staff sign-in.</span></div>
         )}
-        <GoogleAuth destination="/staff" description="You can also use your approved staff Google account." />
+        <p>Your manager creates your sign-in name and password in Staff. Ask them to reset it if you cannot sign in.</p>
         <Link href="/admin/security" className="text-link">Set or change your admin password</Link>
         <Link href="/" className="text-link">Return to hotel website</Link>
       </section>

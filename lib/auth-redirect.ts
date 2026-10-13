@@ -1,7 +1,7 @@
-const authDestinations = new Set(["/book", "/my-bookings", "/members", "/admin", "/admin/security", "/staff", "/staff/operations", "/staff/housekeeping"]);
+const authDestinations = new Set(["/book", "/my-bookings", "/members"]);
 export const authReturnCookieName = "mainali-auth-return";
 
-/** Only explicit same-origin destinations; admin pages independently enforce staff access. */
+/** Google OAuth returns only to guest pages. Staff sign in with their assigned password. */
 export function safeAuthDestination(requested: string | null | undefined, origin: string) {
   const fallback = "/my-bookings";
   if (!requested || requested.length > 2048 || !requested.startsWith("/") || requested.startsWith("//") || /[\\\u0000-\u001f\u007f]/.test(requested)) return fallback;

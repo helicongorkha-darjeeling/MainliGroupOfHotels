@@ -1,52 +1,41 @@
 # Mobile staff review
 
-Review date: 12 October 2026. Branch: `codex/mobile-staff-operations`.
+Review date: 13 October 2026. Follow-up branch: `codex/room-guest-checkin`.
 
-## What is built
+## Current room workflow
 
-One 25-room hotel with manager, front desk and read-only housekeeping access. The flow covers staff accounts, room/key-return status, capacity-safe walk-ins and extensions, registration/private ID photos, server check-in/out times, folios, manual/test gateway payments and financial-year invoices. See [release and operating instructions](../../LIVE_BOOKING_SETUP.md).
+The manager/front desk taps a room to open its dashboard. A clean vacant room collects a guest profile and typed ID information, then saves reservation, room assignment, optional received advance, profile and server check-in time together. An occupied room shows guest details, source, arrival and expected checkout, with an Add food bill action. Checkout creates the numbered Mainali invoice and marks the room dirty atomically. New ID photo uploads are retired.
 
-## Phone screenshots
+Admin and staff sign in with individual names/passwords. The gateway verifies a signed password authentication claim plus the current active role. Google remains available for guest bookings. Managers add, reset and deactivate staff from Staff; no real passwords or new accounts were created during review.
 
-These are native browser captures at **390 × 844**, using the actual staff components with **synthetic sample data**. Sample legal information and the 5% sample tax are not approved hotel settings. All saves, uploads, account changes, payments and messages in this review are disabled.
+## Fresh phone evidence
+
+Native browser captures use the actual components and synthetic data. Sample tax/legal values are not approved hotel settings. Review saves, payments and messages are disabled.
 
 | Screen | Capture |
 | --- | --- |
-| Staff sign-in | [Login](login-390.jpg) |
-| Front desk home | [Home](01-home-390.jpg) |
-| Arrivals / in-house / departures | [Arrivals](arrivals-390.jpg), [In-house](in_house-390.jpg), [Departures](departures-390.jpg) |
-| 25-room operations | [Rooms](rooms-390.jpg) |
-| Walk-in steps | [Dates](walk-in-390.jpg), [Room](walk-in-room-390.jpg), [Guest](walk-in-guest-390.jpg), [Advance](walk-in-advance-390.jpg) |
-| Registration | [Check-in](check-in-390.jpg), [Private ID fields](check-in-id-390.jpg) |
-| Stay and bill | [Stay](stay-390.jpg), [Take payment](take-payment-390.jpg) |
-| Housekeeping | [Dirty](housekeeping-390.jpg), [All 25 rooms](housekeeping-all-390.jpg) |
-| Staff accounts | [Team](team-390.jpg), [Add staff](add-staff-390.jpg) |
-| Invoice and settings | [Invoice](invoice-390.jpg), [Settings](settings-390.jpg) |
+| Password-only sign-in | [Login](login-390.jpg) |
+| Room registration | [Room 305](room-register-390.jpg), [Typed ID fields](typed-id-390.jpg) |
+| Occupied room | [Room 302](room-occupied-390.jpg) |
+| Add food bill | [Food bill](food-bill-390.jpg) |
+| Staff name and chosen password | [Add staff](staff-names-390.jpg) |
+| Branded invoice | [Invoice](invoice-food-390.jpg) |
+| 360px with 125% text | [Registration](room-register-360-large.jpg) |
 
-Additional 360px captures with 125% root text: [Home](home-360-large-text.jpg), [Rooms](rooms-360-large-text.jpg), [Check-in](check-in-360-large-text.jpg), [Stay](stay-360-large-text.jpg), [Housekeeping](housekeeping-360-large-text.jpg), [Team](team-360-large-text.jpg), [Invoice](invoice-360-large-text.jpg).
+[Current measurements](typed-room-viewport-checks.json) confirm no horizontal overflow in registration, occupied-room and food forms at 390px and 360px with 125% root text. Invoice and staff-account screens also fit 390px. Production controls are at least 48px with at least 16px text; the compact development-only review selector is excluded. Registration contains zero file inputs. Rooms -> room 305 -> registration and occupied room -> Add food bill were exercised through the UI. Mutations are covered at API/SQL boundaries, not claimed as live browser writes.
 
-Browser measurements are saved in [viewport-checks.json](viewport-checks.json). All twelve review screens fit 390px; key screens also fit 360px, including 20px body text at 125%. Staff controls measure at least 48px. Spot checks at 430px, 768px tablet and 1280px desktop show no horizontal overflow. A scrollbar consumes 15px, so the document client width is narrower than the viewport. The housekeeping All filter contained 25 room cards and no guest names.
+Other images and `viewport-checks.json` in this folder are historical captures from the 12 October PR #3 review. They do not describe the updated typed-ID or password-only screens. Run `pnpm dev` and open `/staff/review` for the current local harness.
 
-Run `pnpm dev` and open `/staff/review` for the local visual harness. It exists only in development, uses no live data, and returns 404 from a production build. Real operations remain protected at `/staff` and `/admin`.
+## Validation
 
-## Verification through the stack
+- ESLint, TypeScript, **249 unit/API/Edge tests across 21 files**, and the Next.js production build passed.
+- Both staff migrations plus `category_core_regression.sql`, `mobile_staff_regression.sql` and `typed_guest_room_regression.sql` passed in a single hosted BEGIN/ROLLBACK transaction with per-suite savepoints.
+- SQL checks cover typed registration, role/RLS privacy, room capacity, matching/mismatched retries, one profile/request/audit, food charges on invoices, checkout rollback on missing legal/tax settings or unpaid balance, invoice retry/numbering and room cleaning. Failed checkout consumes no invoice sequence/audit. Registration IDs do not enter invoice snapshots.
+- After rollback: **25 rooms and 3 existing reservations** remained; no synthetic users, new tables or storage buckets remained.
+- Built production server: `/staff/review` returned 404; anonymous `/staff/rooms/305` redirected to `/staff/login`; staff operations API returned 401; retired staff OAuth callback redirected to password login; staff login rendered no Google button. Temporary production server stopped afterward.
 
-| Boundary | Evidence |
-| --- | --- |
-| Browser → component | Native screenshots; wizard navigation; 25-room housekeeping filters; 360–430px and large-text checks. Review mutations are explicitly disabled. |
-| Next.js → gateway | Unit/API checks for active role routing, origin checks, SSR session cookies, anonymous/guest denial, housekeeping write denial, manager-only accounts/settings, and strict mutation payloads. |
-| Gateway → Auth/provider/SQL | 104 Edge handler/helper tests exercise role reads, Auth admin boundaries, scoped private ID uploads, signatures, provider ownership, currency/amount, capture replay/races and invoice sharing. Provider/Auth writes are mocked. |
-| SQL → inventory/folio/audit | `category_core_regression.sql` plus `mobile_staff_regression.sql`, with the new migration, passed in one rollback-only hosted transaction. Checks cover clean-room check-in, server times, role/storage isolation, housekeeper audit, conflicts, tax/paise maths, FY numbering, balances, invoice immutability and late captures. Walk-in changed-payload retries return 409 while identical retries remain idempotent after guest edits. |
-| Response → UI | Saves refresh server-owned snapshots; housekeeping gets a safe projected room response at both gateway and Next.js. Errors and payment-review/credit state remain visible. |
+## Release status
 
-Full ESLint, TypeScript (`tsc --noEmit`), unit/API tests and Next.js production build pass. The installed Node entrypoints were used as equivalents of the npm scripts because npm is unavailable in this Windows shell. **219 tests across 20 files pass**, including the 104 Edge tests. The final SQL rollback audit retained **25 rooms and 3 existing reservations**, with no synthetic users, new operational tables or new storage bucket left behind.
+PR #3 is merged. This follow-up is prepared for a separate PR. No permanent migration, Edge deployment, main push, real staff-account creation, payment or email was performed by this follow-up. Apply the two staff migrations in order, deploy the complete Edge directory and release the matching frontend together; see [operating/release instructions](../../LIVE_BOOKING_SETUP.md).
 
-The built production server was checked on a temporary local port: `/staff/review` returned 404; anonymous `/staff` and `/admin` redirected to `/staff/login`; `/api/staff/operations` returned 401; cross-origin staff account writes returned 403; an invalid public invoice token returned 404 with private/no-store and no-index headers. The temporary server was stopped after these checks.
-
-## Remaining release checks
-
-No permanent migration, Edge deployment, main push, staff account creation, ID upload, payment or email was performed for this PR. Existing production remains on the previous admin release. The next release requires the reviewed migration plus complete Edge directory and Next.js build together. A Vercel preview against the earlier live gateway is not evidence that these new backend features are activated.
-
-Before operational use, verify in a preview project with real Supabase sessions: account creation/reset/deactivation; a real camera upload and authorised download; check-in → payment → invoice → checkout → dirty → attributed clean; provider test captures/replays; invoice email and link revocation. Owner-approved legal/tax/policy and ID retention settings are still required. Test-mode Razorpay links and QR must not collect real money. Android/iOS UPI app switching needs real-device testing after provider setup.
-
-OTA sync, POS, night audit, housekeeping task scheduling, automatic FRRO submission and live staff Razorpay payments are outside this release.
+Before hotel use, complete real password-session creation/reset/deactivation and room check-in -> food -> payment -> invoice/checkout -> dirty -> attributed clean in a preview project. Owner legal/tax/policy and guest-profile retention settings, Razorpay test capture/replay and configured Resend delivery remain release dependencies. Android/iOS UPI switching needs real-device testing after provider setup. OTA sync, POS, night audit, housekeeping task scheduling, automated FRRO submission and live staff Razorpay payments remain outside this release.
