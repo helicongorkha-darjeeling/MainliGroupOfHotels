@@ -20,7 +20,7 @@ beforeEach(() => {
   mocks.gateway.mockResolvedValue({ data: { saved: true }, error: null });
 });
 describe("staff API permissions", () => {
-  const actions = ["confirm", "cancel", "assign", "check_in", "check_out", "housekeeping", "walk_in", "extend", "charge", "discount", "manual_payment", "checkin_correction", "season", "settings"];
+  const actions = ["confirm", "cancel", "assign", "check_in", "room_check_in", "check_out", "housekeeping", "walk_in", "extend", "charge", "discount", "manual_payment", "checkin_correction", "season", "settings"];
   for (const action of actions) it(`denies housekeeping ${action} before any write`, async () => {
     mocks.role.mockResolvedValue({ user: { id }, role: "housekeeping", error: null, status: 200 });
     expect((await operations(request({ action, reservationId: id }))).status).toBe(403);
@@ -56,11 +56,37 @@ describe("staff API permissions", () => {
     for (const extra of [{ actor: id }, { checkedInAt: "2000-01-01T00:00:00Z" }, { role: "manager" }]) expect((await operations(request({ ...guest, ...extra }))).status).toBe(400);
     expect(mocks.gateway).not.toHaveBeenCalled();
   });
-  it("limits photo MIME and size, and denies guests before issuing a signed URL", async () => {
+  it("retires photo uploads and registration, and denies guests before legacy reads", async () => {
+    expect((await documents(request({ action: "upload", reservationId: id, side: "front", contentType: "image/jpeg", size: 100 }))).status).toBe(400);
+    expect((await documents(request({ action: "register", reservationId: id, side: "front", path: `${id}/front/example.jpg` }))).status).toBe(400);
     expect((await documents(request({ action: "upload", reservationId: id, side: "front", contentType: "text/html", size: 10 }))).status).toBe(400);
     expect((await documents(request({ action: "upload", reservationId: id, side: "front", contentType: "image/jpeg", size: 6 * 1024 * 1024 }))).status).toBe(400);
     mocks.role.mockResolvedValue({ user: { id }, role: null, error: "Hotel staff access required", status: 403 });
     expect((await documents(request({ action: "read", reservationId: id, path: `${id}/front/example.jpg` }))).status).toBe(403);
     expect(mocks.gateway).not.toHaveBeenCalled();
+  });
+  const registration = { action: "room_check_in", requestId: id, roomNumber: "301", checkIn: "2026-10-13", checkOut: "2026-10-15", guests: 2, fullName: "Example Guest", phone: "+919876543210", address: "Example address", nationality: "Indian", adults: 2, children: 0, idType: "aadhaar", idNumber: "1234", source: "walk_in" };
+  it("checks in from a room using typed identity details with no photo or existing reservation", async () => {
+    mocks.role.mockResolvedValue({ user: { id }, role: "reception", error: null, status: 200 });
+    mocks.gateway.mockResolvedValue({ data: { saved: true, reservationId: id, guestProfileId: id }, error: null });
+    const response = await operations(request(registration));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ saved: true, data: { saved: true, reservationId: id, guestProfileId: id } });
+    expect(mocks.gateway).toHaveBeenCalledWith("staff-change", { change: registration });
+  });
+  it.each([
+    { reservationId: id }, { guestProfileId: id }, { actor: id }, { checkedInAt: "2000-01-01T00:00:00Z" },
+    { checkOut: "2026-10-13" }, { checkOut: "2026-11-15" }, { guests: 3 },
+    { nationality: "British" }, { source: "other" }, { advancePaise: 100 },
+    { advancePaise: 100, advanceMethod: "upi_manual" },
+  ])("rejects incomplete or caller-controlled room registration %#", async extra => {
+    expect((await operations(request({ ...registration, ...extra }))).status).toBe(400);
+    expect(mocks.gateway).not.toHaveBeenCalled();
+  });
+  it("returns the invoice from atomic checkout for immediate bill display", async () => {
+    mocks.gateway.mockResolvedValue({ data: { saved: true, invoiceId: id, invoice: { number: "TEESTA/2026-27/000001" } }, error: null });
+    const response = await operations(request({ action: "check_out", reservationId: id }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ data: { saved: true, invoiceId: id } });
   });
 });

@@ -11,14 +11,20 @@ export type StaffDependencies = {
   reply: (body: unknown, status?: number) => Response;
 };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const photoTypes: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 const photoBucket = "hotel-guest-id";
-const photoLimit = 5 * 1024 * 1024;
 const managerChanges = new Set(["discount", "checkin_correction", "allow_balance_due", "settings", "season"]);
-const staffChanges = new Set(["confirm", "cancel", "check_in", "check_out", "assign", "housekeeping", "walk_in", "extend", "charge", "discount", "manual_payment", "checkin_correction", "allow_balance_due", "settings", "season"]);
+const staffChanges = new Set(["confirm", "cancel", "check_in", "room_check_in", "check_out", "assign", "housekeeping", "walk_in", "extend", "charge", "discount", "manual_payment", "checkin_correction", "allow_balance_due", "settings", "season"]);
 
 export function isStaffRole(value: unknown): value is StaffRole {
   return value === "manager" || value === "reception" || value === "housekeeping";
+}
+export function isPrivateStaffAction(action: string) {
+  return action !== "staff-login" && (action === "staff" || action.startsWith("staff-") || action === "housekeeping");
+}
+/** Only call with claims returned by Supabase Auth getClaims after validating this token's user. */
+export function passwordStaffClaims(claims: unknown, verifiedUserId: string) {
+  const value = asObject(claims);
+  return value.sub === verifiedUserId && Array.isArray(value.amr) && value.amr.some(method => asObject(method).method === "password");
 }
 export function paymentReviewNotice(status: unknown) {
   return status === "payment_review"
@@ -89,6 +95,7 @@ export async function publicInvoice(input: StaffInput, deps: Pick<StaffDependenc
 export async function handleStaffAction(input: StaffInput, deps: StaffDependencies): Promise<Response> {
   const { db, user, role, reply } = deps;
   if (!staffActionAllowed(role, input.action, input.change)) return reply({ error: "This staff role cannot perform that action." }, 403);
+  if (input.action === "staff-id-upload" || input.action === "staff-id-register") return reply({ error: "ID photo uploads are no longer used. Enter the guest's ID details." }, 400);
   if (input.action === "staff-role") return reply({ data: { role } });
   if (input.action === "staff" || input.action === "housekeeping") {
     // Preserve the front desk's immediate expiry sweep; housekeeping reads never mutate.
@@ -167,24 +174,7 @@ async function staffPhoto(input: StaffInput, { db, user, reply }: StaffDependenc
   const { data: authorization, error } = await db.rpc("hotel_id_photo_authorize", { actor: user.id, reservation_id: input.reservationId });
   if (error) return rpcFailure(error, reply);
   const bucket = db.storage.from(photoBucket);
-  if (input.action === "staff-id-upload") {
-    const ext = typeof input.contentType === "string" ? photoTypes[input.contentType] : null;
-    if (!ext || !Number.isInteger(input.size) || Number(input.size) <= 0 || Number(input.size) > photoLimit || !["front", "back"].includes(String(input.side))) return reply({ error: "Choose a JPG, PNG or WebP photo no larger than 5 MB." }, 400);
-    const path = `${input.reservationId}/${user.id}/${crypto.randomUUID()}.${input.side}.${ext}`;
-    const { data, error: uploadError } = await bucket.createSignedUploadUrl(path, { upsert: false });
-    return uploadError ? reply({ error: "Photo upload unavailable." }, 503) : reply({ data });
-  }
-  if (!validPhotoPath(input.path, input.reservationId, input.action === "staff-id-register" ? input.side : undefined)) return reply({ error: "Invalid photo path." }, 400);
-  if (input.action === "staff-id-register") {
-    if (input.path.split("/")[1] !== user.id || !["front", "back"].includes(String(input.side))) return reply({ error: "Photo upload does not belong to this session." }, 403);
-    const { data: info, error: infoError } = await bucket.info(input.path);
-    const metadata = asObject(info?.metadata);
-    const mime = metadata.mimetype ?? metadata.mimeType ?? asObject(info).contentType;
-    const size = metadata.size ?? asObject(info).size;
-    if (infoError || typeof mime !== "string" || !photoTypes[mime] || !Number.isSafeInteger(Number(size)) || Number(size) <= 0 || Number(size) > photoLimit || !input.path.endsWith(`.${photoTypes[mime]}`)) return reply({ error: "The uploaded photo is invalid or too large." }, 400);
-    const { data, error: saveError } = await db.rpc("hotel_staff_change", { actor: user.id, change: { action: "id_photo", reservationId: input.reservationId, path: input.path, side: input.side } });
-    return saveError ? rpcFailure(saveError, reply) : reply({ data });
-  }
+  if (!validPhotoPath(input.path, input.reservationId)) return reply({ error: "Invalid photo path." }, 400);
   if (!Array.isArray(authorization?.paths) || !authorization.paths.includes(input.path)) return reply({ error: "Photo not found for this stay." }, 404);
   const { data, error: readError } = await bucket.createSignedUrl(input.path, 60);
   return readError ? reply({ error: "Photo unavailable." }, 503) : reply({ data });

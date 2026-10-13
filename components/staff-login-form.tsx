@@ -40,7 +40,7 @@ export function StaffLoginForm() {
 
   return (
     <form className="staff-login-form" onSubmit={submit}>
-      <label htmlFor="staff-identifier"><UserRound size={17} aria-hidden="true" /> Username or staff email</label>
+      <label htmlFor="staff-identifier"><UserRound size={17} aria-hidden="true" /> Staff sign-in name</label>
       <input id="staff-identifier" name="username" type="text" autoComplete="username" autoCapitalize="none" maxLength={254} value={identifier} onChange={(event) => setIdentifier(event.target.value)} disabled={pending} required />
       <label htmlFor="staff-password"><LockKeyhole size={17} aria-hidden="true" /> Password</label>
       <input id="staff-password" name="password" type="password" autoComplete="current-password" maxLength={128} value={password} onChange={(event) => setPassword(event.target.value)} disabled={pending} required />

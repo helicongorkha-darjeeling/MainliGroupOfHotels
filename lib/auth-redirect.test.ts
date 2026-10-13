@@ -4,8 +4,14 @@ import { authCallbackUrl, authReturnCookie, authReturnDestination, safeAuthDesti
 const origin = "https://mainli-group-of-hotels.vercel.app";
 describe("guest auth redirects", () => {
   it("keeps guest destinations and stay parameters", () => {
-    for (const destination of ["/members", "/my-bookings", "/book?checkIn=2026-10-10&guests=2", "/admin", "/admin/security", "/staff", "/staff/operations", "/staff/housekeeping"]) {
+    for (const destination of ["/members", "/my-bookings", "/book?checkIn=2026-10-10&guests=2"]) {
       expect(safeAuthDestination(destination, origin)).toBe(destination);
+    }
+  });
+  it("does not use Google OAuth to enter staff or admin pages", () => {
+    for (const destination of ["/admin", "/admin/security", "/staff", "/staff/operations", "/staff/housekeeping"]) {
+      expect(safeAuthDestination(destination, origin)).toBe("/my-bookings");
+      expect(authReturnDestination(encodeURIComponent(destination), origin)).toBe("/my-bookings");
     }
   });
   it("rejects external, unapproved and malformed destinations", () => {

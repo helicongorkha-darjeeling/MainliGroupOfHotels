@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { handleStaffAction, paymentReviewNotice, publicInvoice, recordBalanceWebhook, sha256, staffActionAllowed, staffLogin, validPhotoPath, type StaffDependencies, type StaffRole } from "./staff";
+import { handleStaffAction, isPrivateStaffAction, passwordStaffClaims, paymentReviewNotice, publicInvoice, recordBalanceWebhook, sha256, staffActionAllowed, staffLogin, validPhotoPath, type StaffDependencies, type StaffRole } from "./staff";
 
 const actor = "11111111-1111-4111-8111-111111111111";
 const reservation = "22222222-2222-4222-8222-222222222222";
@@ -14,7 +14,7 @@ function dependencies(role: StaffRole = "manager") {
   const deps: StaffDependencies = { db: mock as unknown as StaffDependencies["db"], user: { id: actor }, role, env: () => undefined, provider: vi.fn(), reply };
   return { deps, mock, query, bucket };
 }
-const writes = ["confirm", "cancel", "check_in", "check_out", "assign", "housekeeping", "walk_in", "extend", "charge", "discount", "manual_payment", "checkin_correction", "allow_balance_due", "settings", "season", "id_photo", "invoice", "invoice_share", "invoice_revoke"];
+const writes = ["confirm", "cancel", "check_in", "room_check_in", "check_out", "assign", "housekeeping", "walk_in", "extend", "charge", "discount", "manual_payment", "checkin_correction", "allow_balance_due", "settings", "season", "id_photo", "invoice", "invoice_share", "invoice_revoke"];
 
 describe("staff gateway role enforcement", () => {
   it.each(writes)("housekeeping receives 403 for database write %s", async action => {
@@ -42,7 +42,7 @@ describe("staff gateway role enforcement", () => {
   });
   it("housekeeping snapshot strips identity, finance, assignments and unexpected room properties", async () => {
     const { deps, mock } = dependencies("housekeeping");
-    mock.rpc.mockResolvedValue({ data: { rooms: [{ number: "301", category: "double-room", name: "Double Room", active: true, housekeeping: "dirty", occupancy: "vacant", full_name: "Private guest", email: "guest@example.test", paid_paise: 200000 }], reservations: [{ full_name: "Private guest" }], staffMembers: [{ name: "Staff member" }] }, error: null });
+    mock.rpc.mockResolvedValue({ data: { rooms: [{ number: "301", category: "double-room", name: "Double Room", active: true, housekeeping: "dirty", occupancy: "vacant", full_name: "Private guest", email: "guest@example.test", paid_paise: 200000 }], reservations: [{ full_name: "Private guest" }], staffMembers: [{ name: "Staff member" }], guestProfiles: [{ full_name: "Private guest", id_number: "Private ID", passport_number: "Private passport" }] }, error: null });
     const data = (await (await handleStaffAction({ action: "staff" }, deps)).json()).data;
     expect(data).toEqual({ role: "housekeeping", staffCoreReady: true, rooms: [{ number: "301", category: "double-room", name: "Double Room", active: true, housekeeping: "dirty", occupancy: "vacant" }] });
   });
@@ -60,6 +60,15 @@ describe("staff gateway role enforcement", () => {
 });
 
 describe("username password login", () => {
+  it("requires verified matching-subject password claims only on private staff actions", () => {
+    expect(passwordStaffClaims({ sub: actor, amr: [{ method: "password", timestamp: 1791849600 }] }, actor)).toBe(true);
+    expect(passwordStaffClaims({ sub: actor, amr: [{ method: "totp" }, { method: "password" }] }, actor)).toBe(true);
+    for (const claims of [null, {}, { sub: request, amr: [{ method: "password" }] }, { sub: actor, amr: ["password"] }, { sub: actor, amr: [{ method: "oauth" }], user_metadata: { amr: [{ method: "password" }] } }]) {
+      expect(passwordStaffClaims(claims, actor)).toBe(false);
+    }
+    for (const action of ["staff", "staff-role", "staff-change", "staff-account", "staff-id-read", "housekeeping"]) expect(isPrivateStaffAction(action)).toBe(true);
+    for (const action of ["staff-login", "reserve", "order", "verify", "invoice-public", "search"]) expect(isPrivateStaffAction(action)).toBe(false);
+  });
   it("throttles before any Auth request, independent of caller IP headers", async () => {
     const { deps, mock } = dependencies();
     mock.rpc.mockResolvedValue({ data: { allowed: false }, error: null });
@@ -105,15 +114,15 @@ describe("username password login", () => {
   });
 });
 
-describe("private identification photographs", () => {
+describe("legacy private identification photographs", () => {
   it("rejects traversal, a different stay and unapproved extensions", () => {
     expect(validPhotoPath(photo, reservation, "front")).toBe(true);
     for (const path of [photo.replace(reservation, request), `../${photo}`, photo.replace(".jpg", ".svg"), photo.replace(".front.", ".back.")]) expect(validPhotoPath(path, reservation, "front")).toBe(false);
   });
-  it.each([{ contentType: "image/svg+xml", size: 100 }, { contentType: "image/png", size: 5 * 1024 * 1024 + 1 }, { contentType: "image/jpeg", size: 0 }])("rejects invalid upload constraints %#", async details => {
+  it.each(["staff-id-upload", "staff-id-register"])("rejects retired action %s before database or storage access", async action => {
     const { deps, mock, bucket } = dependencies("reception");
-    mock.rpc.mockResolvedValue({ data: { paths: [] }, error: null });
-    expect((await handleStaffAction({ action: "staff-id-upload", reservationId: reservation, side: "front", ...details }, deps)).status).toBe(400);
+    expect((await handleStaffAction({ action, reservationId: reservation, side: "front", contentType: "image/jpeg", size: 100, path: photo }, deps)).status).toBe(400);
+    expect(mock.rpc).not.toHaveBeenCalled(); expect(mock.storage.from).not.toHaveBeenCalled();
     expect(bucket.createSignedUploadUrl).not.toHaveBeenCalled();
   });
   it("a signed read requires the path registered on that authorized stay", async () => {

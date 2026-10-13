@@ -19,9 +19,9 @@ Current inventory: 25 active rooms (14 Double, 4 Triple, 6 Four-person, 1 Six-pe
 - [ ] Google branding/homepage review completion by Google Trust and Safety.
 - [ ] Owner review on real Android/iOS devices, including UPI app switching/return.
 
-## Mobile staff PR — implemented and verified, pending coordinated release
+## Mobile staff app — implemented and verified, pending backend release
 
-- [x] Branch `codex/mobile-staff-operations`; no direct main push.
+- [x] Original PR #3 merged; corrections on `codex/room-guest-checkin`, with no direct main push.
 - [x] Manager, reception and read-only housekeeping roles checked by server, gateway and database.
 - [x] Individual username/password accounts created/reset/deactivated through manager UI and Edge Auth admin; existing owner account retained.
 - [x] Distributed sign-in throttling, fresh active-role checks and no service key/password exposure.
@@ -29,23 +29,25 @@ Current inventory: 25 active rooms (14 Double, 4 Triple, 6 Four-person, 1 Six-pe
 - [x] Housekeeping's 25-room Dirty/All list, safe status-only response and visible 30-second refresh.
 - [x] Checkout marks dirty; front desk clean/key return requires active housekeeper attribution and room audit.
 - [x] Capacity-safe walk-in wizard with atomic advance, saved rates and mismatched-retry conflict protection.
-- [x] Check-in registration: source/OTA reference, contacts/address/nationality/adults/children, ID and private camera photographs.
+- [x] Room dashboard: one-step check-in creates a private guest profile with typed ID details; photo uploads retired.
+- [x] Password-only staff/admin sessions enforced at the gateway; Google retained for guest bookings only.
 - [x] Server check-in/out times, audited manager corrections, availability-safe extensions/early departure.
 - [x] Foreign passport/visa fields and official FRRO reporting reminder; no automatic submission.
 - [x] Folios, extra charges, manager discounts, approved tax snapshot, integer-paise calculations and idempotent receipts.
 - [x] Cash/card-terminal/manual-UPI receipts with staff attribution and non-cash reference.
 - [x] Test-only Razorpay balance Payment Links/UPI QR with verified provider capture, retry/race checks and credit review.
 - [x] Balance-due checkout denial with explicit audited manager approval option.
+- [x] Add food bill from the occupied room; checkout atomically creates the branded invoice and marks the room dirty.
 - [x] Transactional Indian financial-year invoice numbering, private printing and rotating/revocable expiring share links.
 - [x] WhatsApp draft handoff and configured Resend invoice email.
 - [x] Additive migration, service-only RLS tables/private storage and backward-compatible core regression.
-- [x] 219 unit/API/Edge tests; rollback SQL regressions preserve 25 rooms and existing records.
+- [x] 249 unit/API/Edge tests; all three rollback SQL regression suites preserve 25 rooms and existing records.
 - [x] Native phone screenshots, 360–430px checks, 125% text checks and 48px controls in `artifacts/staff-review/`.
 - [x] Development-only synthetic review harness; all external saves disabled, absent from production.
-- [ ] Review and merge PR only after agreeing coordinated backend/frontend release.
+- [ ] Review follow-up PR and coordinate both staff migrations, complete Edge gateway and frontend release.
 - [ ] Preview-project backup/migration/Edge/Next deployment and real-session role smoke test.
 - [ ] Create named real staff, check account reset/deactivation with real Supabase sessions.
-- [ ] Real private ID camera upload/download test and owner-approved retention/deletion procedure.
+- [ ] Real password-session room check-in → food bill → payment → invoice/checkout test; owner-approved guest-profile retention/deletion procedure.
 - [ ] Real test-mode Razorpay link/QR capture and replay verification; no live staff payment mode in scope.
 - [ ] Resend verified sender and actual receipt/reminder/invoice delivery test.
 

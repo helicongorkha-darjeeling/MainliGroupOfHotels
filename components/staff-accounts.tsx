@@ -34,25 +34,25 @@ export function StaffAccounts({ data }: { data: HotelOperationsData }) {
   }
   return <div className="staff-app staff-accounts">
     <div className="staff-title-row"><div><p className="staff-kicker">Manager only</p><h2>Team access</h2></div><UserRound size={28} aria-hidden="true" /></div>
-    <p className="staff-lead">Give each person their own username. Housekeeping staff can sign in without a Google account.</p>
+    <p className="staff-lead">Add each person’s full name, a unique sign-in name and a password you choose. Their role controls which hotel screens they can open.</p>
     <StaffNotice error={notice.error}>{notice.text}</StaffNotice>
     <button type="button" className="staff-primary" disabled={!data.staffCoreReady || pending} onClick={() => { setAdding(!adding); setSelected(null); }}><Plus size={20} aria-hidden="true" /> Add staff member</button>
     {!data.staffCoreReady && <StaffNotice>The staff update must be installed before new accounts can be added.</StaffNotice>}
     {adding && <form className="staff-form staff-card" onSubmit={create}>
       <h2>Add staff member</h2>
       <label>Full name<input name="name" autoComplete="name" required minLength={2} maxLength={120} /></label>
-      <label>Username<input name="username" autoComplete="off" autoCapitalize="none" required minLength={3} maxLength={32} pattern="[A-Za-z][A-Za-z0-9_.-]{2,31}" /><span className="staff-help">Start with a letter. Use letters, numbers, dots, dashes or underscores.</span></label>
+      <label>Sign-in name<input name="username" autoComplete="off" autoCapitalize="none" spellCheck={false} required minLength={3} maxLength={32} pattern="[A-Za-z][A-Za-z0-9_.-]{2,31}" placeholder="sarita or sarita.frontdesk" /><span className="staff-help">Use their name without spaces. Each sign-in name must be unique; letters, numbers, dots, dashes and underscores are allowed.</span></label>
       <label>Role<select name="role" defaultValue="reception">{roles.map(role => <option key={role.value} value={role.value}>{role.label}</option>)}</select></label>
-      <label>Temporary password<input name="password" type="password" autoComplete="new-password" minLength={12} maxLength={128} required /><span className="staff-help">At least 12 characters. Give it privately to this staff member.</span></label>
+      <label>Choose their password<input name="password" type="password" autoComplete="new-password" minLength={12} maxLength={128} required /><span className="staff-help">At least 12 characters. Give the sign-in name and password privately to this staff member.</span></label>
       <div className="staff-form-actions"><button disabled={pending} className="staff-primary">{pending ? "Saving…" : "Create staff account"}</button><button type="button" disabled={pending} onClick={() => setAdding(false)}>Cancel</button></div>
     </form>}
     <div className="staff-account-list">{(data.staffMembers || []).map(member => <article className="staff-card" key={member.user_id}>
       <div className="staff-title-row"><h2>{member.name || "Staff member"}</h2><StaffStatus value={member.active ? "active" : "inactive"} /></div>
-      <p>{member.username || "Google account"} · {roles.find(role => role.value === member.role)?.label || member.role}</p>
+      <p>Sign-in: {member.username || "Not set"} · {roles.find(role => role.value === member.role)?.label || member.role}</p>
       {member.active && <button type="button" disabled={pending || !data.staffCoreReady} onClick={() => { setSelected(member); setAdding(false); }}><KeyRound size={18} aria-hidden="true" /> Manage access</button>}
       {selected?.user_id === member.user_id && <div className="staff-account-controls">
         <form className="staff-form" onSubmit={event => { event.preventDefault(); const form = event.currentTarget; void save({ action: "reset", userId: member.user_id, password: new FormData(form).get("password") }, form); }}>
-          <label>New temporary password<input name="password" type="password" autoComplete="new-password" minLength={12} maxLength={128} required /></label>
+          <label>Choose a new password<input name="password" type="password" autoComplete="new-password" minLength={12} maxLength={128} required /><span className="staff-help">At least 12 characters. The previous password stops working when you save.</span></label>
           <button disabled={pending} className="staff-primary">Reset password</button>
         </form>
         <details><summary>Deactivate this staff member</summary><p>They will lose staff access immediately. Existing bookings and audit records stay saved.</p><button type="button" className="staff-danger" disabled={pending} onClick={() => void save({ action: "deactivate", userId: member.user_id })}>Deactivate {member.name || member.username}</button></details>

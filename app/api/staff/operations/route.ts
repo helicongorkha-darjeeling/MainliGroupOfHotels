@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export async function GET() {
   const access = await readStaffAccess();
   if (!access.user) return bookingResponse({ error: "Sign in to continue." }, 401);
-  if (!access.data) return bookingResponse({ error: access.error }, 403);
+  if (!access.data) return bookingResponse({ error: access.error }, access.errorCode === "PT401" ? 401 : 403);
   return bookingResponse({ data: access.data });
 }
 export async function POST(request: NextRequest) {

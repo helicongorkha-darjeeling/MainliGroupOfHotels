@@ -42,10 +42,6 @@ const nextConfig: NextConfig = {
 
     return [
       { source: "/:path*", headers },
-      { source: "/staff/check-in/:path*", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
-      { source: "/staff/walk-in", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
-      { source: "/staff/operations", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
-      { source: "/admin", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
       { source: "/invoice/:path*", headers: [
         { key: "Referrer-Policy", value: "no-referrer" },
         { key: "Cache-Control", value: "private, no-store" },

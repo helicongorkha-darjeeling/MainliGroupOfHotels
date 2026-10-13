@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.117.2";
-import { handleStaffAction, isStaffRole, paymentReviewNotice, publicInvoice, recordBalanceWebhook, staffActionAllowed, staffLogin, type StaffInput } from "./staff.ts";
+import { handleStaffAction, isPrivateStaffAction, isStaffRole, passwordStaffClaims, paymentReviewNotice, publicInvoice, recordBalanceWebhook, staffActionAllowed, staffLogin, type StaffInput } from "./staff.ts";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
   auth:{persistSession:false,autoRefreshToken:false},
@@ -119,6 +119,10 @@ Deno.serve(async(req:Request)=>{
     const {data:auth,error:authError}=await db.auth.getUser(token);
     const user=auth.user;
     if(authError||!user||(!user.email_confirmed_at&&!user.phone_confirmed_at))return reply({error:"Verified sign-in required."},401,origin);
+    if(isPrivateStaffAction(input.action)) {
+      const {data:claims,error:claimsError}=await db.auth.getClaims(token);
+      if(claimsError||!passwordStaffClaims(claims?.claims,user.id))return reply({error:"Sign in with your staff username and password to continue.",code:"PT401"},401,origin);
+    }
     const {data:staff,error:staffError}=await db.from("hotel_staff").select("role").eq("user_id",user.id).eq("active",true).maybeSingle();
     if(staffError)throw new Error("database");
     if(staff?.role==="housekeeping"&&!staffActionAllowed("housekeeping",input.action,input.change))return reply({error:"Housekeeping access is read-only."},403,origin);

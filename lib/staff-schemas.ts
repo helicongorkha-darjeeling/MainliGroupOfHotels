@@ -15,7 +15,27 @@ const guest = {
   idNumber: z.string().trim().min(4).max(80), passportNumber: optionalText(80), visaNumber: optionalText(80),
   visaExpiry: z.union([z.string().date(), z.literal("")]).optional(), ...source,
 };
+const roomCheckIn = z.object({
+  action: z.literal("room_check_in"), requestId: uuid, roomNumber: room,
+  checkIn: z.string().date(), checkOut: z.string().date(), guests: z.number().int().min(1).max(6), ...guest,
+  advancePaise: z.number().int().min(0).max(100_000_000).optional(),
+  advanceMethod: z.enum(["cash", "card_terminal", "upi_manual"]).optional(), advanceReference: optionalText(120),
+}).strict().superRefine((value, context) => {
+  if (value.checkOut <= value.checkIn || (Date.parse(value.checkOut) - Date.parse(value.checkIn)) / 86_400_000 > 30) {
+    context.addIssue({ code: "custom", path: ["checkOut"], message: "Choose a stay of up to 30 nights." });
+  }
+  if (value.adults + value.children !== value.guests) context.addIssue({ code: "custom", path: ["guests"], message: "Adults and children must match the guest count." });
+  if ((value.advancePaise ?? 0) > 0 && !value.advanceMethod) context.addIssue({ code: "custom", path: ["advanceMethod"], message: "Choose the advance payment method." });
+  if ((value.advancePaise ?? 0) > 0 && value.advanceMethod !== "cash" && (value.advanceReference?.length ?? 0) < 2) {
+    context.addIssue({ code: "custom", path: ["advanceReference"], message: "Enter the payment reference." });
+  }
+  if (!["indian", "india", "in"].includes(value.nationality.toLowerCase()) && (!value.passportNumber || !value.visaNumber || !value.visaExpiry)) {
+    context.addIssue({ code: "custom", path: ["passportNumber"], message: "Enter passport and visa details for a foreign guest." });
+  }
+  if (value.source === "other" && (value.sourceOther?.length ?? 0) < 2) context.addIssue({ code: "custom", path: ["sourceOther"], message: "Describe the booking source." });
+});
 export const staffChangeSchema = z.discriminatedUnion("action", [
+  roomCheckIn,
   z.object({ action: z.literal("confirm"), reservationId: uuid }).strict(),
   z.object({ action: z.literal("cancel"), reservationId: uuid }).strict(),
   z.object({ action: z.literal("assign"), reservationId: uuid, rooms: z.array(room).min(1).max(12) }).strict(),
@@ -39,11 +59,8 @@ export const staffAccountSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("reset"), userId: uuid, password: z.string().min(12).max(128) }).strict(),
   z.object({ action: z.literal("deactivate"), userId: uuid }).strict(),
 ]);
-export const staffDocumentSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("upload"), reservationId: uuid, side: z.enum(["front", "back"]), contentType: z.enum(["image/jpeg", "image/png", "image/webp"]), size: z.number().int().min(1).max(5 * 1024 * 1024) }).strict(),
-  z.object({ action: z.literal("register"), reservationId: uuid, side: z.enum(["front", "back"]), path: z.string().min(10).max(200) }).strict(),
-  z.object({ action: z.literal("read"), reservationId: uuid, path: z.string().min(10).max(200) }).strict(),
-]);
+// Existing private photos remain readable; new registrations use typed ID details.
+export const staffDocumentSchema = z.object({ action: z.literal("read"), reservationId: uuid, path: z.string().min(10).max(200) }).strict();
 export const staffPaymentSchema = z.object({ reservationId: uuid, kind: z.enum(["link", "qr"]), requestId: uuid }).strict();
 export const staffInvoiceSchema = z.object({ reservationId: uuid, operation: z.enum(["create", "share", "revoke", "email"]) }).strict();
 export const staffAvailabilitySchema = z.object({ checkIn: z.string().date(), checkOut: z.string().date(), guests: z.number().int().min(1).max(12) }).strict();

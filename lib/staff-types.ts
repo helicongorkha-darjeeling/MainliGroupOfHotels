@@ -10,6 +10,7 @@ export type SafeStaffRoom = { number: string; category: string; name?: string; a
 export type StaffRoom = SafeStaffRoom & { reservation_id?: string | null; checked_in_at?: string | null; expected_check_out?: string | null; source?: BookingSource | null };
 export type StaffMember = { user_id: string; name: string; username: string | null; role: StaffRole; active: boolean };
 export type StaffStay = {
+  guest_profile_id?: string | null;
   reservation_id: string; source: BookingSource; source_other: string | null; ota_reference: string | null;
   address: string | null; nationality: string | null; adults: number | null; children: number | null; id_type: string | null; id_number: string | null;
   passport_number: string | null; visa_number: string | null; visa_expiry: string | null;
@@ -17,6 +18,15 @@ export type StaffStay = {
   checked_out_at: string | null; checked_out_by: string | null; allow_balance_due: boolean; allow_balance_by: string | null;
   id_front_path: string | null; id_back_path: string | null;
 };
+/** Private per-stay registration. Aadhaar is already masked by the gateway/database. */
+export type StaffGuestProfile = {
+  id: string; reservation_id: string; full_name: string; phone: string; email: string;
+  address: string; nationality: string; adults: number; children: number;
+  id_type: string; id_number: string; passport_number: string | null; visa_number: string | null; visa_expiry: string | null;
+  created_at: string; updated_at: string;
+};
+export type StaffCheckOutResult = { saved: true; invoiceId: string; invoice: StaffInvoice; folio: StaffFolio };
+export type StaffRoomCheckInResult = { saved: true; reservationId: string; guestProfileId: string; reservation: Reservation; folio: StaffFolio };
 export type StaffFolioItem = { id: string; reservation_id: string; kind: "charge" | "discount"; description: string; amount_paise: number; tax_rate_bps: number | null; created_by: string; created_at: string };
 export type StaffFolioPayment = { id: string; reservation_id: string; method: "cash" | "card_terminal" | "upi_manual" | "razorpay"; amount_paise: number; reference: string | null; received_by: string | null; received_at: string };
 export type StaffFolio = { reservation_id: string; room_subtotal_paise: number; extras_paise: number; discount_paise: number; taxable_paise: number; tax_rate_bps: number | null; tax_paise: number | null; total_paise: number; paid_paise: number; balance_paise: number; credit_paise?: number; tax_confirmed: boolean };
@@ -35,7 +45,7 @@ export type HotelOperationsData = {
   assignments: {reservation_id: string; room_number: string}[];
   seasons: {id: string; name: string; starts_on: string; ends_on: string; solo_paise: number; couple_paise: number; group_per_guest_paise: number; active: boolean}[];
   settings: StaffSettings; stays?: StaffStay[]; staffMembers?: StaffMember[]; folioItems?: StaffFolioItem[];
-  folioPayments?: StaffFolioPayment[]; folios?: StaffFolio[]; invoices?: StaffInvoice[]; balanceRequests?: StaffBalanceRequest[];
+  folioPayments?: StaffFolioPayment[]; folios?: StaffFolio[]; invoices?: StaffInvoice[]; balanceRequests?: StaffBalanceRequest[]; guestProfiles?: StaffGuestProfile[];
 };
 export type StaffHousekeepingData = { role: "housekeeping"; rooms: SafeStaffRoom[]; staffCoreReady?: boolean };
 export type StaffAccessData = HotelOperationsData | StaffHousekeepingData;

@@ -10,7 +10,7 @@ begin
     insert into auth.users(id,email,email_confirmed_at) values(housekeeper,'category-test-'||housekeeper||'@example.invalid',now());
     insert into public.hotel_staff(user_id,role) values(housekeeper,'housekeeping');
   end if;
-  perform public.hotel_staff_change(guest,jsonb_build_object('action','settings','taxRateBps',0,'checkInTime','14:00','checkOutTime','11:00','cancellationTerms','Synthetic policy for rolled-back verification only.','paymentsEnabled',true));
+  perform public.hotel_staff_change(guest,jsonb_build_object('action','settings','taxRateBps',0,'checkInTime','14:00','checkOutTime','11:00','cancellationTerms','Synthetic policy for rolled-back verification only.','paymentsEnabled',true,'legalName','Synthetic Category Hotel','legalAddress','Synthetic Category hotel address'));
   if (public.hotel_quote(today,today+2,1)->>'totalPaise')::bigint<>400000 then raise exception 'Solo quote mismatch'; end if;
   if (public.hotel_quote(today,today+2,2)->>'totalPaise')::bigint<>500000 then raise exception 'Couple quote mismatch'; end if;
   if (public.hotel_quote(today,today+2,3)->>'totalPaise')::bigint<>720000 then raise exception 'Group quote mismatch'; end if;
@@ -42,12 +42,14 @@ begin
     perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','out_of_service'));
     raise exception 'Booked room was removed from inventory';
   exception when sqlstate 'PT409' then null; end;
-  -- The mobile staff migration requires clean assigned rooms and captured private ID photos.
+  -- Both staff versions require clean assigned rooms; the typed registration follow-up removes the photo requirement.
   if to_regclass('public.hotel_stays') is not null then
     perform public.hotel_staff_change(guest,jsonb_build_object('action','housekeeping','roomNumber','324','status','clean','housekeeperId',housekeeper));
-    insert into storage.objects(bucket_id,name) values('hotel-guest-id',(booking->>'id')||'/'||guest||'/synthetic.front.jpg'),('hotel-guest-id',(booking->>'id')||'/'||guest||'/synthetic.back.jpg');
-    perform public.hotel_staff_change(guest,jsonb_build_object('action','id_photo','reservationId',booking->>'id','side','front','path',(booking->>'id')||'/'||guest||'/synthetic.front.jpg'));
-    perform public.hotel_staff_change(guest,jsonb_build_object('action','id_photo','reservationId',booking->>'id','side','back','path',(booking->>'id')||'/'||guest||'/synthetic.back.jpg'));
+    if to_regclass('public.hotel_guest_profiles') is null then
+      insert into storage.objects(bucket_id,name) values('hotel-guest-id',(booking->>'id')||'/'||guest||'/synthetic.front.jpg'),('hotel-guest-id',(booking->>'id')||'/'||guest||'/synthetic.back.jpg');
+      perform public.hotel_staff_change(guest,jsonb_build_object('action','id_photo','reservationId',booking->>'id','side','front','path',(booking->>'id')||'/'||guest||'/synthetic.front.jpg'));
+      perform public.hotel_staff_change(guest,jsonb_build_object('action','id_photo','reservationId',booking->>'id','side','back','path',(booking->>'id')||'/'||guest||'/synthetic.back.jpg'));
+    end if;
     perform public.hotel_staff_change(guest,jsonb_build_object('action','check_in','reservationId',booking->>'id','fullName','Synthetic Guest','phone','+919999999999','address','Synthetic test address','nationality','Indian','adults',6,'children',0,'idType','passport','idNumber','TEST1234'));
   else
     perform public.hotel_staff_change(guest,jsonb_build_object('action','check_in','reservationId',booking->>'id'));
