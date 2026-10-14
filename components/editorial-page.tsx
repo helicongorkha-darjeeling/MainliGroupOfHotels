@@ -1,3 +1,4 @@
+import { brandedPhoto } from "@/lib/photo-assets";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/site-header";
@@ -7,7 +8,7 @@ export function EditorialPage({ title, eyebrow, intro, image, children }: { titl
   return <main className="mainali-public-page">
     <SiteHeader overlay />
     <section className="mainali-property-hero editorial-page-hero">
-      <Image src={image} alt="Hotel Teesta, Darjeeling" fill preload sizes="100vw" className="cover-image" style={{objectPosition:"50% 60%"}} />
+      <Image src={brandedPhoto(image,"card")} alt="Hotel Teesta, Darjeeling" fill preload sizes="100vw" className="cover-image" style={{objectPosition:"100% 100%"}} />
       <div className="mainali-hero-shade" />
       <div className="mainali-hero-copy site-shell"><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{intro}</p></div>
     </section>

@@ -2,6 +2,7 @@
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 import { formatHoldCountdown, remainingHoldSeconds } from "@/lib/booking-presentation";
+import { KnotLoader } from "./knot-loader";
 import { formatInr } from "@/lib/rates";
 import type { Reservation } from "@/lib/reservations";
 
@@ -55,6 +56,6 @@ export function ReservationPayment({reservationId,holdUntil,amountPaise,autoStar
       <small>Held until {new Intl.DateTimeFormat("en-IN",{hour:"numeric",minute:"2-digit",timeZone:"Asia/Kolkata"}).format(new Date(holdUntil))} IST. The hold releases if payment is not confirmed in time.</small></>}
     </div>}
     <Script src="https://checkout.razorpay.com/v1/checkout.js" onReady={()=>{setReady(true);if(autoStart&&!autoOpened.current){autoOpened.current=true;void pay();}}} onError={()=>setMessage("Secure checkout could not load. Retry shortly.")} />
-    <button type="button" className="button button-primary" disabled={!ready||busy||expired} onClick={pay}>{busy?"Checking payment…":`Pay now${amountPaise===undefined?"":` · ${formatInr(amountPaise)}`}`}</button>
+    <button type="button" className="button button-primary" disabled={!ready||busy||expired} onClick={pay}>{busy?<><KnotLoader />Checking payment…</>:`Pay now${amountPaise===undefined?"":` · ${formatInr(amountPaise)}`}`}</button>
     <p role="status" aria-live="polite">{message}</p></div>;
 }

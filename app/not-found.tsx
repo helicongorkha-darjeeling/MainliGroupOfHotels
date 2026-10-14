@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 
 export default function NotFound() {
   return (
-    <main>
+    <main className="mainali-public-page">
       <SiteHeader />
       <section className="simple-page site-shell">
         <p className="eyebrow">Page not found</p>

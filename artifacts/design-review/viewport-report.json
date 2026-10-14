@@ -1,0 +1,171 @@
+{
+  "base": "http://localhost:3001",
+  "results": [
+    {
+      "name": "home",
+      "width": 360,
+      "height": 780,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "rooms",
+      "width": 360,
+      "height": 780,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "teesta",
+      "width": 360,
+      "height": 780,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "book",
+      "width": 360,
+      "height": 780,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "rooms",
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "teesta",
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "book",
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "rooms",
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "teesta",
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "small": [],
+      "images": [
+        "http://localhost:3001/_next/image?url=%2Fbranded-images%2Fteesta-room-seating-card.webp&w=3840&q=75",
+        "http://localhost:3001/_next/image?url=%2Fbranded-images%2Fteesta-double-room-bedside-card.webp&w=3840&q=75",
+        "http://localhost:3001/_next/image?url=%2Fbranded-images%2Fteesta-double-room-interior-card.webp&w=3840&q=75",
+        "http://localhost:3001/_next/image?url=%2Fbranded-images%2Fteesta-bathroom-card.webp&w=3840&q=75"
+      ]
+    },
+    {
+      "name": "book",
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "home",
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "rooms",
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "teesta",
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "book",
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "home",
+      "width": 1440,
+      "height": 900,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "rooms",
+      "width": 1440,
+      "height": 900,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "teesta",
+      "width": 1440,
+      "height": 900,
+      "overflow": false,
+      "small": [],
+      "images": []
+    },
+    {
+      "name": "book",
+      "width": 1440,
+      "height": 900,
+      "overflow": false,
+      "small": [],
+      "images": []
+    }
+  ],
+  "errors": []
+}

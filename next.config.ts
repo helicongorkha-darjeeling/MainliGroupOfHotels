@@ -42,6 +42,7 @@ const nextConfig: NextConfig = {
 
     return [
       { source: "/:path*", headers },
+      ...["/staff/:path*", "/admin/:path*", "/api/:path*", "/auth/:path*", "/book", "/rooms", "/members", "/my-bookings", "/offers"].map(source => ({ source, headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] })),
       { source: "/staff/check-in/:path*", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
       { source: "/staff/walk-in", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
       { source: "/staff/operations", headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(self)" }] },
