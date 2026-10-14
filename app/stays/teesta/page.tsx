@@ -1,34 +1,34 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { BookingBar } from "@/components/booking-bar";
 import { PropertyGallery } from "@/components/property-gallery";
-import { Reveal } from "@/components/reveal";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { StickyBooking } from "@/components/sticky-booking";
+import { HotelJsonLd } from "@/components/seo/HotelJsonLd";
+import { HotelFAQ } from "@/components/sections/HotelFAQ";
+import { RoomComparisonTable } from "@/components/rooms/RoomComparisonTable";
+import { AmenityBulletList } from "@/components/rooms/AmenityBulletList";
+import { publicTeesta, hotelAddress, hotelMapUrl, publishedRateStatement, roomStartingPrice } from "@/lib/hotel-content";
 import { teesta } from "@/lib/property";
-import { teestaRoomTypes } from "@/lib/room-types";
-
-export const metadata: Metadata = { title: "Hotel Teesta, Darjeeling", description: "Explore real room photographs and plan your stay at Hotel Teesta in Chauk Bazaar, Darjeeling." };
-
+import { brandedPhoto } from "@/lib/photo-assets";
+import { siteOrigin, siteMetadata } from "@/lib/seo";
+export const metadata = siteMetadata("/stays/teesta", "Hotel Teesta, Darjeeling", publicTeesta.description);
 export default function TeestaPage() {
-  return <main className="mainali-public-page">
-    <SiteHeader overlay />
-    <section className="mainali-property-hero" aria-labelledby="property-title">
-      <Image src={teesta.publicRoom.photo} alt="Double room beside a window at Hotel Teesta" fill preload sizes="100vw" className="cover-image" style={{objectPosition:"50% 65%"}} />
-      <div className="mainali-hero-shade" />
-      <div className="mainali-hero-copy site-shell"><p className="eyebrow">Darjeeling, West Bengal</p><h1 id="property-title">Hotel Teesta</h1><p>A welcoming hill stay in Chauk Bazaar.<br />Choose a room that feels right for your journey.</p><a href="#check-rooms" className="button hero-outline">Plan your stay</a></div>
+  return <main className="mainali-public-page"><SiteHeader overlay /><HotelJsonLd hotel={publicTeesta} />
+    <section className="mainali-property-hero" aria-labelledby="property-title"><picture className="hero-picture"><source media="(min-width:640px)" srcSet={brandedPhoto(teesta.publicRoom.photo,"hero")} /><Image src={brandedPhoto(teesta.publicRoom.photo,"hero-mobile")} alt="Hotel Teesta double room" fill preload sizes="100vw" className="cover-image" /></picture><div className="mainali-hero-shade" /><div className="mainali-hero-copy site-shell"><p className="eyebrow">Chauk Bazaar · Darjeeling</p><h1 id="property-title">{publicTeesta.name}</h1><p>{publicTeesta.description}</p></div></section>
+    <BookingBar variant="inline" />
+    <nav className="property-section-nav" aria-label="Explore Hotel Teesta"><a href="#room-layouts">Rooms</a><a href="#photos">Photos</a><a href="#location">Location</a><Link href="/policies/booking-terms">Booking terms</Link></nav>
+    <section id="room-layouts" className="section-space site-shell"><h2>Choose your room layout.</h2><p>{publicTeesta.inventoryCount} rooms. Reception assigns your physical room after booking.</p><div className="room-layout-grid">{publicTeesta.rooms.map(room => <article className="room-layout-card" key={room.id}><div className="room-layout-photo">{room.photo ? <Image src={brandedPhoto(room.photo,"card")} alt={room.name + " at Hotel Teesta"} fill sizes="(min-width:900px)25vw,(min-width:640px)50vw,82vw" className="cover-image" /> : <div className="room-placeholder">Six-person layout · photograph on request</div>}</div><h3>{room.name}</h3><p>{room.description}</p><p>Up to {room.maxGuests} guests · {room.bedConfiguration}</p><p>{roomStartingPrice(room)}</p><a href="#check-rooms" className="text-link">See dates</a></article>)}</div><p className="fine-print room-layout-note">{publishedRateStatement}</p><RoomComparisonTable rooms={publicTeesta.rooms} /></section>
+    <section className="section-space site-shell" aria-labelledby="amenities-title"><h2 id="amenities-title">Hotel amenities</h2><AmenityBulletList amenities={publicTeesta.amenities} /></section>
+    <section id="photos" className="section-space site-shell"><h2>Take a closer look.</h2><p>Actual rooms, bathroom, lobby, restaurant and front desk.</p><PropertyGallery photos={teesta.gallery} /></section>
+    <section id="location" className="section-space site-shell"><h2>Find Hotel Teesta.</h2><address>{hotelAddress}</address><a href={hotelMapUrl} className="text-link">Get directions</a>
+      {publicTeesta.telephone && <p>Telephone: <a href={"tel:" + publicTeesta.telephone}>{publicTeesta.telephone}</a></p>}
+      {publicTeesta.geo && <p>Coordinates: {publicTeesta.geo.latitude}, {publicTeesta.geo.longitude}</p>}
+      {publicTeesta.checkinTime && <p>Check-in: {publicTeesta.checkinTime}</p>}{publicTeesta.checkoutTime && <p>Checkout: {publicTeesta.checkoutTime}</p>}
+      {publicTeesta.aggregateRating && <p>Guest rating: {publicTeesta.aggregateRating.ratingValue} / 5 · {publicTeesta.aggregateRating.reviewCount} reviews · {publicTeesta.aggregateRating.source}</p>}
+      {publicTeesta.venue && <div><h3>{publicTeesta.venue.name}</h3><p>{publicTeesta.venue.description}</p><p>Maximum event capacity: {publicTeesta.venue.capacity} guests</p></div>}
     </section>
-    <BookingBar />
-    <nav className="property-section-nav" aria-label="Explore Hotel Teesta"><a href="#room-layouts">Rooms</a><a href="#photos">Photographs</a><a href="#location">Location</a><Link href="/policies/booking-terms">Booking terms</Link></nav>
-    <section id="room-layouts" className="section-space site-shell" aria-labelledby="rooms-title">
-      <div className="editorial-heading"><p className="eyebrow">Stay your way</p><h2 id="rooms-title">Space for every journey.</h2><p>Choose a room layout, not a room number. Reception allots your room later.</p></div>
-      <div className="room-layout-grid">{teestaRoomTypes.filter((room) => room.id !== "family-room-sofa").map((room) => <Reveal className="room-layout-card" key={room.id}><a href="#check-rooms" className="room-layout-photo" aria-label={"Choose dates for " + room.name}><Image src={room.photo} alt={room.id === "six-person-room" ? "Hotel Teesta exterior" : room.name + " at Hotel Teesta"} fill sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 25vw" className="cover-image" style={{objectPosition:room.position}} /></a><p className="eyebrow">Up to {room.maxGuests} guests per room</p><h3>{room.name}</h3><p>{room.description}</p><strong>{room.id === "double-room" ? "Solo ₹2,000 · Couple ₹2,500 / night" : "Groups of 3+ · ₹1,200 per guest / night"}</strong><a href="#check-rooms" className="text-link">Choose dates <ArrowUpRight size={16} aria-hidden="true" /></a></Reveal>)}</div>
-      <p className="fine-print room-layout-note">Room layouts are shown from the owner’s photographs. Starting rates are not a live availability promise. Final rates, taxes and policies must be confirmed before payment.</p>
-    </section>
-    <section id="photos" className="gallery-section section-space" aria-labelledby="gallery-title"><div className="site-shell"><div className="editorial-heading"><p className="eyebrow">Inside Hotel Teesta</p><h2 id="gallery-title">Take a closer look.</h2><p>Our actual rooms, bathroom, lobby, restaurant and front desk. Tap a photograph for the full view.</p></div><PropertyGallery photos={teesta.gallery} /></div></section>
-    <section id="location" className="section-space site-shell editorial-split location-section" aria-labelledby="location-title"><Reveal className="location-photograph"><Image src="/images/teesta-exterior-front.webp" alt="Hotel Teesta opposite the bus stand in Chauk Bazaar" fill sizes="(max-width: 800px) 100vw, 50vw" className="cover-image" /></Reveal><Reveal className="editorial-copy"><p className="eyebrow">Find your way</p><h2 id="location-title">In the heart<br />of Chauk Bazaar.</h2><p>Hotel Teesta, Botanical Garden Road, Darjeeling, West Bengal. Opposite the bus stand.</p><Link href="/contact" className="button button-outline">Location &amp; enquiries <ArrowUpRight size={16} aria-hidden="true" /></Link><p className="fine-print">Check live room availability, sign in with Google and review your stay. Your room is confirmed after verified payment.</p></Reveal></section>
-    <SiteFooter />
+    <div className="section-space site-shell"><HotelFAQ faqs={publicTeesta.faqs} pageUrl={siteOrigin() + publicTeesta.canonicalPath} /><Link className="text-link" href="/policies/refunds">Cancellation and refund terms</Link></div><SiteFooter /><StickyBooking />
   </main>;
 }

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useId, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Expand, Images, X } from "lucide-react";
+import { brandedPhoto } from "@/lib/photo-assets";
 import type { PropertyPhoto } from "@/lib/property";
 
 export function PropertyGallery({ photos }: { photos: PropertyPhoto[] }) {
@@ -39,7 +40,7 @@ export function PropertyGallery({ photos }: { photos: PropertyPhoto[] }) {
       <div className={`photo-grid ${visible.length === 1 ? "photo-grid-single" : ""}`}>
         {visible.slice(0, 5).map((photo, index) => (
           <button type="button" className="photo-tile" key={photo.src} onClick={() => open(index)} aria-label={`View photo: ${photo.caption}`}>
-            <Image src={photo.src} alt={photo.alt} fill sizes={index === 0 ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 50vw, 25vw"} className="cover-image" style={{ objectPosition: photo.objectPosition }} />
+            <Image src={brandedPhoto(photo.src, "card")} alt={photo.alt} fill sizes={index === 0 ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 50vw, 25vw"} className="cover-image" style={{ objectPosition: "100% 100%" }} />
             <span className="photo-tile-caption">{photo.caption}</span>
             <span className="photo-expand" aria-hidden="true"><Expand size={17} /></span>
           </button>
@@ -63,7 +64,7 @@ export function PropertyGallery({ photos }: { photos: PropertyPhoto[] }) {
         <div className="photo-stage">
           {isOpen && current && <>
             {loadedSrc !== current.src && <span className="photo-loading" role="status">Loading photograph…</span>}
-            <Image src={current.src} alt={current.alt} fill loading="eager" sizes="(max-width: 640px) 100vw, 90vw" className="photo-full-image" onLoad={() => setLoadedSrc(current.src)} />
+            <Image src={brandedPhoto(current.src)} alt={current.alt} fill loading="eager" sizes="(max-width: 640px) 100vw, 90vw" className="photo-full-image" onLoad={() => setLoadedSrc(current.src)} />
           </>}
           {visible.length > 1 && <>
             <button type="button" className="photo-nav photo-nav-prev" aria-label="Previous photo" onClick={() => move(-1)}><ArrowLeft size={22} /></button>
@@ -75,7 +76,7 @@ export function PropertyGallery({ photos }: { photos: PropertyPhoto[] }) {
           <div className="photo-thumbnails" aria-label="Choose a photo">
             {visible.map((photo, index) => (
               <button type="button" key={photo.src} aria-label={`Show ${photo.caption}`} aria-pressed={index === selected} onClick={() => setSelected(index)}>
-                <Image src={photo.src} alt="" fill sizes="64px" className="cover-image" style={{ objectPosition: photo.objectPosition }} />
+                <Image src={brandedPhoto(photo.src, "card")} alt="" fill sizes="64px" className="cover-image" style={{ objectPosition: "100% 100%" }} />
               </button>
             ))}
           </div>

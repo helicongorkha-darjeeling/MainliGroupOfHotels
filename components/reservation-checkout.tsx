@@ -4,6 +4,7 @@ import Link from "next/link";
 import { GoogleAuth } from "./google-auth";
 import { ReservationPayment } from "./reservation-payment";
 import { BookingSteps } from "./booking-steps";
+import { KnotLoader } from "./knot-loader";
 import { formatInr } from "@/lib/rates";
 import { guestDetailsSchema } from "@/lib/guest-details";
 import { reservationInputSchema,type Reservation } from "@/lib/reservations";
@@ -56,7 +57,7 @@ export function ReservationCheckout({bookingPath,checkIn,checkOut,guests,categor
     <label>Phone number<input name="phone" type="tel" autoComplete="tel" placeholder="+91 98765 43210" maxLength={30} required value={phone} onChange={e=>setPhone(e.target.value)} disabled={busy}/></label>
     <p>Continuing saves your contact details to your account for this booking. Your phone number is a contact number, not OTP-verified. When payment is available, Pay now checks availability again and starts a 15-minute payment hold. Your stay is confirmed after payment is verified. Read the <Link href="/policies/booking-terms">booking terms</Link> and <Link href="/policies/privacy">privacy notice</Link>.</p>
     {!paymentsEnabled&&<p className="checkout-payment-notice">Online payment is being prepared. You can review your stay, but no room will be held or charged until payment opens.</p>}
-    <div className="checkout-pay-action"><button className="button button-primary" disabled={busy} type="submit">{busy?"Saving & checking…":paymentsEnabled?`Pay now · ${formatInr(reviewedTotalPaise)}`:"Save details & continue"}</button><small>{paymentsEnabled?"Secure payment with Razorpay · confirmation after verified payment":"Payment opens after hotel tax and payment setup"}</small></div>
+    <div className="checkout-pay-action"><button className="button button-primary" disabled={busy} type="submit">{busy?<><KnotLoader />Saving & checking…</>:paymentsEnabled?`Pay now · ${formatInr(reviewedTotalPaise)}`:"Save details & continue"}</button><small>{paymentsEnabled?"Secure payment with Razorpay · confirmation after verified payment":"Payment opens after hotel tax and payment setup"}</small></div>
     <p role="status" aria-live="polite">{message}</p>
   </form>;
 }

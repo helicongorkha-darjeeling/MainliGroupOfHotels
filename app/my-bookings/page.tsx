@@ -17,7 +17,7 @@ export default async function MyBookingsPage({ searchParams }: { searchParams: P
   const query = await searchParams;
   const {user,bookings,unavailable,evaluatedAt}=await guestReservations();
   return (
-    <main>
+    <main className="mainali-public-page">
       <SiteHeader />
       <section className="account-page site-shell">
         <div className="account-copy">

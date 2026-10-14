@@ -26,7 +26,6 @@ export function StayCalendar({ checkIn, checkOut, onChange }: StayCalendarProps)
   const id = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const checkInRef = useRef<HTMLButtonElement>(null);
-  const checkOutRef = useRef<HTMLButtonElement>(null);
   const [active, setActive] = useState<DateField | null>(null);
   const [today, setToday] = useState(hotelToday);
   const nights = nightsBetween(checkIn, checkOut);
@@ -34,7 +33,7 @@ export function StayCalendar({ checkIn, checkOut, onChange }: StayCalendarProps)
   useEffect(() => {
     if (!active) return;
     const dialog = dialogRef.current;
-    const anchor = active === "checkIn" ? checkInRef.current : checkOutRef.current;
+    const anchor = checkInRef.current;
     if (!dialog || !anchor) return;
 
     function position() {
@@ -82,31 +81,20 @@ export function StayCalendar({ checkIn, checkOut, onChange }: StayCalendarProps)
 
   return (
     <>
-      {(["checkIn", "checkOut"] as const).map((field) => (
-        <div className="search-field search-field-date" key={field}>
-          <button
-            ref={field === "checkIn" ? checkInRef : checkOutRef}
-            type="button"
-            className="date-trigger"
-            aria-haspopup="dialog"
-            aria-label={`${field === "checkIn" ? "Check-in" : "Checkout"}, ${formatHotelDate(field === "checkIn" ? checkIn : checkOut) || "Choose a date"}`}
-            aria-expanded={active === field}
-            aria-controls={`${id}-calendar`}
-            onClick={() => open(field)}
-          >
-            <span className="date-field-label"><CalendarDays size={16} aria-hidden="true" />{field === "checkIn" ? "Check-in" : "Checkout"}</span>
-            <span className="date-field-value">{formatHotelDate(field === "checkIn" ? checkIn : checkOut) || "Choose a date"}<ChevronDown size={17} aria-hidden="true" /></span>
-          </button>
-          <input type="hidden" name={field} value={field === "checkIn" ? checkIn : checkOut} />
-        </div>
-      ))}
+      <div className="search-field search-field-date">
+        <button ref={checkInRef} type="button" className="date-trigger" data-date-trigger aria-haspopup="dialog" aria-expanded={active !== null} aria-controls={id + "-calendar"} onClick={() => open("checkIn")}>
+          <span className="date-field-label"><CalendarDays size={16} aria-hidden="true" />Dates · {nights} {nights === 1 ? "night" : "nights"}</span>
+          <span className="date-field-value">{formatHotelDate(checkIn)} → {formatHotelDate(checkOut)}<ChevronDown size={17} aria-hidden="true" /></span>
+        </button>
+        <input type="hidden" name="checkIn" value={checkIn} /><input type="hidden" name="checkOut" value={checkOut} />
+      </div>
       <dialog
         ref={dialogRef}
         id={`${id}-calendar`}
         className="stay-calendar-dialog"
         aria-labelledby={`${id}-calendar-title`}
         onClose={() => {
-          const trigger = active === "checkOut" ? checkOutRef.current : checkInRef.current;
+          const trigger = checkInRef.current;
           setActive(null);
           trigger?.focus();
         }}

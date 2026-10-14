@@ -14,6 +14,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { teesta } from "@/lib/property";
 import { formatInr } from "@/lib/rates";
+import { publicTeesta } from "@/lib/hotel-content";
+import { brandedPhoto } from "@/lib/photo-assets";
 import { getTeestaRoomType, planRoomChoice } from "@/lib/room-types";
 import { formatHotelDate, hotelToday, nightsBetween, staySearchSchema } from "@/lib/stay";
 
@@ -34,7 +36,7 @@ export default async function BookPage({ searchParams }: BookPageProps) {
   const room = getTeestaRoomType(params.roomType === undefined ? undefined : typeof params.roomType === "string" ? params.roomType : "invalid");
   if (!parsed.success || !room || parsed.data.checkIn < hotelToday()) {
     return (
-      <main>
+      <main className="mainali-public-page">
         <SiteHeader />
         <section className="booking-invalid site-shell">
           <p className="eyebrow">Booking details</p>
@@ -46,6 +48,7 @@ export default async function BookPage({ searchParams }: BookPageProps) {
     );
   }
 
+  const roomPhoto = publicTeesta.rooms.find(item => item.id === room.id)?.photo;
   const nights = nightsBetween(parsed.data.checkIn, parsed.data.checkOut);
   const plan = planRoomChoice(room, parsed.data.guests, nights);
   const [inventory,session] = await Promise.all([searchInventory(parsed.data.checkIn,parsed.data.checkOut,parsed.data.guests),createSessionSupabaseClient()]);
@@ -59,11 +62,11 @@ export default async function BookPage({ searchParams }: BookPageProps) {
   }).toString()}`;
 
   return (
-    <main className="booking-page">
+    <main className="mainali-public-page booking-page">
       <SiteHeader />
       <section className="booking-shell site-shell">
         <div className="booking-visual">
-          <Image src={room.photo} alt={room.id==="six-person-room"?"Hotel Teesta exterior":`${room.name} at Hotel Teesta`} fill loading="eager" fetchPriority="high" sizes="(max-width: 900px) 100vw, 48vw" className="cover-image" style={{ objectPosition: room.position }} />
+          {roomPhoto ? <Image src={brandedPhoto(roomPhoto,"card")} alt={room.id==="six-person-room"?"Hotel Teesta exterior":`${room.name} at Hotel Teesta`} fill loading="eager" fetchPriority="high" sizes="(max-width: 900px) 100vw, 48vw" className="cover-image" style={{ objectPosition: "100% 100%" }} /> : <div className="room-placeholder">{room.name} · bed layout and photo on request</div>}
           <span>{room.name} · Hotel Teesta</span>
         </div>
 

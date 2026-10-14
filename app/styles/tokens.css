@@ -1,0 +1,12 @@
+:root {
+--mh-ivory:#F7F3EC;--mh-paper:#fff;--mh-sand:#EFE8DC;--mh-line:#DDD4C4;--mh-ink:#1B1915;--mh-ink-soft:#6B6357;
+--mh-gold:#A8844F;--mh-gold-ink:#7A5C30;--mh-gold-press:#8A6A3B;--mh-knot:#ADA287;--mh-night:#15130F;--mh-on-night:#F3EDE2;--mh-on-night-soft:#C7C0B6;
+--mh-success:#2F6B4F;--mh-warning:#8A5A12;--mh-danger:#A23B2C;--mh-focus:#7A5C30;
+--mh-font-display:var(--font-editorial),Georgia,serif;--mh-font-text:var(--font-hospitality),system-ui,sans-serif;
+--mh-step--1:.875rem;--mh-step-0:1rem;--mh-step-1:1.125rem;--mh-step-2:clamp(1.375rem,1.2rem + .8vw,1.75rem);--mh-step-3:clamp(1.75rem,1.4rem + 1.8vw,2.75rem);--mh-step-4:clamp(2.25rem,1.6rem + 3.4vw,4.25rem);--mh-label:.875rem;
+--mh-1:4px;--mh-2:8px;--mh-3:12px;--mh-4:16px;--mh-5:24px;--mh-6:32px;--mh-7:48px;--mh-8:64px;--mh-9:96px;
+--mh-section:clamp(56px,8vw,112px);--mh-gutter:clamp(16px,4vw,40px);--mh-max:1200px;--mh-radius:2px;--mh-shadow:0 10px 30px rgb(21 19 15 / .08);
+--mh-ease:cubic-bezier(.2,.75,.2,1);--mh-fast:150ms;--mh-base:250ms;--mh-slow:600ms;--mh-header:64px;--mh-tap:48px;
+}
+@media(min-width:900px){:root{--mh-header:72px}}
+

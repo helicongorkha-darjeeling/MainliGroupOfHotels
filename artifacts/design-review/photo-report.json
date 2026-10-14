@@ -1,0 +1,238 @@
+{
+  "source": "public/images",
+  "output": "Kiran - with logo/public/images",
+  "fullSizeCopies": 20,
+  "webDerivatives": 28,
+  "failed": [],
+  "excluded": "Brand assets, dependencies and review screenshots are outside public/images.",
+  "photos": [
+    {
+      "photo": "teesta-arrival.webp",
+      "position": "top-left",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "fe0ebbd1b4dc262220d9743a5df1c119537d915a3f6b5a61a209fadc7bd9d018",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-arrival-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-bathroom.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "ed3315efa850edf8f59304ba5475d3d387af3dbbdbcbdee4bfb02ac6351856c6",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-bathroom-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-dining-room.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "7fe45609b3f482e9395d4fecdf9b34a1298208c16b84bb21d435197f6ce668d1",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-dining-room-card.webp",
+        "teesta-dining-room-hero.webp",
+        "teesta-dining-room-hero-mobile.webp"
+      ]
+    },
+    {
+      "photo": "teesta-dining.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "be668490f3e97d9833028508a182d76495664db99018d37bae11b44f94e84ed9",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-dining-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-double-room-bedside.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "73f9ddd14f62f3e78b8ad4b117921381ef13bb63a2f61e69c6ae3f5d61467a94",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-double-room-bedside-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-double-room-interior.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "9c132d7d1156aa21f8db9647ed18d1cb51cf1bcf03235d6a41089b89c62186c7",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-double-room-interior-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-double-room-window.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "7d0b5eb4c89d806bbaef91a77c857f008e9bf223f583fc3d3ed347d72a795015",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-double-room-window-card.webp",
+        "teesta-double-room-window-hero.webp",
+        "teesta-double-room-window-hero-mobile.webp"
+      ]
+    },
+    {
+      "photo": "teesta-double-room.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "e85c3de9ec3b1dd78fe92a695de4e3365ec86eae3a9296aadb4974a700ea0604",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-double-room-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-exterior-front.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "67c6effabc789a5cb0155f755dc0323e5d75223c608d01434d908196c0808be8",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-exterior-front-card.webp",
+        "teesta-exterior-front-hero.webp",
+        "teesta-exterior-front-hero-mobile.webp"
+      ]
+    },
+    {
+      "photo": "teesta-exterior.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "d5621f252a2dfb6b795502e13a32893ea7bec666735e3e5a71a4e5703eaf13b2",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-exterior-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-family-room.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "583f34c01f1874d0c6ce3b75b7fcb1bacec6a1fcc3e075bbb0298ec7bf1d7d5b",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-family-room-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-family-sofa-room.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "7f092eed90b1fa2a7ff1e1568e33a855bb1ac0f37cf9875592435013ae5c4021",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-family-sofa-room-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-four-person-room.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "d419dd975db59c9b09bde84084f4bd4ee40962226ef374c37d3bdaf9dfa88da0",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-four-person-room-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-lobby.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "596b73050a1ae959203846b38d10a6de6e7365b9f65c554c22ec9aae28ae2bed",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-lobby-card.webp",
+        "teesta-lobby-hero.webp",
+        "teesta-lobby-hero-mobile.webp"
+      ]
+    },
+    {
+      "photo": "teesta-multi-bed-room.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "91027eaf5a34aeebe2f21ebee5bd7a12d1fa1afab6871466b6759aa577396545",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-multi-bed-room-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-neighbourhood-view.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "282eb00a0b7c18a2022d372fe3de0e346009a8d7bd60491b8cddb1f2569d8eca",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-neighbourhood-view-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-reception-desk.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "aef87b1970fefc449f986d906e57a9fc625d6cadb0df7ec68d64571911c70791",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-reception-desk-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-reception.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "9fe77e0c5b1f0c8a275179e7be759de6196913752fd13d39a28b1c79cce935fb",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-reception-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-room-seating.webp",
+      "position": "bottom-left",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "b90aa577f148bc9b03bfc7244f7b637f023fc1c7b187b928e545e5a6bfeeced9",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-room-seating-card.webp"
+      ]
+    },
+    {
+      "photo": "teesta-triple-room.webp",
+      "position": "bottom-right",
+      "size": 0.22,
+      "opacity": 0.92,
+      "originalSha256": "65014eb110a1ae3b40aa3eaee03f0b404b1b48e4bcbb7baa7b066e4dd5146c8f",
+      "unchanged": true,
+      "derivatives": [
+        "teesta-triple-room-card.webp"
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { siteMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -51,7 +52,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const policy = policies[slug as keyof typeof policies];
-  return policy ? { title: policy.title } : {};
+  return policy ? siteMetadata("/policies/" + slug, policy.title, policy.intro) : {};
 }
 
 export default async function PolicyPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -60,7 +61,7 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
   if (!policy) notFound();
 
   return (
-    <main>
+    <main className="mainali-public-page">
       <SiteHeader />
       <article className="policy-page site-shell">
         <p className="eyebrow">Guest information</p>
